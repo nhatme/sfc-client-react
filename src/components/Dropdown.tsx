@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useState, FC } from 'react'
 import { Button, Card, Menu, MenuHandler, MenuItem, MenuList, Typography } from '@material-tailwind/react'
 import { ChevronDownIcon, CursorArrowRaysIcon } from '@heroicons/react/24/outline';
+
+interface DropdownCustomName {
+    dropdownName: String
+}
 
 const menuItems = [
     {
@@ -20,7 +24,7 @@ const menuItems = [
     },
 ];
 
-const Dropdown = () => {
+const Dropdown: FC<DropdownCustomName> = ({ dropdownName }) => {
     const [open, setOpen] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
     const handleOpen = () => setOpen(!open);
@@ -32,11 +36,10 @@ const Dropdown = () => {
                     className="flex items-center gap-3 text-base font-normal capitalize tracking-normal"
                     size='sm'
                 >
-                    Technology{" "}
+                    <p className='font-bold'>{dropdownName}</p>{" "}
                     <ChevronDownIcon
                         strokeWidth={2.5}
-                        className={`h-3.5 w-3.5 transition-transform ${openMenu ? "rotate-180" : ""
-                            }`}
+                        className={`h-3.5 w-3.5 transition-transform ${openMenu ? "rotate-180" : ""}`}
                     />
                 </Button>
             </MenuHandler>

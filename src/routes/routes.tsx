@@ -1,17 +1,20 @@
 import defineRoutes from "../config/defineRoutes";
-import Home from "../pages/Home";
-import Swap from "../pages/Swap";
+import { Swap } from "../pages/Trading";
 
 const publicRoutes = [
     {
-        path: defineRoutes.home,
-        component: Home
-    },
-]
-const privateRoutes = [
-    {
         path: defineRoutes.swap,
+        component: Swap
+    },
+    {
+        path: defineRoutes.home,
         component: Swap
     }
 ]
-export { publicRoutes, privateRoutes };
+// const privateRoutes = [
+//     {
+//         path: defineRoutes.swap,
+//         component: Swap
+//     }
+// ]
+export { publicRoutes };

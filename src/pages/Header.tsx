@@ -1,6 +1,6 @@
-import { ButtonHeader } from "../components/Button"
+import { ButtonHeader } from "../components/Button";
 import { Button } from "@material-tailwind/react";
-import logo from "../images/logo.png"
+import logo from "../images/logo.png";
 import { Dropdown } from "../components/Dropdown";
 import { Web3Dialog } from "../components/Dialog";
 export const Header = () => {
@@ -11,13 +11,13 @@ export const Header = () => {
                     <div><img src={logo} alt="logo" /></div>
                     <ButtonHeader buttonText={"Swap"} />
                     <ButtonHeader buttonText={"Pool"} />
-                    <ButtonHeader buttonText={"Vote"} />
+                    <ButtonHeader buttonText={"Stable SFC"} />
                 </div>
                 <div className="flex items-center">
                     <div className="h-10 justify-start items-start gap-8 inline-flex">
                         <div><Button variant="outlined">0 SFC</Button></div>
                         <div><Web3Dialog /></div>
-                        <div className="flex"> <Dropdown /> </div>
+                        <div className="flex"> <Dropdown dropdownName={"My wallet"} /> </div>
                     </div>
                 </div>
             </div>

@@ -6,26 +6,26 @@ import {
     DialogBody,
     DialogFooter,
     IconButton,
-    Typography,
-    MenuItem,
+    Typography
 } from "@material-tailwind/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const Web3Dialog = () => {
     const [open, setOpen] = useState(false);
-
     const handleOpen = () => setOpen((cur) => !cur);
-
     return (
         <>
             <Button onClick={handleOpen}>Connect Wallet</Button>
-            <Dialog size="xs" open={open} handler={handleOpen}>
+            <Dialog size="xs" open={open} handler={handleOpen}
+                animate={{
+                    mount: { scale: 1, y: 0 },
+                    unmount: { scale: 0.9, y: -50 },
+                }}
+                className="bg-[#f8f8f9b3]">
                 <DialogHeader className="justify-between">
                     <div>
-                        <Typography variant="h5" color="blue-gray">
+                        <Typography variant="h5" color="blue-gray" className="font-bold">
                             Connect a Wallet
-                        </Typography>
-                        <Typography color="gray" variant="paragraph">
-                            Choose which card you want to connect
                         </Typography>
                     </div>
                     <IconButton
@@ -34,95 +34,59 @@ const Web3Dialog = () => {
                         variant="text"
                         onClick={handleOpen}
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            className="h-5 w-5"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
+                        <XMarkIcon className="h-6 w-6 text-black" />
                     </IconButton>
                 </DialogHeader>
-                <DialogBody className="overflow-y-scroll !px-5">
+                <DialogBody className="scroll_hidable overflow-y-scroll !px-5 max-h-96">
                     <div className="mb-6">
-                        <Typography
-                            variant="paragraph"
-                            color="blue-gray"
-                            className="py-3 font-semibold uppercase opacity-70"
-                        >
-                            Popular
-                        </Typography>
-                        <ul className="mt-3 -ml-2 flex flex-col gap-1">
-                            <MenuItem className="mb-4 flex items-center justify-center gap-3 !py-4 shadow-md">
+                        <ul className="mt-3 flex flex-col gap-1">
+                            <Button variant="outlined" className="flex items-center justify-between gap-3 bg-white">
+                                <Typography
+                                    className="uppercase"
+                                    color="blue-gray"
+                                    variant="h6"
+                                >
+                                    MetaMask
+                                </Typography>
                                 <img
                                     src="https://docs.material-tailwind.com/icons/metamask.svg"
                                     alt="metamast"
                                     className="h-6 w-6"
                                 />
+                            </Button>
+                            <Button variant="outlined" className="flex items-center justify-between gap-3 bg-white">
                                 <Typography
                                     className="uppercase"
                                     color="blue-gray"
                                     variant="h6"
                                 >
-                                    Connect with MetaMask
+                                    MetaMask
                                 </Typography>
-                            </MenuItem>
-                            <MenuItem className="mb-1 flex items-center justify-center gap-3 !py-4 shadow-md">
+                                <img
+                                    src="https://docs.material-tailwind.com/icons/metamask.svg"
+                                    alt="metamast"
+                                    className="h-6 w-6"
+                                />
+                            </Button>
+                            <Button variant="outlined" className="flex items-center justify-between gap-3 bg-white">
+                                <Typography
+                                    className="uppercase"
+                                    color="blue-gray"
+                                    variant="h6"
+                                >
+                                    Coinbase
+                                </Typography>
                                 <img
                                     src="https://docs.material-tailwind.com/icons/coinbase.svg"
                                     alt="metamast"
                                     className="h-6 w-6 rounded-md"
                                 />
-                                <Typography
-                                    className="uppercase"
-                                    color="blue-gray"
-                                    variant="h6"
-                                >
-                                    Connect with Coinbase
-                                </Typography>
-                            </MenuItem>
-                        </ul>
-                    </div>
-                    <div>
-                        <Typography
-                            variant="paragraph"
-                            color="blue-gray"
-                            className="py-4 font-semibold uppercase opacity-70"
-                        >
-                            Other
-                        </Typography>
-                        <ul className="mt-4 -ml-2.5 flex flex-col gap-1">
-                            <MenuItem className="mb-4 flex items-center justify-center gap-3 !py-4 shadow-md">
-                                <img
-                                    src="https://docs.material-tailwind.com/icons/trust-wallet.svg"
-                                    alt="metamast"
-                                    className="h-7 w-7 rounded-md border border-blue-gray-50"
-                                />
-                                <Typography
-                                    className="uppsecase"
-                                    color="blue-gray"
-                                    variant="h6"
-                                >
-                                    Connect with Trust Wallet
-                                </Typography>
-                            </MenuItem>
+                            </Button>
                         </ul>
                     </div>
                 </DialogBody>
-                <DialogFooter className="justify-between gap-2">
-                    <Typography variant="small" color="gray" className="font-normal">
-                        New to Ethereum wallets?
-                    </Typography>
-                    <Button variant="outlined" size="sm">
-                        Learn More
-                    </Button>
+                <DialogFooter className="justify-center">
+                    <p className="text-black">Powered by Solana</p>
                 </DialogFooter>
             </Dialog>
         </>

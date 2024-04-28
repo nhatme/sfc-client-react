@@ -7,7 +7,7 @@ interface ButtonHeaderProps {
 
 const ButtonHeader: FC<ButtonHeaderProps> = ({ buttonText }) => {
   return (
-    <Button variant="text" size='sm' className="text-black text-sm font-bold font-['Inter']">{buttonText}</Button>
+    <Button variant="text" size='sm' className="text-black text-sm font-bold">{buttonText}</Button>
   )
 }
 
