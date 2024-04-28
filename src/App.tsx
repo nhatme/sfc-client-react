@@ -1,10 +1,24 @@
-import React from 'react';
-
+import { Routes, Route } from "react-router-dom";
+import { privateRoutes, publicRoutes } from './routes/routes';
+import { AppLayout } from './layouts/AppLayout';
 function App() {
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+    <>
+      <Routes>
+        <Route element={<AppLayout />}>
+          {publicRoutes.map((route, index) => {
+            const Page = route.component;
+            return <Route key={index} path={route.path} element={<Page />} />;
+          })}
+        </Route>
+        {/* <Route element={<AppLayout />}>
+          {privateRoutes.map((route, index) => {
+            const Page = route.component;
+            return <Route key={index} path={route.path} element={<Page />} />;
+          })}
+        </Route> */}
+      </Routes>
+    </>
   );
 }
 
