@@ -8,19 +8,19 @@ interface DropdownCustomName {
 
 const menuItems = [
     {
-        title: "@material-tailwind/html",
+        title: "Solana",
         description:
-            "Learn how to use @material-tailwind/html, packed with rich components and widgets.",
+            "Bring blockchain to the people. Solana supports experiences for power users, new consumers, and everyone in between.",
     },
     {
-        title: "@material-tailwind/react",
+        title: "Solana",
         description:
-            "Learn how to use @material-tailwind/react, packed with rich components for React.",
+            "Bring blockchain to the people. Solana supports experiences for power users, new consumers, and everyone in between.",
     },
     {
-        title: "Material Tailwind PRO",
+        title: "Solana",
         description:
-            "A complete set of UI Elements for building faster websites in less time.",
+            "Bring blockchain to the people. Solana supports experiences for power users, new consumers, and everyone in between.",
     },
 ];
 
@@ -51,7 +51,7 @@ const Dropdown: FC<DropdownCustomName> = ({ dropdownName }) => {
                 >
                     <CursorArrowRaysIcon strokeWidth={1} className="h-10 w-10" />
                     <Typography className="mt-5 text-center" variant="h5">
-                        Material Tailwind PRO
+                        Solana PRO
                     </Typography>
                 </Card>
                 <ul className="col-span-4 flex w-full flex-col gap-1">

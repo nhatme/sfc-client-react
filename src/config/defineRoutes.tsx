@@ -1,6 +1,6 @@
 export default {
     home: "/",
-    signin: "signin",
-    signup: "signup",
-    swap: "ex_"
+    swap: "ex_",
+    stablesfc: "stable_sfc",
+    pool: "pool"
 }
