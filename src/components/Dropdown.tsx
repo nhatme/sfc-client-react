@@ -29,7 +29,7 @@ const Dropdown: FC<DropdownCustomName> = ({ dropdownName }) => {
     const [openMenu, setOpenMenu] = useState(false);
     const handleOpen = () => setOpen(!open);
     return (
-        <Menu open={openMenu} handler={setOpenMenu} allowHover>
+        <Menu open={openMenu} handler={setOpenMenu}>
             <MenuHandler>
                 <Button
                     variant="text"

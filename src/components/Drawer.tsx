@@ -15,7 +15,7 @@ const DrawerRight = () => {
     return (
         <Fragment>
             <div className="flex flex-wrap gap-4">
-                <Button onClick={openDrawerRight}>wallet address</Button>
+                <Button onClick={openDrawerRight}>My wallet</Button>
             </div>
             <Drawer
                 placement="right"
