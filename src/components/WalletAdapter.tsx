@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const [detectPhantom, setDetectPhantom] = useState<any>(null);
+// const [detectPhantom, setDetectPhantom] = useState<any>(null);
 const getProvider = () => {
     const isPhantomInstalled = (window as any).phantom?.solana?.isPhantom
     if (isPhantomInstalled) {

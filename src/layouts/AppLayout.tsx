@@ -9,7 +9,7 @@ const AppLayout: FC = () => {
       <Header />
       <main className="flex-1">
         <Outlet />
-        <WalletAdapter />
+        {/* <WalletAdapter /> */}
       </main>
     </div>
   );
