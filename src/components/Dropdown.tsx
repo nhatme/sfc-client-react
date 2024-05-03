@@ -1,10 +1,7 @@
 import { useState, FC } from 'react'
 import { Button, Card, Menu, MenuHandler, MenuItem, MenuList, Typography } from '@material-tailwind/react'
 import { ChevronDownIcon, CursorArrowRaysIcon } from '@heroicons/react/24/outline';
-
-interface DropdownCustomName {
-    dropdownName: String
-}
+import { DropdownCustomName } from '../interfaces/CustomProps';
 
 const menuItems = [
     {

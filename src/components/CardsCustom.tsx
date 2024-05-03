@@ -5,7 +5,7 @@ import {
     Button,
 } from "@material-tailwind/react";
 import { FC } from "react";
-import { CardsProps } from "../interfaces/CardProps";
+import { CardsProps } from "../interfaces/CustomProps";
 
 const CardStableCoin: FC<CardsProps> = ({ className, nameCard, buttons, typograph, cardFooter }) => {
     return (

@@ -1,8 +1,9 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { Button, Card, CardBody, CardFooter, IconButton, Menu, MenuHandler, MenuItem, MenuList } from "@material-tailwind/react";
 import { Dropdown } from "./Dropdown";
+import { FC } from "react";
 
-const TradingBoard = () => {
+const TradingBoard: FC = () => {
     return (
         <Card className="w-full">
             <CardBody className="flex flex-col gap-2">

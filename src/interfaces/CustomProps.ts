@@ -11,3 +11,7 @@ export interface ButtonProps {
     onClick: () => void,
     className?: string
 }
+
+export interface DropdownCustomName {
+    dropdownName: String
+}
