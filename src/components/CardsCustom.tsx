@@ -7,7 +7,7 @@ import {
 import { FC } from "react";
 import { CardsProps } from "../interfaces/CustomProps";
 
-const CardStableCoin: FC<CardsProps> = ({ className, nameCard, buttons, typograph, cardFooter }) => {
+const CardStableCoin: FC<CardsProps> = ({ className, nameCard, buttons, inputBox, typograph, cardFooter }) => {
     return (
         <Card className={`${className}`}>
             <CardBody>
@@ -16,12 +16,13 @@ const CardStableCoin: FC<CardsProps> = ({ className, nameCard, buttons, typograp
                 </Typography>
                 {typograph}
                 <div className="">
-                    {buttons && buttons.map((button, index) => (
+                    {buttons && buttons.map(({ className, onClick, label }, index) => (
                         <div>
-                            <Button className={`${button.className}`} key={index} onClick={button.onClick}>{button.label}</Button>
+                            <Button className={`${className}`} key={index} onClick={onClick}>{label}</Button>
                         </div>
                     ))}
                 </div>
+                {inputBox}
             </CardBody>
             {cardFooter}
         </Card>

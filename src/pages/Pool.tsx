@@ -1,5 +1,6 @@
+import { FC } from "react"
 
-const Pool = () => {
+const Pool: FC = () => {
     return (
         <div>Pool</div>
     )

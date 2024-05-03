@@ -1,6 +1,6 @@
 import defineRoutes from "../config/defineRoutes";
 import { Pool } from "../pages/Pool";
-import { StableCoin } from "../pages/StableCoin";
+import { TabsHandle } from "../pages/StableCoin";
 import { Swap } from "../pages/Trading";
 
 const publicRoutes = [
@@ -14,7 +14,7 @@ const publicRoutes = [
     },
     {
         path: defineRoutes.stablesfc,
-        component: StableCoin
+        component: TabsHandle
     },
     {
         path: defineRoutes.pool,

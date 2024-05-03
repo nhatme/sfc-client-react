@@ -2,6 +2,7 @@ export interface CardsProps {
     className?: string,
     nameCard: string,
     buttons?: ButtonProps[],
+    inputBox?: JSX.Element,
     typograph?: JSX.Element,
     cardFooter?: JSX.Element
 }
@@ -13,5 +14,26 @@ export interface ButtonProps {
 }
 
 export interface DropdownCustomName {
-    dropdownName: String
+    dropdownName: string
+}
+
+export interface InputCustomProps {
+    className?: string,
+    label?: string,
+    type: string,
+    inputSize?: string,
+    dropdown?: JSX.Element,
+    unitCurrencyConverter?: string,
+    walletBalance?: string,
+    placeHolder?: string
+}
+
+export interface TransparentTabsCustom {
+    data: TabProps[]
+}
+
+export interface TabProps {
+    label: string,
+    value: string,
+    desc: JSX.Element
 }

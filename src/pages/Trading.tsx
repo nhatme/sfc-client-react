@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { TradingBoard } from "../components/TradingBoard"
 import { Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@material-tailwind/react";
 
@@ -17,7 +18,7 @@ const data = [
   }
 ];
 
-const Swap = () => {
+const Swap: FC = () => {
   return (
     <div className="bg-gray-100 flex justify-center pt-5 h-full">
       <Tabs value="swap">

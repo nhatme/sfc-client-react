@@ -19,7 +19,7 @@ const Web3Dialog = () => {
             <Dialog size="xs" open={open} handler={handleOpen}
                 animate={{
                     mount: { scale: 1, y: 0 },
-                    unmount: { scale: 0.9, y: -50 },
+                    unmount: { scale: 0.9, y: 0 },
                 }}
                 className="bg-[#f8f8f9b3]">
                 <DialogHeader className="justify-between">
