@@ -5,31 +5,33 @@ import {
     Tab,
     TabPanel,
 } from "@material-tailwind/react";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { TransparentTabsCustom } from "../interfaces/CustomProps";
+import { InputCustom } from "./Inputs";
 
 const TransparentTabs: FC<TransparentTabsCustom> = ({ data }) => {
+    const [stateTarget, setStateTarget] = useState<string | undefined>(data[0].target);
+
     return (
-        <Tabs value={data[0].value} className="max-w-full">
+        <Tabs value={stateTarget} className="max-w-full">
             <TabsHeader
                 className="bg-transparent"
                 indicatorProps={{
                     className: "bg-gray-900/10 shadow-none !text-gray-900",
                 }}
             >
-                {data && data.map(({ label, value }, index) => (
-                    <Tab key={value} value={value}>
+                {data && data.map(({ label, value, target }, index) => (
+                    <Tab key={value} value={value} onClick={() => setStateTarget(target)}>
                         {label}
                     </Tab>
                 ))}
             </TabsHeader>
-            <div>address wallet</div>
-            <TabsBody
-                animate={{
-                    initial: { y: 250 },
-                    mount: { y: 0 },
-                    unmount: { y: 300 },
-                }}>
+            {(stateTarget == "target") && (
+                <div>
+                    <InputCustom placeHolder="Paste target address here" inputClassName="bg-gray-200" className="flex flex-col bg-gray-200 px-4 rounded-lg w-1/3" type="text" />
+                </div>
+            )}
+            <TabsBody>
                 {data && data.map(({ value, desc }, index) => (
                     <TabPanel className="py-2 px-0" key={value} value={value}>
                         {desc}

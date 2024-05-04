@@ -1,12 +1,12 @@
 import { FC } from "react"
 import { InputCustomProps } from "../interfaces/CustomProps"
 
-const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputSize }) => {
+const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
         <div className={`${className}`}>
             <label htmlFor="">{label}</label>
             <div className="flex justify-between items-center">
-                <input type={type} placeholder={placeHolder} className={`${inputSize} leading-none outline-none mt-2 text-black w-full bg-gray-100`} />
+                <input spellCheck={false} type={type} placeholder={placeHolder} className={`${inputClassName} leading-none outline-none mt-2 text-black w-full`} />
                 <div>
                     {dropdown}
                 </div>

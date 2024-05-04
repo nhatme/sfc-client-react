@@ -1,9 +1,9 @@
 import { FC } from "react"
 import { CardStableCoin } from "../components/CardsCustom"
 import { ButtonProps, TabProps } from "../interfaces/CustomProps"
-import { CardFooter } from "@material-tailwind/react"
-import { InputCustom } from "../components/Inputs"
+import { CardFooter, Typography } from "@material-tailwind/react"
 import TransparentTabs from "../components/TabsCustom"
+import ControlledSelect from "../components/selectCustom"
 
 const StableCoin: FC = () => {
     const buttonsEl: ButtonProps[] = [
@@ -11,25 +11,24 @@ const StableCoin: FC = () => {
             label: "meow2",
             onClick: () => console.log("heleo"),
         },
-        {
-            label: "meow2",
-            onClick: () => console.log("heleo2"),
-            className: "mt-3"
-        },
     ]
 
     return (
         <div className="flex gap-3">
-            <div className="w-full">
+            <div className="w-full h-96">
                 <CardStableCoin
-                    nameCard="Card1"
+                    variant="h5"
+                    nameCard="settings"
                     buttons={buttonsEl}
-                    inputBox={<InputCustom placeHolder="Paste target address here" className="flex flex-col bg-gray-100 p-3 rounded-lg mt-3" type="text" />}
+                    selectOptions={<ControlledSelect className="mt-3" />}
+                    className="h-full"
+                    typograph={<Typography variant="paragraph" color="blue-gray" className="mb-2">
+                        dep trai
+                    </Typography>}
+
                 />
-                <CardStableCoin className="mt-3" nameCard="Card2" />
-                <CardStableCoin nameCard="card 3" className="mt-3" />
             </div>
-            <CardStableCoin className="w-full flex justify-between" nameCard="Information" cardFooter={<CardFooter><hr /></CardFooter>} />
+            <CardStableCoin variant="h5" className="w-full flex justify-between" nameCard="Information" cardFooter={<CardFooter><hr /></CardFooter>} />
         </div>
     )
 }
@@ -38,13 +37,15 @@ const TabsHandle: FC = () => {
     const data: TabProps[] = [
         {
             label: "target",
-            value: "label",
+            value: "target",
             desc: <StableCoin />,
+            target: "target"
         },
         {
             label: "my own",
-            value: "value",
+            value: "my own",
             desc: <StableCoin />,
+            target: "self"
         }
     ];
 

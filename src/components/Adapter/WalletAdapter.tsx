@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 // const [detectPhantom, setDetectPhantom] = useState<any>(null);
 const getProvider = () => {
@@ -9,7 +9,7 @@ const getProvider = () => {
     }
 };
 
-const WalletAdapter = () => {
+const WalletAdapter: FC = () => {
     useEffect(() => {
         console.log("useEffect times1");
         getProvider();
@@ -19,4 +19,4 @@ const WalletAdapter = () => {
     )
 }
 
-export default WalletAdapter
+export { WalletAdapter }
