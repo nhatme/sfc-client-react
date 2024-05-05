@@ -15,20 +15,20 @@ const TransparentTabs: FC<TransparentTabsCustom> = ({ data }) => {
     return (
         <Tabs value={stateTarget} className="max-w-full">
             <TabsHeader
-                className="bg-transparent"
+                className="bg-transparent p-0 py-2"
                 indicatorProps={{
                     className: "bg-gray-900/10 shadow-none !text-gray-900",
                 }}
             >
                 {data && data.map(({ label, value, target }, index) => (
-                    <Tab key={value} value={value} onClick={() => setStateTarget(target)}>
+                    <Tab className="" key={value} value={value} onClick={() => setStateTarget(target)}>
                         {label}
                     </Tab>
                 ))}
             </TabsHeader>
             {(stateTarget == "target") && (
                 <div>
-                    <InputCustom placeHolder="Paste target address here" inputClassName="bg-gray-200" className="flex flex-col bg-gray-200 px-4 rounded-lg w-1/3" type="text" />
+                    <InputCustom placeHolder="Paste target address here" inputClassName="bg-gray-300" className="flex flex-col bg-gray-300 px-4 rounded-lg w-1/3" type="text" />
                 </div>
             )}
             <TabsBody>

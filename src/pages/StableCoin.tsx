@@ -18,14 +18,9 @@ const StableCoin: FC = () => {
             <div className="w-full h-96">
                 <CardStableCoin
                     variant="h5"
+                    className="h-full"
                     nameCard="settings"
                     buttons={buttonsEl}
-                    selectOptions={<ControlledSelect className="mt-3" />}
-                    className="h-full"
-                    typograph={<Typography variant="paragraph" color="blue-gray" className="mb-2">
-                        dep trai
-                    </Typography>}
-
                 />
             </div>
             <CardStableCoin variant="h5" className="w-full flex justify-between" nameCard="Information" cardFooter={<CardFooter><hr /></CardFooter>} />
