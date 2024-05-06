@@ -26,7 +26,7 @@ const TransparentTabs: FC<TransparentTabsCustom> = ({ data }) => {
                     </Tab>
                 ))}
             </TabsHeader>
-            {(stateTarget == "target") && (
+            {(stateTarget === "target") && (
                 <div>
                     <InputCustom placeHolder="Paste target address here" inputClassName="bg-gray-300" className="flex flex-col bg-gray-300 px-4 rounded-lg w-1/3" type="text" />
                 </div>

@@ -1,5 +1,7 @@
 import { FC } from "react"
 import { InputCustomProps } from "../interfaces/CustomProps"
+import { ClipboardIcon } from "@heroicons/react/24/outline";
+import { ButtonConfirm } from "./Button";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -19,4 +21,18 @@ const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCur
     )
 }
 
-export { InputCustom }
+const InputTargetAddress: FC = () => {
+    return (
+        <div className="flex gap-4px items-center">
+            <div className="flex gap-6px items-center bg-white rounded-custom-md border-gray-border border-1 px-16px py-8px shadow-md">
+                <div>
+                    <input className="text-fs-20 leading-lh-100 font-bold italic outline-none text-primary-color" spellCheck="false" type="text" placeholder="type or paste here..." />
+                </div>
+                <ClipboardIcon className="h-6 w-6 text-primary-color hover:cursor-pointer" />
+            </div>
+            <ButtonConfirm btnName="Confirm change?" />
+        </div>
+    )
+}
+
+export { InputCustom, InputTargetAddress }

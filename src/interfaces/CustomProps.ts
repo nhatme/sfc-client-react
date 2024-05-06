@@ -11,6 +11,11 @@ export interface CardsProps {
     selectOptions?: JSX.Element
 }
 
+export interface ButtonHeaderProps {
+    buttonName: string,
+    url: string
+}
+
 export interface ButtonProps {
     label: string,
     onClick: () => void,
@@ -45,4 +50,13 @@ export interface TabProps {
 
 export interface SelectProps {
     className?: string
+}
+
+export interface ButtonBuilderProps {
+    btnName: string,
+    classNameCustom: string
+}
+
+export interface ButtonCOnfirmProps {
+    btnName: string
 }

@@ -1,14 +1,16 @@
 import { Outlet } from "react-router-dom";
 import { Header } from "../pages/Header";
-import { FC} from "react";
+import { FC } from "react";
 
 const AppLayout: FC = () => {
   return (
-    <div className="flex flex-col h-screen">
-      <Header />
-      <main className="flex-1">
-        <Outlet />
-      </main>
+    <div>
+      {/* <Header /> */}
+      <div className="flex h-screen bg-gradient-117">
+        <main className="flex-1 max-w-6xl mx-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };
