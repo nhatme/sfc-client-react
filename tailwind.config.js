@@ -14,7 +14,8 @@ module.exports = withMT({
         "gray-border": "#BEBEBE"
       },
       backgroundImage: {
-        'gradient-117': 'linear-gradient(140deg, #D9EFE6 0%, #E7DCF1 100%)'
+        'gradient-117-to-r': 'linear-gradient(140deg, #D9EFE6 0%, #E7DCF1 100%)',
+        'gradient-117-to-l': 'linear-gradient(90deg, #E7DCF1 0, #D9EFE6 100%)'
       },
       fontSize: {
         'fs-8': '8px',
@@ -35,6 +36,7 @@ module.exports = withMT({
         'lh-100': '100%'
       },
       borderRadius: {
+        'custom-ssm': '6px',
         'custom-sm': '8px',
         'custom-md': '12px',
         'custom-lg': '16px',
