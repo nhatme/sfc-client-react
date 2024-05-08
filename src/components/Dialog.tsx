@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
     Button,
     Dialog,
@@ -9,10 +9,23 @@ import {
     Typography
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import logoPhantom from '../images/phantomlogo.png';
+import { getProvider } from "../utils/WalletAdapter";
 
-const Web3Dialog = () => {
+const Web3Dialog: FC = () => {
     const [open, setOpen] = useState(false);
+    const [publicKey, setPublicKey] = useState<string>("");
     const handleOpen = () => setOpen((cur) => !cur);
+    const connectPhantom = async () => {
+        const provider = getProvider();
+        try {
+            const res = await provider.connect();
+            setPublicKey(res.publicKey.toString());
+            // console.log(res.publicKey.toString());
+        } catch (error) {
+            console.log(error);
+        }
+    }
     return (
         <>
             <Button onClick={handleOpen}>Connect Wallet</Button>
@@ -40,53 +53,28 @@ const Web3Dialog = () => {
                 <DialogBody className="scroll_hidable overflow-y-scroll !px-5 max-h-96">
                     <div className="mb-6">
                         <ul className="mt-3 flex flex-col gap-1">
-                            <Button variant="outlined" className="flex items-center justify-between gap-3 bg-white">
+
+                            <Button onClick={connectPhantom} variant="outlined" className="flex items-center justify-between gap-3 bg-white">
                                 <Typography
-                                    className="uppercase"
-                                    color="blue-gray"
+                                    className="flex gap-6"
+                                    color="purple"
                                     variant="h6"
                                 >
-                                    MetaMask
+                                    <div>Phantom</div>
+                                    <div className="truncate w-32">{publicKey}</div>
                                 </Typography>
                                 <img
-                                    src="https://docs.material-tailwind.com/icons/metamask.svg"
+                                    src={logoPhantom}
                                     alt="metamast"
                                     className="h-6 w-6"
                                 />
                             </Button>
-                            <Button variant="outlined" className="flex items-center justify-between gap-3 bg-white">
-                                <Typography
-                                    className="uppercase"
-                                    color="blue-gray"
-                                    variant="h6"
-                                >
-                                    MetaMask
-                                </Typography>
-                                <img
-                                    src="https://docs.material-tailwind.com/icons/metamask.svg"
-                                    alt="metamast"
-                                    className="h-6 w-6"
-                                />
-                            </Button>
-                            <Button variant="outlined" className="flex items-center justify-between gap-3 bg-white">
-                                <Typography
-                                    className="uppercase"
-                                    color="blue-gray"
-                                    variant="h6"
-                                >
-                                    Coinbase
-                                </Typography>
-                                <img
-                                    src="https://docs.material-tailwind.com/icons/coinbase.svg"
-                                    alt="metamast"
-                                    className="h-6 w-6 rounded-md"
-                                />
-                            </Button>
+
                         </ul>
                     </div>
                 </DialogBody>
                 <DialogFooter className="justify-center">
-                    <p className="text-black">Powered by Solana</p>
+                    <p className="text-black-500 text-fs-md">Powered by Solana</p>
                 </DialogFooter>
             </Dialog>
         </>

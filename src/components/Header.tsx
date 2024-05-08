@@ -1,11 +1,12 @@
 import { Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import logo from "../images/logo.png";
-import { ButtonHeader } from "../components/Button";
-import { Web3Dialog } from "../components/Dialog";
-import { DrawerRight } from "../components/Drawer";
+import { ButtonHeader } from "./Button";
+import { Web3Dialog } from "./Dialog";
+import { DrawerRight } from "./Drawer";
+import { FC } from "react";
 
-export const Header = () => {
+export const Header: FC = () => {
     return (
         <div className="">
             <div className="flex justify-between mx-8 h-20">
@@ -20,7 +21,9 @@ export const Header = () => {
                 <div className="flex items-center">
                     <div className="h-10 justify-start items-start gap-8 inline-flex">
                         <div><Button variant="outlined">0 SFC</Button></div>
-                        <div><Web3Dialog /></div>
+                        <div>
+                            <Web3Dialog />
+                        </div>
                         <div className="flex"><DrawerRight /></div>
                     </div>
                 </div>

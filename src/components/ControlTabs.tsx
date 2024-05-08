@@ -6,8 +6,8 @@ const ControlTabs: FC = () => {
     return (
         <div className='flex flex-col gap-10px'>
             <div className="flex gap-8px">
-                <ButtonBuilder classNameCustom='bg-primary-color text-white' btnName='TARGET' />
-                <ButtonBuilder classNameCustom='bg-white text-primary-color' btnName='MINE' />
+                <ButtonBuilder btnType='circle' cursor='pointer' paddingSize='Large' sizeVariant='large' classNameCustom='bg-purple-500 text-white' btnName='TARGET' />
+                <ButtonBuilder btnType='circle' cursor='pointer' paddingSize='Large' sizeVariant='large' classNameCustom='bg-white text-purple-500' btnName='MINE' />
             </div>
             <InputTargetAddress />
         </div>
