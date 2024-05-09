@@ -24,7 +24,7 @@ export const Header: FC = () => {
                         <div>
                             <Web3Dialog />
                         </div>
-                        <div className="flex"><DrawerRight /></div>
+                        {/* <div className="flex"><DrawerRight /></div> */}
                     </div>
                 </div>
             </div>

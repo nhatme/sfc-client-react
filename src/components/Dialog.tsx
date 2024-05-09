@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import {
     Button,
     Dialog,
@@ -10,25 +10,16 @@ import {
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import logoPhantom from '../images/phantomlogo.png';
-import { getProvider } from "../utils/WalletAdapter";
+import { WalletAdapter } from "../utils/WalletAdapter";
 
 const Web3Dialog: FC = () => {
     const [open, setOpen] = useState(false);
-    const [publicKey, setPublicKey] = useState<string>("");
     const handleOpen = () => setOpen((cur) => !cur);
-    const connectPhantom = async () => {
-        const provider = getProvider();
-        try {
-            const res = await provider.connect();
-            setPublicKey(res.publicKey.toString());
-            // console.log(res.publicKey.toString());
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    const [phantomState, connectPhantom] = WalletAdapter();
+
     return (
         <>
-            <Button onClick={handleOpen}>Connect Wallet</Button>
+            <Button onClick={handleOpen}>{phantomState[1] === true ? "Conntected" : "Connect Wallet"}</Button>
             <Dialog size="xs" open={open} handler={handleOpen}
                 animate={{
                     mount: { scale: 1, y: 0 },
@@ -57,11 +48,10 @@ const Web3Dialog: FC = () => {
                             <Button onClick={connectPhantom} variant="outlined" className="flex items-center justify-between gap-3 bg-white">
                                 <Typography
                                     className="flex gap-6"
-                                    color="purple"
                                     variant="h6"
                                 >
-                                    <div>Phantom</div>
-                                    <div className="truncate w-32">{publicKey}</div>
+                                    <div className="capitalize">Phantom</div>
+                                    <div className="text-purple-500">{phantomState[1] === true ? "Conntected" : ""}</div>
                                 </Typography>
                                 <img
                                     src={logoPhantom}
