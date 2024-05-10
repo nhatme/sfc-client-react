@@ -31,24 +31,26 @@ const Web3Dialog: FC = () => {
         solflareStatePublickey,
     } = useWalletStates();
 
-    providerPhantomWallet.on("connect", () => {
-        console.log(phantomStatePublickey);
-        console.log("phantom: " + providerPhantomWallet.isConnected);
-    })
-    providerPhantomWallet.on("disconnect", () => {
-        console.log("Phantom is disconnected");
-        console.log("Phantom: " + providerPhantomWallet.isConnected);
-    })
+    // connectPhantom();
+    // connectSolflare();
+    // providerPhantomWallet.on("connect", () => {
+    //     console.log(phantomStatePublickey);
+    //     console.log("phantom: " + providerPhantomWallet.isConnected);
+    // })
+    // providerPhantomWallet.on("disconnect", () => {
+    //     console.log("Phantom is disconnected");
+    //     console.log("Phantom: " + providerPhantomWallet.isConnected);
+    // })
 
-    providerOkx.on("connect", () => {
-        console.log(okxStatePublickey);
-        console.log("OKX: " + providerOkx.isConnected);
-    })
+    // providerOkx.on("connect", () => {
+    //     console.log(okxStatePublickey);
+    //     console.log("OKX: " + providerOkx.isConnected);
+    // })
 
-    providerOkx.on("disconnect", () => {
-        console.log("OKX is disconnected");
-        console.log("OKX: " + providerOkx.isConnected);
-    })
+    // providerOkx.on("disconnect", () => {
+    //     console.log("OKX is disconnected");
+    //     console.log("OKX: " + providerOkx.isConnected);
+    // })
 
     // providerSolflare.provider.on("connect", () => {
     //     console.log(providerSolflare.provider.publicKey?.toString());
@@ -60,9 +62,10 @@ const Web3Dialog: FC = () => {
     //     console.log("Solflare connected: " + providerSolflare.provider.isConnected);
     // })
 
-    // console.log("phantom: " + phantomStatePublickey);
-    // console.log("Okx: " + okxStatePublickey);
-    // console.log("Solflare: " + solflareStatePublickey);
+    console.log("phantom: " + phantomStatePublickey);
+    console.log("Okx: " + okxStatePublickey);
+    console.log("Solflare: " + solflareStatePublickey);
+    
 
     return (
         <>

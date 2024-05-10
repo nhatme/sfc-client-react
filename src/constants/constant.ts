@@ -1,0 +1,1 @@
+export type WalletExtension = "Phantom" | "Okx" | "Solfare";
