@@ -40,6 +40,7 @@ module.exports = withMT({
         "green-100": "#D9EFE6",
         "black-500": "#333333",
         "gray-border": "#BEBEBE",
+        "black-border": "#000000",
         "gray-200": "#989898"
       },
       backgroundImage: {

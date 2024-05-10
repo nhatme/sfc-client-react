@@ -11,16 +11,17 @@ const ButtonHeader: FC<ButtonHeaderProps> = ({ buttonName, url }) => {
   )
 }
 
-const ButtonBuilder: FC<ButtonBuilderProps> = ({ btnName, classNameCustom, sizeVariant, paddingSize, btnType, icon, cursor }) => {
-  const classNames: string[] = ["border-gray-border", "border-1", "leading-lh-100"];
-
+const ButtonBuilder: FC<ButtonBuilderProps> = ({ btnName, classNameCustom, sizeVariant, paddingSize, btnType, icon, cursor, onClick, border }) => {
+  const classNames: string[] = ["leading-lh-100"];
   const buttonPaddingAndRounded: SizeButton = updateButtonPaddingAndRounded(btnType)[`sizeButtonPadding${paddingSize}`];
   const buttonClasses = buttonPaddingAndRounded[sizeVariant];
   classNames.push(buttonClasses);
   if (cursor) classNames.push(`hover:cursor-${cursor}`);
+  if (border === 'gray-border') classNames.push("border-gray-border", "border-1");
+  if (border === 'black-border') classNames.push("border-black-border", "border-1");
 
   return (
-    <div className={classNames.join(" ") + ` ${classNameCustom}`}>
+    <div onClick={onClick} className={classNames.join(" ") + ` ${classNameCustom}`}>
       <div>{btnName}</div>
       <div>{icon}</div>
     </div>
