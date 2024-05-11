@@ -17,7 +17,7 @@ import {
     connectSolflare,
     useWalletStates,
     providerPhantomWallet,
-    providerOkx, providerSolflare,
+    disConnect,
 } from "../utils/WalletProvider";
 import { ButtonBuilder } from "./Button";
 
@@ -31,41 +31,9 @@ const Web3Dialog: FC = () => {
         solflareStatePublickey,
     } = useWalletStates();
 
-    // connectPhantom();
-    // connectSolflare();
-    // providerPhantomWallet.on("connect", () => {
-    //     console.log(phantomStatePublickey);
-    //     console.log("phantom: " + providerPhantomWallet.isConnected);
-    // })
-    // providerPhantomWallet.on("disconnect", () => {
-    //     console.log("Phantom is disconnected");
-    //     console.log("Phantom: " + providerPhantomWallet.isConnected);
-    // })
-
-    // providerOkx.on("connect", () => {
-    //     console.log(okxStatePublickey);
-    //     console.log("OKX: " + providerOkx.isConnected);
-    // })
-
-    // providerOkx.on("disconnect", () => {
-    //     console.log("OKX is disconnected");
-    //     console.log("OKX: " + providerOkx.isConnected);
-    // })
-
-    // providerSolflare.provider.on("connect", () => {
-    //     console.log(providerSolflare.provider.publicKey?.toString());
-    //     console.log("Solflare connected: " + providerSolflare.provider.isConnected);
-    // })
-
-    // providerSolflare.provider.on("disconnect", () => {
-    //     console.log(providerSolflare.provider.publicKey?.toString());
-    //     console.log("Solflare connected: " + providerSolflare.provider.isConnected);
-    // })
-
     console.log("phantom: " + phantomStatePublickey);
     console.log("Okx: " + okxStatePublickey);
     console.log("Solflare: " + solflareStatePublickey);
-    
 
     return (
         <>
@@ -95,18 +63,25 @@ const Web3Dialog: FC = () => {
                     <div className="mb-6">
                         <ul className="mt-3 flex flex-col gap-1">
 
-                            <ButtonBuilder btnName="Phantom" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
-                                cursor="pointer"
-                                border="black-border"
-                                onClick={connectPhantom}
-                                classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
-                                    <img
-                                        src={logoPhantom}
-                                        alt="phantom"
-                                        className="h-6 w-6"
-                                    />
-                                }
-                            />
+                            <div>
+                                <ButtonBuilder btnName="Phantom" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
+                                    cursor="pointer"
+                                    border="black-border"
+                                    onClick={connectPhantom}
+                                    classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
+                                        <img
+                                            src={logoPhantom}
+                                            alt="phantom"
+                                            className="h-6 w-6"
+                                        />
+                                    }
+                                />
+                                <ButtonBuilder onClick={disConnect} btnName="Disconnect" paddingSize="Medium" sizeVariant="small" btnType="circle"
+                                    cursor="pointer"
+                                    border="black-border"
+
+                                />
+                            </div>
 
                             <ButtonBuilder btnName="OKX" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
                                 cursor="pointer"

@@ -1,10 +1,4 @@
-declare type variant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "lead" | "paragraph" | "small";
-declare type sizeVariant = 'small' | 'medium' | 'large';
-declare type paddingSizeButton = 'Small' | 'Medium' | 'Large';
-declare type typeOfButton = 'circle' | 'circle-square';
-declare type GradientType = 'bg-gradient-117-to-r' | 'bg-gradient-117-to-l';
-declare type Cursor = 'pointer' | 'not-allowed';
-declare type Border = 'gray-border' | 'black-border';
+import { Border, Cursor, GradientType, paddingSizeButton, sizeVariant, typeOfButton, variant } from "../constants/constant"
 
 export interface CardsProps {
     className?: string,
