@@ -5,7 +5,7 @@ export type CmdPublickey = "UPDATE_PUBLICKEY" | "LOGIN";
 
 export type Action = {
     type: CmdPublickey;
-    payload: { publicKey: string, type: WalletExtensionName},
+    payload: { publicKey: string, type: WalletExtensionName },
 }
 
 export interface WalletPublickey {

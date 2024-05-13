@@ -79,8 +79,6 @@ const Web3Dialog: FC = () => {
                                                 connectWallet(providerPhantomWallet)
                                                     .then(pubkey => {
                                                         dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.publicKey.toString(), type: "Phantom" } });
-                                                        // dispatch(actions.updateWallet({ publicKey: pubkey.publicKey.toString(), type: "Phantom" }));
-                                                        // console.log(pubkey);
                                                         initWalletLocalStorage("Phantom", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
                                                         setLoading(false);
                                                     })
@@ -88,6 +86,10 @@ const Web3Dialog: FC = () => {
                                                         setLoading(false);
                                                         console.log(err);
                                                     });
+                                                providerPhantomWallet.on("accountChanged", (pubkey: string) => {
+                                                    dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.toString(), type: "Phantom" } });
+                                                    console.log(pubkey.toString());
+                                                })
                                             }}
                                             classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
                                                 <img

@@ -1,4 +1,3 @@
-import { TypeUpdateWallet } from './actions';
 import { Action, WalletPublickey, } from './constants';
 
 const initState: WalletPublickey = {
@@ -6,29 +5,7 @@ const initState: WalletPublickey = {
     type: "",
 };
 
-// const reducer = (state: WalletPublickey, action: Action): WalletPublickey => {
-//     switch (action.type) {
-//         case "UPDATE_PUBLICKEY":
-//             return {
-//                 ...state,
-//                 publicKey: action.payload.publicKey,
-//                 type: action.payload.type
-//             };
-//         case 'LOGIN':
-//             return {
-//                 ...state,
-//                 isLogin: action.payload.isLogin
-//             }
-//         default:
-//             return state;
-//     }
-// };
-type ActionType = {
-    type: string,
-    payload: TypeUpdateWallet
-}
-
-const reducer = (state: WalletPublickey, action: ActionType) => {
+const reducer = (state: WalletPublickey, action: Action): WalletPublickey => {
     switch (action.type) {
         case "UPDATE_PUBLICKEY":
             return {
