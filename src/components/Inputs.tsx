@@ -33,7 +33,7 @@ const InputTargetAddress: FC = () => {
                 </div>
                 <ClipboardDocumentListIcon className="h-6 w-6 text-purple-500 hover:cursor-pointer" />
             </div>
-            <ButtonBuilder btnType="circle" sizeVariant="small" paddingSize="Small" btnName="Confirm change?" classNameCustom="text-white bg-purple-500" />
+            <ButtonBuilder btnType="circle" sizeVariant="small" paddingSize="Medium" btnName="Confirm change?" classNameCustom="text-white bg-purple-500" border="gray-border" />
         </div>
     )
 }
@@ -53,7 +53,7 @@ const InputQuantity: FC = () => {
             <ButtonBuilder
                 btnType="circle-square" sizeVariant="large" paddingSize="Small"
                 classNameCustom="mt-4px text-center text-white bg-purple-100"
-                btnName="Enter an amount"
+                btnName="Enter an amount" border="gray-border"
             />
         </div>
     )

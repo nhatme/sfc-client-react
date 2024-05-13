@@ -6,10 +6,10 @@ import {
     TabPanel,
 } from "@material-tailwind/react";
 import { FC, useState } from "react";
-import { TransparentTabsCustom } from "../interfaces/CustomProps";
+import { TabsCustom } from "../interfaces/CustomProps";
 import { InputCustom } from "./Inputs";
 
-const TransparentTabs: FC<TransparentTabsCustom> = ({ data }) => {
+const TransparentTabs: FC<TabsCustom> = ({ data }) => {
     const [stateTarget, setStateTarget] = useState<string | undefined>(data[0].target);
 
     return (
@@ -32,9 +32,9 @@ const TransparentTabs: FC<TransparentTabsCustom> = ({ data }) => {
                 </div>
             )}
             <TabsBody>
-                {data && data.map(({ value, desc }, index) => (
+                {data && data.map(({ value, content }, index) => (
                     <TabPanel className="py-2 px-0" key={value} value={value}>
-                        {desc}
+                        {content}
                     </TabPanel>
                 ))}
             </TabsBody>
@@ -42,4 +42,25 @@ const TransparentTabs: FC<TransparentTabsCustom> = ({ data }) => {
     );
 }
 
-export default TransparentTabs;
+const TabsDefault: FC<TabsCustom> = ({ data }) => {
+    return (
+        <Tabs value="html">
+            <TabsHeader>
+                {data.map(({ label, value }) => (
+                    <Tab key={value} value={value}>
+                        {label}
+                    </Tab>
+                ))}
+            </TabsHeader>
+            <TabsBody>
+                {data.map(({ value, content }) => (
+                    <TabPanel key={value} value={value}>
+                        {content}
+                    </TabPanel>
+                ))}
+            </TabsBody>
+        </Tabs>
+    );
+}
+
+export { TransparentTabs, TabsDefault };

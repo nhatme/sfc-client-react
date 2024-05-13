@@ -1,5 +1,5 @@
+import { Dispatch, SetStateAction } from "react"
 import { Border, Cursor, GradientType, paddingSizeButton, sizeVariant, typeOfButton, variant } from "../constants/constant"
-
 export interface CardsProps {
     className?: string,
     nameCard: string,
@@ -37,14 +37,14 @@ export interface InputCustomProps {
     placeHolder?: string
 }
 
-export interface TransparentTabsCustom {
+export interface TabsCustom {
     data: TabProps[]
 }
 
 export interface TabProps {
     label: string,
     value: string,
-    desc: JSX.Element,
+    content: JSX.Element,
     target?: string
 }
 
@@ -67,15 +67,15 @@ export interface StatusStProps {
 }
 
 export interface ButtonBuilderProps {
-    btnName: string,
+    btnName: string | null,
     classNameCustom?: string,
     sizeVariant: sizeVariant,
     paddingSize: paddingSizeButton,
     btnType: typeOfButton,
     icon?: JSX.Element,
     cursor?: Cursor,
-    onClick?: () => void,
-    border?: Border
+    onClick?: () => void | Promise<void>,
+    border?: Border,
 }
 
 export declare interface SizeButton {
@@ -120,6 +120,20 @@ function updateButtonPaddingAndRounded(btnType: typeOfButton): any {
             }
         };
     }
+}
+
+export interface StatePublicKey {
+    publickey: string,
+    solflarePublickey?: string,
+    disconnect: () => void,
+    disconnectSolflarePubkey?: () => void,
+}
+
+export interface WalletContextProps {
+    phantomStatePublickey: any;
+    setPhantomPublickey: Dispatch<SetStateAction<any>>;
+    solflareStatePublickey: any;
+    setSolflarePublickey: Dispatch<SetStateAction<any>>; // Define the correct type for the setter
 }
 
 export { updateButtonPaddingAndRounded };

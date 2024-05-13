@@ -6,6 +6,7 @@ import { BoltIcon, CheckIcon, ClipboardDocumentListIcon, QuestionMarkCircleIcon 
 import { ButtonBuilder } from "../components/Button";
 import { InputQuantity } from "../components/Inputs";
 import { StatusStProps } from "../interfaces/CustomProps";
+import { GetBalance } from "../utils/Utilities";
 
 const ContentBoard1: FC = () => {
     return (
@@ -14,16 +15,16 @@ const ContentBoard1: FC = () => {
                 <div className="flex flex-col gap-4px">
                     <div className="text-fs-14 italic font-bold text-purple-500">Open & Close Asset</div>
                     <div className="flex gap-6px">
-                        <ButtonBuilder btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Open" classNameCustom="text-purple-500" />
-                        <ButtonBuilder btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Close" classNameCustom="text-purple-500" />
+                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Open" classNameCustom="text-purple-500" />
+                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Close" classNameCustom="text-purple-500" />
                     </div>
                 </div>
                 <div className="flex flex-col gap-4px mt-12px">
                     <div className="text-fs-14 italic font-bold text-purple-500">Mint & Burn SFC token</div>
 
                     <div className="flex items-center gap-6px">
-                        <ButtonBuilder btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Mint" classNameCustom="text-purple-500" />
-                        <ButtonBuilder btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Burn" classNameCustom="text-purple-500" />
+                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Mint" classNameCustom="text-purple-500" />
+                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Burn" classNameCustom="text-purple-500" />
                         <CircleStackIcon className="h-5 w-5 text-gray-500" />
                     </div>
                     <div>
@@ -34,7 +35,7 @@ const ContentBoard1: FC = () => {
             <div className="border-r-1 border-gray-border"></div>
             <div className="mx-16px ">
                 <div className="flex mb-4px">
-                    <ButtonBuilder btnType="circle" paddingSize="Medium" sizeVariant="medium" btnName="Transfer" cursor="pointer"
+                    <ButtonBuilder border="gray-border" btnType="circle" paddingSize="Medium" sizeVariant="medium" btnName="Transfer" cursor="pointer"
                         classNameCustom="text-purple-500 flex gap-4px" icon={<BoltIcon className="h-5 w-5 text-purple-500" />} />
                 </div>
                 <div>
@@ -65,15 +66,15 @@ const ContentBoard2: FC = () => {
             <div className="border-b-1 border-gray-border my-16px"></div>
             <div className="mx-16px flex justify-between">
                 <div className="flex flex-col gap-6px">
-                    <ButtonBuilder btnName="Open Asset" btnType="circle" paddingSize="Small" sizeVariant="small"
+                    <ButtonBuilder border="gray-border" btnName="Open Asset" btnType="circle" paddingSize="Small" sizeVariant="small"
                         classNameCustom="flex items-center gap-4px text-purple-500"
                         icon={<CheckIcon className="h-4 w-4 text-success-500" />}
                     />
-                    <ButtonBuilder btnName="open Asset" btnType="circle" paddingSize="Small" sizeVariant="small"
+                    <ButtonBuilder border="gray-border" btnName="open Asset" btnType="circle" paddingSize="Small" sizeVariant="small"
                         classNameCustom="flex items-center gap-4px text-purple-500"
                         icon={<CheckIcon className="h-4 w-4 text-success-500" />}
                     />
-                    <ButtonBuilder btnName="Open SFC" btnType="circle" paddingSize="Small" sizeVariant="small"
+                    <ButtonBuilder border="gray-border" btnName="Open SFC" btnType="circle" paddingSize="Small" sizeVariant="small"
                         classNameCustom="flex items-center gap-4px text-purple-500"
                         icon={<CheckIcon className="h-4 w-4 text-success-500" />}
                     />
@@ -81,7 +82,7 @@ const ContentBoard2: FC = () => {
                 <div className="border-r-1 border-gray-border mx-16px"></div>
                 <div className="flex flex-col gap-4px">
                     <StatusOfSt name="Account name: " value="Phan Minh Nhật" unit="" />
-                    <ButtonBuilder btnName="AMiZ3mSZVs.....uUsgFaUqg1QZ" btnType="circle" paddingSize="Medium" sizeVariant="small"
+                    <ButtonBuilder border="gray-border" btnName="AMiZ3mSZVs.....uUsgFaUqg1QZ" btnType="circle" paddingSize="Medium" sizeVariant="small"
                         classNameCustom="flex items-center gap-16px text-purple-500" icon={<ClipboardDocumentListIcon className="h-6 w-6 text-purple-500 cursor-pointer" />}
                     />
                     <div className="flex gap-4px">
@@ -129,6 +130,7 @@ const TabsHandle: FC = () => {
         <div className="flex items-start pt-10 h-full">
             <div className="flex flex-col gap-10px">
                 <ControlTabs />
+                <GetBalance />
                 <div className="flex flex-col gap-8px">
                     <div className="flex gap-8px">
                         <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<ContentBoard1 />} width="w-[572px]" />

@@ -1,123 +1,148 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import {
     Dialog,
     DialogHeader,
     DialogBody,
     DialogFooter,
     IconButton,
-    Typography
+    Typography,
+    Spinner,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import logoPhantom from '../assets/phantomlogo.png';
-import logoOkx from '../assets/OKX_logo.png';
 import solflareLogo from '../assets/solflare_logo.png'
 import {
-    connectPhantom,
-    connectOkx,
-    connectSolflare,
-    useWalletStates,
+    connectWallet,
     providerPhantomWallet,
-    disConnect,
+    providerSolflareWallet,
+    detectSolflare,
+    detectPhantom,
+    PublicKeyContext
 } from "../utils/WalletProvider";
 import { ButtonBuilder } from "./Button";
+import { DrawerRight } from "./Drawer";
+import { initWalletLocalStorage } from "../utils/ManageLocalStorage";
+import { useWallet } from "../hooks/useWallet";
+import { actions } from "../store";
 
 const Web3Dialog: FC = () => {
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = () => setOpen((cur) => !cur);
+    const [loading, setLoading] = useState<boolean>(false);
+    const { state, dispatch } = useWallet();
+    // console.log("nhatdia", state);
 
-    const {
-        phantomStatePublickey,
-        okxStatePublickey,
-        solflareStatePublickey,
-    } = useWalletStates();
+    // console.log(phantomStatePublickey);
+    // console.log(solflareStatePublickey);
 
-    console.log("phantom: " + phantomStatePublickey);
-    console.log("Okx: " + okxStatePublickey);
-    console.log("Solflare: " + solflareStatePublickey);
+    if (!state.publicKey) {
+        return (
+            <>
+                <ButtonBuilder onClick={handleOpen} btnName="Connect Wallet" paddingSize="Large" sizeVariant="medium" btnType="circle" cursor="pointer" border="gray-border" />
+                <Dialog size="xs" open={open} handler={handleOpen}
+                    animate={{
+                        mount: { scale: 1, y: 0 },
+                        unmount: { scale: 0.9, y: 0 },
+                    }}
+                    className="bg-[#f8f8f9b3]">
+                    <DialogHeader className="justify-between">
+                        <div>
+                            <Typography variant="h5" color="blue-gray" className="font-bold">
+                                Connect a Wallet
+                            </Typography>
+                        </div>
+                        <IconButton
+                            color="blue-gray"
+                            size="sm"
+                            variant="text"
+                            onClick={handleOpen}
+                        >
+                            <XMarkIcon className="h-6 w-6 text-black" />
+                        </IconButton>
+                    </DialogHeader>
+                    <DialogBody className="scroll_hidable overflow-y-scroll !px-5 max-h-96">
+                        <div className="mb-6">
+                            <ul className="mt-3 flex flex-col gap-1">
 
-    return (
-        <>
-            <ButtonBuilder onClick={handleOpen} btnName="Connect Wallet" paddingSize="Large" sizeVariant="medium" btnType="circle" cursor="pointer" border="gray-border" />
-            <Dialog size="xs" open={open} handler={handleOpen}
-                animate={{
-                    mount: { scale: 1, y: 0 },
-                    unmount: { scale: 0.9, y: 0 },
-                }}
-                className="bg-[#f8f8f9b3]">
-                <DialogHeader className="justify-between">
-                    <div>
-                        <Typography variant="h5" color="blue-gray" className="font-bold">
-                            Connect a Wallet
-                        </Typography>
-                    </div>
-                    <IconButton
-                        color="blue-gray"
-                        size="sm"
-                        variant="text"
-                        onClick={handleOpen}
-                    >
-                        <XMarkIcon className="h-6 w-6 text-black" />
-                    </IconButton>
-                </DialogHeader>
-                <DialogBody className="scroll_hidable overflow-y-scroll !px-5 max-h-96">
-                    <div className="mb-6">
-                        <ul className="mt-3 flex flex-col gap-1">
-
-                            <div>
-                                <ButtonBuilder btnName="Phantom" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
-                                    cursor="pointer"
-                                    border="black-border"
-                                    onClick={connectPhantom}
-                                    classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
-                                        <img
-                                            src={logoPhantom}
-                                            alt="phantom"
-                                            className="h-6 w-6"
-                                        />
-                                    }
-                                />
-                                <ButtonBuilder onClick={disConnect} btnName="Disconnect" paddingSize="Medium" sizeVariant="small" btnType="circle"
-                                    cursor="pointer"
-                                    border="black-border"
-
-                                />
-                            </div>
-
-                            <ButtonBuilder btnName="OKX" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
-                                cursor="pointer"
-                                border="black-border"
-                                onClick={connectOkx}
-                                classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
-                                    <img
-                                        src={logoOkx}
-                                        alt="phantom"
-                                        className="h-6 w-6"
-                                    />
-                                }
-                            />
-
-                            <ButtonBuilder btnName="Solflare" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
-                                cursor="pointer"
-                                border="black-border"
-                                onClick={connectSolflare}
-                                classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
-                                    <img
-                                        src={solflareLogo}
-                                        alt="phantom"
-                                        className="h-6 w-6"
-                                    />
-                                }
-                            />
-
-                        </ul>
-                    </div>
-                </DialogBody>
-                <DialogFooter className="justify-center">
-                    <p className="text-black-500 text-fs-md">Powered by Solana</p>
-                </DialogFooter>
-            </Dialog>
-        </>
-    );
+                                {loading ? <div className="flex justify-center">
+                                    <div className="flex flex-col justify-center items-center">
+                                        <Spinner className="h-16 w-16 text-gray-900/50" />
+                                        <div>Connecting...</div>
+                                    </div>
+                                </div> :
+                                    <>
+                                        {detectPhantom ? <ButtonBuilder btnName="Phantom Detected" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
+                                            cursor="pointer"
+                                            border="black-border"
+                                            onClick={() => {
+                                                setLoading(true);
+                                                connectWallet(providerPhantomWallet)
+                                                    .then(pubkey => {
+                                                        dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.publicKey.toString(), type: "Phantom" } });
+                                                        // dispatch(actions.updateWallet({ publicKey: pubkey.publicKey.toString(), type: "Phantom" }));
+                                                        // console.log(pubkey);
+                                                        initWalletLocalStorage("Phantom", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+                                                        setLoading(false);
+                                                    })
+                                                    .catch(err => {
+                                                        setLoading(false);
+                                                        console.log(err);
+                                                    });
+                                            }}
+                                            classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
+                                                <img
+                                                    src={logoPhantom}
+                                                    alt="phantom"
+                                                    className="h-6 w-6"
+                                                />
+                                            }
+                                        /> : ""}
+                                        {detectSolflare ? <ButtonBuilder btnName="Solflare Detected" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
+                                            cursor="pointer"
+                                            border="black-border"
+                                            onClick={() => {
+                                                setLoading(true);
+                                                connectWallet(providerSolflareWallet)
+                                                    .then(ok => {
+                                                        // we ok callback a boolean value when wallet is connected
+                                                        // console.log("à thế à", ok);
+                                                        initWalletLocalStorage("Solflare", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+                                                        setLoading(false);
+                                                    })
+                                                    .catch(err => {
+                                                        setLoading(false);
+                                                        console.log(err);
+                                                    });
+                                                providerSolflareWallet.on("connect", (pubkey: string) => {
+                                                    // setSolflarePublickey(pubkey.toString());
+                                                    dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.toString(), type: "Solflare" } });
+                                                })
+                                            }}
+                                            classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
+                                                <img
+                                                    src={solflareLogo}
+                                                    alt="phantom"
+                                                    className="h-6 w-6"
+                                                />
+                                            }
+                                        /> : ""}
+                                    </>}
+                            </ul>
+                        </div>
+                    </DialogBody>
+                    <DialogFooter className="justify-center">
+                        <p className="text-black-500 text-fs-md">Powered by Solana</p>
+                    </DialogFooter>
+                </Dialog>
+            </>
+        );
+    } else {
+        return (
+            <DrawerRight
+                publickey={state.publicKey} disconnect={() => dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: "", type: "" } })}
+            />
+        );
+    }
 }
 
-export { Web3Dialog }
+export { Web3Dialog };
