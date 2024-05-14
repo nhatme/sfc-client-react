@@ -1,6 +1,3 @@
-import { FC, createContext, useState } from "react";
-import { WalletContextProps } from "../interfaces/CustomProps";
-
 const getPhantomProvider = () => {
     const provider = (window as any).phantom?.solana;
     if (provider?.isPhantom) {
@@ -21,10 +18,22 @@ const getSolflareProvider = () => {
     }
 }
 
+// const getBackpackProvider = () => {
+//     const provider = (window as any).backpack;
+//     if (provider?.isBackpack) {
+//         return {
+//             detect: provider?.isBackpack,
+//             provider: provider
+//         }
+//     }
+// }
+
 const providerPhantomWallet = getPhantomProvider()?.provider;
 const detectPhantom = getPhantomProvider()?.detect;
 const providerSolflareWallet = getSolflareProvider()?.provider;
 const detectSolflare = getSolflareProvider()?.detect;
+// const detetcBackpack = getBackpackProvider()?.detect;
+// const providerBackpackWallet = getBackpackProvider()?.provider;
 
 const connectWallet = async (provider: any) => {
     try {
@@ -42,32 +51,6 @@ const disConnect = async (provider: any) => {
     }
 }
 
-const walletContextValue: WalletContextProps = {
-    phantomStatePublickey: null,
-    setPhantomPublickey: () => { },
-    solflareStatePublickey: null,
-    setSolflarePublickey: () => { }
-};
-
-const PublicKeyContext = createContext(walletContextValue);
-
-const PublickeyProvider: FC<{ children: JSX.Element }> = ({ children }) => {
-    const [phantomStatePublickey, setPhantomPublickey] = useState<any>(null);
-    const [solflareStatePublickey, setSolflarePublickey] = useState<any>(null);
-
-    return (
-        <PublicKeyContext.Provider
-            value={{
-                phantomStatePublickey,
-                setPhantomPublickey,
-                solflareStatePublickey,
-                setSolflarePublickey
-            }}>
-            {children}
-        </PublicKeyContext.Provider>
-    );
-}
-
 export {
     detectSolflare,
     detectPhantom,
@@ -75,6 +58,4 @@ export {
     disConnect,
     providerPhantomWallet,
     providerSolflareWallet,
-    PublicKeyContext,
-    PublickeyProvider
 }

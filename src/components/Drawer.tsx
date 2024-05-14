@@ -6,44 +6,34 @@ import {
 import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 import { ButtonBuilder } from "./Button";
 import { disConnect, providerPhantomWallet, providerSolflareWallet } from "../utils/WalletProvider";
-import { StatePublicKey } from "../interfaces/CustomProps";
 import { copyClipboard, prettierPublickey } from "../utils/ManageWalletAccount";
 import { removeItemLocalStorage } from "../utils/ManageLocalStorage";
 import { ArrowRightStartOnRectangleIcon, LinkIcon } from "@heroicons/react/16/solid";
 import { useWallet } from "../hooks/useWallet";
+import { useBalance } from "../utils/Utilities";
+import { SOLANA_UNIT, SOLANA_PRICE } from "../constants/_solana_var";
+import { formatConverter } from "../utils/Tools";
 
 const DrawerRight: FC = () => {
     const { state, dispatch } = useWallet();
     const [openRight, setOpenRight] = useState(false);
     const openDrawerRight = () => setOpenRight(true);
     const closeDrawerRight = () => setOpenRight(false);
-    const walletPrettier = state.publicKey ? prettierPublickey(state.publicKey) : null;
+    const walletPrettier = state.myPublicKey.publicKey ? prettierPublickey(state.myPublicKey.publicKey) : null;
 
-    // const data: TabProps = [
-    //     {
-    //         label: "HTML",
-    //         value: "html",
-    //         content: <div></div>,
-    //         target: "history"
-    //     },
-    //     {
-    //         label: "React",
-    //         value: "react",
-    //         content: <div></div>,
-    //         target: "myToken"
-    //     }
-    // ];
-    
     const handleDisconnect = async () => {
-        if (state.type === "Phantom") {
+        if (state.myPublicKey.walletType === "Phantom") {
             await disConnect(providerPhantomWallet);
-            dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: "", type: "" } });
+            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: "", walletType: "Unknown" } });
             removeItemLocalStorage();
-        } else if (state.type === "Solflare") {
+        } else if (state.myPublicKey.walletType === "Solflare") {
             await disConnect(providerSolflareWallet);
-            dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: "", type: "" } });
+            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: "", walletType: "Unknown" } });
         }
     }
+
+    const balance = useBalance();
+    const balanceToUsd = (balance * SOLANA_PRICE).toFixed(2);
 
     return (
         <Fragment>
@@ -66,17 +56,17 @@ const DrawerRight: FC = () => {
                                 className="w-12 h-12 rounded-full mr-8px"
                             />
                             <div>
-                                0 SOL
+                                {balance + " " + SOLANA_UNIT}
                                 <div>{walletPrettier}</div>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-8px">
-                            <div onClick={() => { copyClipboard(state.publicKey) }} className="p-2 border-gray-border border-1 rounded-full bg-purple-50 cursor-pointer">
+                            <div onClick={() => { copyClipboard(state.myPublicKey.publicKey) }} className="p-2 border-gray-border border-1 rounded-full bg-purple-50 cursor-pointer">
                                 <ClipboardDocumentListIcon className="h-5 w-5 text-purple-500" />
                             </div>
                             <div onClick={() => {
-                                window.open(`https://explorer.solana.com/address/${state.publicKey ? state.publicKey : null}?cluster=devnet`, "_blank");
+                                window.open(`https://explorer.solana.com/address/${state.myPublicKey.publicKey ? state.myPublicKey.publicKey : null}?cluster=devnet`, "_blank");
                             }} className="p-2 border-gray-border border-1 rounded-full bg-purple-50 cursor-pointer">
                                 <LinkIcon className="h-5 w-5 text-purple-500" />
                             </div>
@@ -90,8 +80,8 @@ const DrawerRight: FC = () => {
                 </div>
                 <Typography color="gray" className="mb-8 pr-4 font-normal">
                     <div>
-                        <div className="text-fs-lg">$0</div>
-                        <div>~0 SOL</div>
+                        <div className="text-fs-lg">{formatConverter(balanceToUsd)}</div>
+                        <div>~{balance.toFixed(2)} {SOLANA_UNIT}</div>
                     </div>
                 </Typography>
                 <hr className="mb-8" />

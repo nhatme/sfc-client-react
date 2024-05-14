@@ -6,7 +6,8 @@ import { BoltIcon, CheckIcon, ClipboardDocumentListIcon, QuestionMarkCircleIcon 
 import { ButtonBuilder } from "../components/Button";
 import { InputQuantity } from "../components/Inputs";
 import { StatusStProps } from "../interfaces/CustomProps";
-import { GetBalance } from "../utils/Utilities";
+import { useWallet } from "../hooks/useWallet";
+import { prettierPublickey } from "../utils/ManageWalletAccount";
 
 const ContentBoard1: FC = () => {
     return (
@@ -56,6 +57,7 @@ const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon }) => {
 }
 
 const ContentBoard2: FC = () => {
+    const { state } = useWallet();
     return (
         <div>
             <div className="mx-16px flex flex-col gap-8px">
@@ -81,9 +83,9 @@ const ContentBoard2: FC = () => {
                 </div>
                 <div className="border-r-1 border-gray-border mx-16px"></div>
                 <div className="flex flex-col gap-4px">
-                    <StatusOfSt name="Account name: " value="Phan Minh Nhật" unit="" />
-                    <ButtonBuilder border="gray-border" btnName="AMiZ3mSZVs.....uUsgFaUqg1QZ" btnType="circle" paddingSize="Medium" sizeVariant="small"
-                        classNameCustom="flex items-center gap-16px text-purple-500" icon={<ClipboardDocumentListIcon className="h-6 w-6 text-purple-500 cursor-pointer" />}
+                    <StatusOfSt name="Account name: " value=" Phan Minh Nhật" unit="" />
+                    <ButtonBuilder border="gray-border" btnName={`${prettierPublickey(state.myPublicKey.publicKey)}`} btnType="circle" paddingSize="Medium" sizeVariant="small"
+                        classNameCustom="flex items-center gap-16px text-purple-500" icon={<ClipboardDocumentListIcon className="h-5 w-5 text-purple-500 cursor-pointer" />}
                     />
                     <div className="flex gap-4px">
                         <img
@@ -130,7 +132,6 @@ const TabsHandle: FC = () => {
         <div className="flex items-start pt-10 h-full">
             <div className="flex flex-col gap-10px">
                 <ControlTabs />
-                <GetBalance />
                 <div className="flex flex-col gap-8px">
                     <div className="flex gap-8px">
                         <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<ContentBoard1 />} width="w-[572px]" />

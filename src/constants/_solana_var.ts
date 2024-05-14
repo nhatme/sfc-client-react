@@ -1,0 +1,6 @@
+const SOLANA_UNIT = "SOL";
+const SOLANA_PRICE = 150;
+
+export {
+    SOLANA_PRICE, SOLANA_UNIT
+}

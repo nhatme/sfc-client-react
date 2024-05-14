@@ -17,22 +17,19 @@ import {
     providerSolflareWallet,
     detectSolflare,
     detectPhantom,
-    PublicKeyContext
 } from "../utils/WalletProvider";
 import { ButtonBuilder } from "./Button";
 import { DrawerRight } from "./Drawer";
 import { initWalletLocalStorage } from "../utils/ManageLocalStorage";
 import { useWallet } from "../hooks/useWallet";
-import { actions } from "../store";
 
 const Web3Dialog: FC = () => {
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = () => setOpen((cur) => !cur);
     const [loading, setLoading] = useState<boolean>(false);
     const { state, dispatch } = useWallet();
-    // console.log("nhat dialog", state);
 
-    if (!state.publicKey) {
+    if (!state.myPublicKey.publicKey) {
         return (
             <>
                 <ButtonBuilder onClick={handleOpen} btnName="Connect Wallet" paddingSize="Large" sizeVariant="medium" btnType="circle" cursor="pointer" border="gray-border" />
@@ -75,7 +72,7 @@ const Web3Dialog: FC = () => {
                                                 setLoading(true);
                                                 connectWallet(providerPhantomWallet)
                                                     .then(pubkey => {
-                                                        dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.publicKey.toString(), type: "Phantom" } });
+                                                        dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: pubkey.publicKey.toString(), walletType: "Phantom" } });
                                                         initWalletLocalStorage("Phantom", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
                                                         setLoading(false);
                                                     })
@@ -84,8 +81,7 @@ const Web3Dialog: FC = () => {
                                                         console.log(err);
                                                     });
                                                 providerPhantomWallet.on("accountChanged", (pubkey: string) => {
-                                                    dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.toString(), type: "Phantom" } });
-                                                    console.log(pubkey.toString());
+                                                    dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: pubkey.toString(), walletType: "Phantom" } });
                                                 })
                                             }}
                                             classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
@@ -104,7 +100,6 @@ const Web3Dialog: FC = () => {
                                                 connectWallet(providerSolflareWallet)
                                                     .then(ok => {
                                                         // we ok callback a boolean value when wallet is connected
-                                                        // console.log("à thế à", ok);
                                                         initWalletLocalStorage("Solflare", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
                                                         setLoading(false);
                                                     })
@@ -113,7 +108,7 @@ const Web3Dialog: FC = () => {
                                                         console.log(err);
                                                     });
                                                 providerSolflareWallet.on("connect", (pubkey: string) => {
-                                                    dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.toString(), type: "Solflare" } });
+                                                    dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: pubkey.toString(), walletType: "Solflare" } });
                                                 })
                                             }}
                                             classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
@@ -136,9 +131,7 @@ const Web3Dialog: FC = () => {
         );
     } else {
         return (
-            <DrawerRight
-                
-            />
+            <DrawerRight />
         );
     }
 }

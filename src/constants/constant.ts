@@ -5,7 +5,7 @@ declare type typeOfButton = 'circle' | 'circle-square';
 declare type GradientType = 'bg-gradient-117-to-r' | 'bg-gradient-117-to-l';
 declare type Cursor = 'pointer' | 'not-allowed';
 declare type Border = 'gray-border' | 'black-border';
-declare type WalletExtensionName = "Phantom" | "Okx" | "Solflare" | any;
+declare type WalletExtensionName = "Phantom" | "Okx" | "Solflare" | "Backpack" | "Unknown";
 declare type WalletWatching = "WALLET_EXTENSION_WATCHING";
 declare type WalletPrevious = "open-wallet-previous";
 

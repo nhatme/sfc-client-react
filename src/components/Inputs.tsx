@@ -1,7 +1,8 @@
-import { FC } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { InputCustomProps } from "../interfaces/CustomProps";
 import { ButtonBuilder } from "./Button";
 import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
+import { useWallet } from "../hooks/useWallet";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -25,15 +26,22 @@ const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCur
  * This @FC for input target address when user want to target a specific target address (public key ) 
  * */
 const InputTargetAddress: FC = () => {
+    const { dispatch } = useWallet();
+    const [targetAddress, setTargetAddress] = useState<string>("");
+    const inputValue = (e: ChangeEvent<HTMLInputElement>) => {
+        setTargetAddress(e.target.value);
+    }
+    // console.log("targetaddress");
+    // console.log("state target address: ", state.publicKeyTarget);
     return (
         <div className="flex gap-4px items-center">
             <div className="flex gap-6px items-center bg-white rounded-custom-md border-gray-border border-1 px-16px py-8px shadow-md">
                 <div>
-                    <input className="text-fs-20 leading-lh-100 font-bold italic outline-none text-purple-500" spellCheck="false" type="text" placeholder="type or paste here..." />
+                    <input onChange={inputValue} className="text-fs-20 leading-lh-100 font-bold italic outline-none text-purple-500" spellCheck="false" type="text" placeholder="type or paste here..." />
                 </div>
                 <ClipboardDocumentListIcon className="h-6 w-6 text-purple-500 hover:cursor-pointer" />
             </div>
-            <ButtonBuilder btnType="circle" sizeVariant="small" paddingSize="Medium" btnName="Confirm change?" classNameCustom="text-white bg-purple-500" border="gray-border" />
+            <ButtonBuilder onClick={() => dispatch({ type: "UPDATE_PUBLICKEY_TARGET_ACTION", payload: { publicKey: targetAddress } })} btnType="circle" sizeVariant="small" paddingSize="Medium" btnName="Confirm change?" classNameCustom="text-white bg-purple-500" border="gray-border" cursor="pointer" />
         </div>
     )
 }

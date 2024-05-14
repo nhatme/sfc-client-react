@@ -124,9 +124,7 @@ function updateButtonPaddingAndRounded(btnType: typeOfButton): any {
 
 export interface StatePublicKey {
     publickey: string,
-    solflarePublickey?: string,
     disconnect: () => void,
-    disconnectSolflarePubkey?: () => void,
 }
 
 export interface WalletContextProps {

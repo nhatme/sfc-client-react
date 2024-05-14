@@ -1,12 +1,16 @@
-import { createContext } from 'react';
-import { WalletContextProps } from './constants';
-import { initState } from './reducer';
+import { Dispatch, createContext } from 'react';
+import { State, Action } from './types';
+import { initialState } from './reducer';
 
-const context: WalletContextProps = {
-    state: initState,
-    dispatch: () => { },
+export interface WalletContextStoreProps {
+    state: State,
+    dispatch: Dispatch<Action>,
 };
 
-const WalletContext = createContext(context);
+const walletStore: WalletContextStoreProps = {
+    state: initialState,
+    dispatch: () => { }
+}
 
+const WalletContext = createContext<WalletContextStoreProps>(walletStore);
 export default WalletContext;

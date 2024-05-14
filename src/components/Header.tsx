@@ -3,7 +3,6 @@ import logo from "../assets/logo.png";
 import { ButtonBuilder, ButtonHeader } from "./Button";
 import { Web3Dialog } from "./Dialog";
 import { FC } from "react";
-import { PublickeyProvider } from "../utils/WalletProvider";
 
 export const Header: FC = () => {
     return (
