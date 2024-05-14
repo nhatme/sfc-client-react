@@ -23,4 +23,4 @@ interface UpdatePublickeyTargetAction {
     }
 }
 
-export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction;
+export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction; 

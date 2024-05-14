@@ -8,6 +8,8 @@ import { InputQuantity } from "../components/Inputs";
 import { StatusStProps } from "../interfaces/CustomProps";
 import { useWallet } from "../hooks/useWallet";
 import { prettierPublickey } from "../utils/ManageWalletAccount";
+import LockTargetAddress from "../utils/LockTargetAddress";
+
 
 const ContentBoard1: FC = () => {
     return (
@@ -132,6 +134,7 @@ const TabsHandle: FC = () => {
         <div className="flex items-start pt-10 h-full">
             <div className="flex flex-col gap-10px">
                 <ControlTabs />
+                <LockTargetAddress />
                 <div className="flex flex-col gap-8px">
                     <div className="flex gap-8px">
                         <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<ContentBoard1 />} width="w-[572px]" />

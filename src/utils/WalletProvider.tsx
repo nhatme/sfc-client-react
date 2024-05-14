@@ -18,22 +18,10 @@ const getSolflareProvider = () => {
     }
 }
 
-// const getBackpackProvider = () => {
-//     const provider = (window as any).backpack;
-//     if (provider?.isBackpack) {
-//         return {
-//             detect: provider?.isBackpack,
-//             provider: provider
-//         }
-//     }
-// }
-
 const providerPhantomWallet = getPhantomProvider()?.provider;
 const detectPhantom = getPhantomProvider()?.detect;
 const providerSolflareWallet = getSolflareProvider()?.provider;
 const detectSolflare = getSolflareProvider()?.detect;
-// const detetcBackpack = getBackpackProvider()?.detect;
-// const providerBackpackWallet = getBackpackProvider()?.provider;
 
 const connectWallet = async (provider: any) => {
     try {
