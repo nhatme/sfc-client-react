@@ -7,7 +7,7 @@ const connection = new Connection(clusterApiUrl('devnet'), "confirmed");
 const GetBalance: FC = () => {
     const [balance, setBalance] = useState<number>(0);
     const { state, dispatch } = useWallet();
-    console.log("nhatutil", state);
+    // console.log("nhatutil", state);
 
     useEffect(() => {
         const fetchBalance = async () => {

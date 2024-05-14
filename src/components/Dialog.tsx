@@ -30,10 +30,7 @@ const Web3Dialog: FC = () => {
     const handleOpen = () => setOpen((cur) => !cur);
     const [loading, setLoading] = useState<boolean>(false);
     const { state, dispatch } = useWallet();
-    // console.log("nhatdia", state);
-
-    // console.log(phantomStatePublickey);
-    // console.log(solflareStatePublickey);
+    // console.log("nhat dialog", state);
 
     if (!state.publicKey) {
         return (
@@ -116,7 +113,6 @@ const Web3Dialog: FC = () => {
                                                         console.log(err);
                                                     });
                                                 providerSolflareWallet.on("connect", (pubkey: string) => {
-                                                    // setSolflarePublickey(pubkey.toString());
                                                     dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: pubkey.toString(), type: "Solflare" } });
                                                 })
                                             }}
@@ -141,7 +137,7 @@ const Web3Dialog: FC = () => {
     } else {
         return (
             <DrawerRight
-                publickey={state.publicKey} disconnect={() => dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: "", type: "" } })}
+                
             />
         );
     }

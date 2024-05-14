@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
 import { WalletExtensionName } from "../constants/constant";
 
-export type CmdPublickey = "UPDATE_PUBLICKEY" | "LOGIN";
+export type CmdPublickey = "UPDATE_PUBLICKEY";
 
 export type Action = {
     type: CmdPublickey;

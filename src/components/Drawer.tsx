@@ -10,12 +10,14 @@ import { StatePublicKey } from "../interfaces/CustomProps";
 import { copyClipboard, prettierPublickey } from "../utils/ManageWalletAccount";
 import { removeItemLocalStorage } from "../utils/ManageLocalStorage";
 import { ArrowRightStartOnRectangleIcon, LinkIcon } from "@heroicons/react/16/solid";
+import { useWallet } from "../hooks/useWallet";
 
-const DrawerRight: FC<StatePublicKey> = ({ publickey, disconnect }) => {
+const DrawerRight: FC = () => {
+    const { state, dispatch } = useWallet();
     const [openRight, setOpenRight] = useState(false);
     const openDrawerRight = () => setOpenRight(true);
     const closeDrawerRight = () => setOpenRight(false);
-    const walletPrettier = publickey ? prettierPublickey(publickey) : null;
+    const walletPrettier = state.publicKey ? prettierPublickey(state.publicKey) : null;
 
     // const data: TabProps = [
     //     {
@@ -31,6 +33,17 @@ const DrawerRight: FC<StatePublicKey> = ({ publickey, disconnect }) => {
     //         target: "myToken"
     //     }
     // ];
+    
+    const handleDisconnect = async () => {
+        if (state.type === "Phantom") {
+            await disConnect(providerPhantomWallet);
+            dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: "", type: "" } });
+            removeItemLocalStorage();
+        } else if (state.type === "Solflare") {
+            await disConnect(providerSolflareWallet);
+            dispatch({ type: "UPDATE_PUBLICKEY", payload: { publicKey: "", type: "" } });
+        }
+    }
 
     return (
         <Fragment>
@@ -59,21 +72,16 @@ const DrawerRight: FC<StatePublicKey> = ({ publickey, disconnect }) => {
                         </div>
 
                         <div className="flex items-center gap-8px">
-                            <div onClick={() => { copyClipboard(publickey) }} className="p-2 border-gray-border border-1 rounded-full bg-purple-50 cursor-pointer">
+                            <div onClick={() => { copyClipboard(state.publicKey) }} className="p-2 border-gray-border border-1 rounded-full bg-purple-50 cursor-pointer">
                                 <ClipboardDocumentListIcon className="h-5 w-5 text-purple-500" />
                             </div>
                             <div onClick={() => {
-                                window.open(`https://explorer.solana.com/address/${publickey ? publickey : null}?cluster=devnet`, "_blank");
+                                window.open(`https://explorer.solana.com/address/${state.publicKey ? state.publicKey : null}?cluster=devnet`, "_blank");
                             }} className="p-2 border-gray-border border-1 rounded-full bg-purple-50 cursor-pointer">
                                 <LinkIcon className="h-5 w-5 text-purple-500" />
                             </div>
                             <div className="p-2 border-gray-border border-1 rounded-full bg-purple-50 cursor-pointer"
-                                onClick={() => {
-                                    publickey ? disConnect(providerPhantomWallet).then(() => {
-                                        disconnect();
-                                        removeItemLocalStorage();
-                                    }) : "";
-                                }}
+                                onClick={handleDisconnect}
                             >
                                 <ArrowRightStartOnRectangleIcon className="h-5 w-5 text-purple-500" />
                             </div>
