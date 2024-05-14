@@ -5,7 +5,9 @@ function prettierPublickey(publicKey: string): string {
 }
 
 const copyClipboard = (phantomPublickey: string) => {
-    phantomPublickey ? navigator.clipboard.writeText(phantomPublickey) : null;
+    if (phantomPublickey) {
+        navigator.clipboard.writeText(phantomPublickey).catch(err => console.error('Failed to copy text: ', err));
+    }
 }
 
 export { prettierPublickey, copyClipboard };
