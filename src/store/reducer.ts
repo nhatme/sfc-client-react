@@ -2,7 +2,7 @@ import { Action, State } from "./types";
 
 const initialState: State = {
     myPublicKey: {
-        publicKey: "",
+        publicKey: undefined,
         walletType: "Unknown"
     },
     publicKeyTarget: ""

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
     Dialog,
     DialogHeader,
@@ -9,25 +9,55 @@ import {
     Spinner,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import logoPhantom from '../assets/phantomlogo.png';
-import solflareLogo from '../assets/solflare_logo.png'
-import {
-    connectWallet,
-    providerPhantomWallet,
-    providerSolflareWallet,
-    detectSolflare,
-    detectPhantom,
-} from "../utils/WalletProvider";
 import { ButtonBuilder } from "./Button";
 import { DrawerRight } from "./Drawer";
-import { initWalletLocalStorage } from "../utils/ManageLocalStorage";
+import { initWalletLocalStorage, removeItemLocalStorage } from "../utils/ManageLocalStorage";
 import { useWallet } from "../hooks/useWallet";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 
 const Web3Dialog: FC = () => {
+    const [phantomAdapter, setPhantomAdapter] = useState<PhantomWalletAdapter | null>(null);
+    const [solflareAdapter, setSolflareAdapter] = useState<SolflareWalletAdapter | null>(null);
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = () => setOpen((cur) => !cur);
     const [loading, setLoading] = useState<boolean>(false);
     const { state, dispatch } = useWallet();
+
+    useEffect(() => {
+        const phantomAdapter = new PhantomWalletAdapter();
+        setPhantomAdapter(phantomAdapter);
+        const solflareAdapter = new SolflareWalletAdapter();
+        setSolflareAdapter(solflareAdapter);
+
+        phantomAdapter.on("connect", () => {
+            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: phantomAdapter.publicKey?.toString(), walletType: "Phantom" } });
+            initWalletLocalStorage("Phantom", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+        });
+
+        phantomAdapter.on("readyStateChange", (event) => {
+            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: event.toString(), walletType: "Phantom" } });
+        })
+
+        solflareAdapter.on("connect", () => {
+            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: solflareAdapter.publicKey?.toString(), walletType: "Solflare" } });
+            initWalletLocalStorage("Solflare", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+        });
+
+        return () => {
+            phantomAdapter.disconnect();
+            solflareAdapter.disconnect();
+        }
+
+    }, []);
+
+    const connect = async (adapter: any) => {
+        try {
+            return await adapter.connect();
+        } catch (error) {
+            return error;
+        }
+    }
 
     if (!state.myPublicKey.publicKey) {
         return (
@@ -57,7 +87,6 @@ const Web3Dialog: FC = () => {
                     <DialogBody className="scroll_hidable overflow-y-scroll !px-5 max-h-96">
                         <div className="mb-6">
                             <ul className="mt-3 flex flex-col gap-1">
-
                                 {loading ? <div className="flex justify-center">
                                     <div className="flex flex-col justify-center items-center">
                                         <Spinner className="h-16 w-16 text-gray-900/50" />
@@ -65,60 +94,48 @@ const Web3Dialog: FC = () => {
                                     </div>
                                 </div> :
                                     <>
-                                        {detectPhantom ? <ButtonBuilder btnName="Phantom Detected" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
-                                            cursor="pointer"
-                                            border="black-border"
-                                            onClick={() => {
-                                                setLoading(true);
-                                                connectWallet(providerPhantomWallet)
-                                                    .then(pubkey => {
-                                                        dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: pubkey.publicKey.toString(), walletType: "Phantom" } });
-                                                        initWalletLocalStorage("Phantom", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+                                        {phantomAdapter && (
+                                            <ButtonBuilder btnName={`${phantomAdapter.name} Detected`} paddingSize="Medium" sizeVariant="small" btnType="circle-square"
+                                                cursor="pointer"
+                                                border="black-border"
+                                                onClick={() => {
+                                                    setLoading(true);
+                                                    connect(phantomAdapter).then(() => {
                                                         setLoading(false);
-                                                    })
-                                                    .catch(err => {
-                                                        setLoading(false);
+                                                    }).catch(err => {
                                                         console.log(err);
                                                     });
-                                                providerPhantomWallet.on("accountChanged", (pubkey: string) => {
-                                                    dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: pubkey.toString(), walletType: "Phantom" } });
-                                                })
-                                            }}
-                                            classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
-                                                <img
-                                                    src={logoPhantom}
-                                                    alt="phantom"
-                                                    className="h-6 w-6"
-                                                />
-                                            }
-                                        /> : ""}
-                                        {detectSolflare ? <ButtonBuilder btnName="Solflare Detected" paddingSize="Medium" sizeVariant="small" btnType="circle-square"
-                                            cursor="pointer"
-                                            border="black-border"
-                                            onClick={() => {
-                                                setLoading(true);
-                                                connectWallet(providerSolflareWallet)
-                                                    .then(ok => {
-                                                        // we ok callback a boolean value when wallet is connected
-                                                        initWalletLocalStorage("Solflare", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+                                                }}
+                                                classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
+                                                    <img
+                                                        src={phantomAdapter.icon}
+                                                        alt="phantom"
+                                                        className="h-6 w-6"
+                                                    />
+                                                }
+                                            />
+                                        )}
+                                        {solflareAdapter && (
+                                            <ButtonBuilder btnName={`${solflareAdapter.name} Detected`} paddingSize="Medium" sizeVariant="small" btnType="circle-square"
+                                                cursor="pointer"
+                                                border="black-border"
+                                                onClick={() => {
+                                                    setLoading(true);
+                                                    connect(solflareAdapter).then(() => {
                                                         setLoading(false);
-                                                    })
-                                                    .catch(err => {
-                                                        setLoading(false);
-                                                        console.log(err);
+                                                    }).catch(err => {
+                                                        console.log("Solflare", err);
                                                     });
-                                                providerSolflareWallet.on("connect", (pubkey: string) => {
-                                                    dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: pubkey.toString(), walletType: "Solflare" } });
-                                                })
-                                            }}
-                                            classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
-                                                <img
-                                                    src={solflareLogo}
-                                                    alt="phantom"
-                                                    className="h-6 w-6"
-                                                />
-                                            }
-                                        /> : ""}
+                                                }}
+                                                classNameCustom="flex items-center justify-between gap-3 bg-white text-purple-500" icon={
+                                                    <img
+                                                        src={solflareAdapter.icon}
+                                                        alt="solflare"
+                                                        className="h-6 w-6"
+                                                    />
+                                                }
+                                            />
+                                        )}
                                     </>}
                             </ul>
                         </div>
@@ -131,7 +148,7 @@ const Web3Dialog: FC = () => {
         );
     } else {
         return (
-            <DrawerRight />
+            <DrawerRight/>
         );
     }
 }

@@ -7,11 +7,15 @@ const connection = new Connection(clusterApiUrl('devnet'), "finalized");
 const useBalance = () => {
     const { state } = useWallet();
     const [balance, setBalance] = useState<number>(0);
+
+    const publicKeyValue = state.myPublicKey.publicKey;
     useEffect(() => {
         const fetchBalance = async () => {
             try {
-                const balance = await connection.getBalance(new PublicKey(state.myPublicKey.publicKey), "confirmed");
-                setBalance(balance / LAMPORTS_PER_SOL);
+                if (publicKeyValue !== undefined) {
+                    const balance = await connection.getBalance(new PublicKey(publicKeyValue), "confirmed");
+                    setBalance(balance / LAMPORTS_PER_SOL);
+                }
             } catch (error) {
                 console.error("Error fetching balance:", error);
             }

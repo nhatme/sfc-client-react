@@ -29,6 +29,7 @@ const DrawerRight: FC = () => {
         } else if (state.myPublicKey.walletType === "Solflare") {
             await disConnect(providerSolflareWallet);
             dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: "", walletType: "Unknown" } });
+            removeItemLocalStorage();
         }
     }
 

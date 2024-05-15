@@ -4,9 +4,9 @@ function prettierPublickey(publicKey: string): string {
     return first + "....." + last;
 }
 
-const copyClipboard = (phantomPublickey: string) => {
+const copyClipboard = (phantomPublickey: string | undefined): any => {
     if (phantomPublickey) {
-        navigator.clipboard.writeText(phantomPublickey).catch(err => console.error('Failed to copy text: ', err));
+        return navigator.clipboard.writeText(phantomPublickey).catch(err => console.error('Failed to copy text: ', err));
     }
 }
 

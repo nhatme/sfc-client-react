@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { ControlTabs } from "../components/ControlTabs";
 import { Board } from "../components/Board";
 import { CircleStackIcon } from "@heroicons/react/24/outline";
@@ -8,7 +8,6 @@ import { InputQuantity } from "../components/Inputs";
 import { StatusStProps } from "../interfaces/CustomProps";
 import { useWallet } from "../hooks/useWallet";
 import { prettierPublickey } from "../utils/ManageWalletAccount";
-import LockTargetAddress from "../utils/LockTargetAddress";
 
 
 const ContentBoard1: FC = () => {
@@ -60,6 +59,13 @@ const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon }) => {
 
 const ContentBoard2: FC = () => {
     const { state } = useWallet();
+    const [userPrettyPublickey, setUserPublickey] = useState<string | undefined>(undefined);
+    const userPublickey = state.myPublicKey.publicKey;
+    useEffect(() => {
+        if (userPublickey !== undefined) {
+            setUserPublickey(prettierPublickey(userPublickey));
+        }
+    }, [userPublickey]);
     return (
         <div>
             <div className="mx-16px flex flex-col gap-8px">
@@ -86,7 +92,7 @@ const ContentBoard2: FC = () => {
                 <div className="border-r-1 border-gray-border mx-16px"></div>
                 <div className="flex flex-col gap-4px">
                     <StatusOfSt name="Account name: " value=" Phan Minh Nhật" unit="" />
-                    <ButtonBuilder border="gray-border" btnName={`${prettierPublickey(state.myPublicKey.publicKey)}`} btnType="circle" paddingSize="Medium" sizeVariant="small"
+                    <ButtonBuilder border="gray-border" btnName={`${userPrettyPublickey === undefined ? "" : userPrettyPublickey}`} btnType="circle" paddingSize="Medium" sizeVariant="small"
                         classNameCustom="flex items-center gap-16px text-purple-500" icon={<ClipboardDocumentListIcon className="h-5 w-5 text-purple-500 cursor-pointer" />}
                     />
                     <div className="flex gap-4px">
@@ -134,7 +140,6 @@ const TabsHandle: FC = () => {
         <div className="flex items-start pt-10 h-full">
             <div className="flex flex-col gap-10px">
                 <ControlTabs />
-                <LockTargetAddress />
                 <div className="flex flex-col gap-8px">
                     <div className="flex gap-8px">
                         <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<ContentBoard1 />} width="w-[572px]" />
