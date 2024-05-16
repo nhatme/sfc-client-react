@@ -87,8 +87,8 @@ const anchorProgram = async (): Promise<Program | null> => {
         const IDL = await Program.fetchIdl(ProgramId);
         if (!IDL) {
             console.error("Error: IDL not found");
-            {/* @ts-ignore */}
-            return new Program(idl, getProvider()); 
+            {/* @ts-ignore */ }
+            return new Program(idl, getProvider());
         }
         return new Program(IDL, getProvider());
     } catch (error) {
