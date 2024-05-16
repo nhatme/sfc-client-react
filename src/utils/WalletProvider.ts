@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 const getPhantomProvider = () => {
     const provider = (window as any).phantom?.solana;

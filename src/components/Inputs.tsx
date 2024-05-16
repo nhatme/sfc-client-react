@@ -1,8 +1,11 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { InputCustomProps } from "../interfaces/CustomProps";
 import { ButtonBuilder } from "./Button";
 import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
 import { useWallet } from "../hooks/useWallet";
+import lockTargetAddress from "../utils/LockTargetAddress";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -26,22 +29,54 @@ const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCur
  * This @FC for input target address when user want to target a specific target address (public key ) 
  * */
 const InputTargetAddress: FC = () => {
-    const { dispatch } = useWallet();
+    const { state, dispatch } = useWallet();
     const [targetAddress, setTargetAddress] = useState<string>("");
-    const inputValue = (e: ChangeEvent<HTMLInputElement>) => {
-        setTargetAddress(e.target.value);
-    }
-    // console.log("targetaddress");
-    // console.log("state target address: ", state.publicKeyTarget);
+    const [buttonClicked, setButtonClicked] = useState<boolean>(false);
+    const phantomAdapter = new PhantomWalletAdapter();
+
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setTargetAddress(event.target.value);
+    };
+
+    const handleButtonClick = () => {
+        setButtonClicked(true);
+        dispatch({
+            type: 'UPDATE_PUBLICKEY_TARGET_ACTION',
+            payload: { publicKey: targetAddress },
+        });
+    };
+
+    const userPublickey = state.myPublicKey.publicKey;
+    const walletType = state.myPublicKey.walletType;
+
+    useEffect(() => {
+        const connectAndLock = async () => {
+            if (buttonClicked && targetAddress && userPublickey && walletType) {
+                if (!phantomAdapter.connected) {
+                    await phantomAdapter.connect();
+                }
+                lockTargetAddress(userPublickey, targetAddress, walletType);
+            }
+        };
+    
+        connectAndLock();
+        setButtonClicked(false);
+    }, [buttonClicked, targetAddress, userPublickey, walletType]);
+
     return (
         <div className="flex gap-4px items-center">
             <div className="flex gap-6px items-center bg-white rounded-custom-md border-gray-border border-1 px-16px py-8px shadow-md">
                 <div>
-                    <input onChange={inputValue} className="text-fs-20 leading-lh-100 font-bold italic outline-none text-purple-500" spellCheck="false" type="text" placeholder="type or paste here..." />
+                    <input value={targetAddress}
+                        onChange={handleInputChange}
+                        className="text-fs-20 leading-lh-100 font-bold italic outline-none text-purple-500" spellCheck="false" type="text" placeholder="type or paste here..." />
                 </div>
                 <ClipboardDocumentListIcon className="h-6 w-6 text-purple-500 hover:cursor-pointer" />
             </div>
-            <ButtonBuilder onClick={() => dispatch({ type: "UPDATE_PUBLICKEY_TARGET_ACTION", payload: { publicKey: targetAddress } })} btnType="circle" sizeVariant="small" paddingSize="Medium" btnName="Confirm change?" classNameCustom="text-white bg-purple-500" border="gray-border" cursor="pointer" />
+            <ButtonBuilder
+                onClick={handleButtonClick}
+                btnType="circle" sizeVariant="small" paddingSize="Medium" btnName="Confirm change?"
+                classNameCustom="text-white bg-purple-500" border="gray-border" cursor="pointer" />
         </div>
     )
 }

@@ -1,0 +1,1369 @@
+{
+  "address": "DKPreu6SebHaxEWXDEvoX5vXc1wkWEjorvRba1HMrGXc",
+  "metadata": {
+    "name": "sfcvnd",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "buy_sol",
+      "discriminator": [
+        206,
+        59,
+        125,
+        30,
+        202,
+        248,
+        111,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "vaultsol",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vaultsfc",
+          "writable": true
+        },
+        {
+          "name": "donator",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amountin",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "change_name",
+      "discriminator": [
+        164,
+        48,
+        236,
+        189,
+        230,
+        194,
+        144,
+        235
+      ],
+      "accounts": [
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "change_name_target",
+      "discriminator": [
+        20,
+        34,
+        57,
+        246,
+        8,
+        135,
+        129,
+        172
+      ],
+      "accounts": [
+        {
+          "name": "target",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target.asset_target",
+                "account": "UserTarget"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "clear_user",
+      "discriminator": [
+        28,
+        207,
+        0,
+        226,
+        205,
+        132,
+        35,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "sol_destination",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit_asset",
+      "discriminator": [
+        107,
+        93,
+        89,
+        87,
+        226,
+        203,
+        154,
+        19
+      ],
+      "accounts": [
+        {
+          "name": "target",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target.asset_target",
+                "account": "UserTarget"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "init_user",
+      "discriminator": [
+        14,
+        51,
+        68,
+        159,
+        237,
+        78,
+        158,
+        102
+      ],
+      "accounts": [
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "lock_target",
+      "discriminator": [
+        209,
+        101,
+        139,
+        126,
+        219,
+        137,
+        176,
+        179
+      ],
+      "accounts": [
+        {
+          "name": "target",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "targetkey",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "provide_liquidity",
+      "discriminator": [
+        40,
+        110,
+        107,
+        116,
+        174,
+        127,
+        97,
+        204
+      ],
+      "accounts": [
+        {
+          "name": "vaultsol",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vaultsfc",
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "donatorsfc",
+          "writable": true
+        },
+        {
+          "name": "donatorlp",
+          "writable": true
+        },
+        {
+          "name": "token",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "ratio",
+          "type": "u64"
+        },
+        {
+          "name": "bump",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "sell_sol",
+      "discriminator": [
+        205,
+        130,
+        32,
+        108,
+        218,
+        104,
+        75,
+        30
+      ],
+      "accounts": [
+        {
+          "name": "vaultsol",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vaultsfc",
+          "writable": true
+        },
+        {
+          "name": "donator",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amountin",
+          "type": "u64"
+        },
+        {
+          "name": "bump",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "summon_asset",
+      "discriminator": [
+        83,
+        136,
+        247,
+        209,
+        214,
+        177,
+        108,
+        136
+      ],
+      "accounts": [
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "donator",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "tk",
+          "writable": true
+        },
+        {
+          "name": "token",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "tranfer_asset",
+      "discriminator": [
+        131,
+        254,
+        91,
+        98,
+        82,
+        7,
+        33,
+        132
+      ],
+      "accounts": [
+        {
+          "name": "target",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "toclient",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target.asset_target",
+                "account": "UserTarget"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fromclient",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "tranfer_sol",
+      "discriminator": [
+        243,
+        108,
+        193,
+        122,
+        32,
+        6,
+        8,
+        33
+      ],
+      "accounts": [
+        {
+          "name": "target",
+          "docs": [
+            "because it involves interactions with external accounts, but no additional checks",
+            "through types are necessary as it's validated elsewhere in the program logic."
+          ],
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "tranfer_token",
+      "discriminator": [
+        242,
+        146,
+        184,
+        85,
+        85,
+        23,
+        253,
+        149
+      ],
+      "accounts": [
+        {
+          "name": "fromtoken",
+          "writable": true
+        },
+        {
+          "name": "totoken",
+          "writable": true
+        },
+        {
+          "name": "token",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "choose",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "tribute_asset",
+      "discriminator": [
+        131,
+        145,
+        105,
+        163,
+        30,
+        36,
+        90,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "donator",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "tk",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "because it involves interactions with external accounts, but no additional checks",
+            "through types are necessary as it's validated elsewhere in the program logic."
+          ]
+        },
+        {
+          "name": "token",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "bump",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "user_message",
+      "discriminator": [
+        52,
+        209,
+        252,
+        130,
+        13,
+        42,
+        188,
+        57
+      ],
+      "accounts": [
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "message",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "user_message_target",
+      "discriminator": [
+        189,
+        255,
+        131,
+        52,
+        75,
+        186,
+        93,
+        227
+      ],
+      "accounts": [
+        {
+          "name": "target",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "toclient",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target.asset_target",
+                "account": "UserTarget"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fromclient",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "message",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_asset",
+      "discriminator": [
+        78,
+        193,
+        207,
+        125,
+        63,
+        193,
+        129,
+        12
+      ],
+      "accounts": [
+        {
+          "name": "target",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target.asset_target",
+                "account": "UserTarget"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_liquidity",
+      "discriminator": [
+        149,
+        158,
+        33,
+        185,
+        47,
+        243,
+        253,
+        31
+      ],
+      "accounts": [
+        {
+          "name": "vaultsol",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vaultsfc",
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "donatorsfc",
+          "writable": true
+        },
+        {
+          "name": "donatorlp",
+          "writable": true
+        },
+        {
+          "name": "token",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "ratio",
+          "type": "u64"
+        },
+        {
+          "name": "bump",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "UserInfor",
+      "discriminator": [
+        104,
+        46,
+        234,
+        94,
+        232,
+        226,
+        173,
+        177
+      ]
+    },
+    {
+      "name": "UserTarget",
+      "discriminator": [
+        248,
+        48,
+        100,
+        96,
+        14,
+        90,
+        246,
+        151
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "PriceUnderSlippage",
+      "msg": "Dev Sol price under slippage"
+    },
+    {
+      "code": 6001,
+      "name": "PriceOverSlippage",
+      "msg": "Dev Sol price over slippage"
+    },
+    {
+      "code": 6002,
+      "name": "NotEnoughVND",
+      "msg": "Not enough VND"
+    },
+    {
+      "code": 6003,
+      "name": "NotEnoughSFCVND",
+      "msg": "Not enough SFC - VND"
+    },
+    {
+      "code": 6004,
+      "name": "VaultNotEnoughSFCVND",
+      "msg": "Vault not enough SFC - VND"
+    },
+    {
+      "code": 6005,
+      "name": "YouNotEnoughSFCVND",
+      "msg": "You not enough SFC - VND"
+    },
+    {
+      "code": 6006,
+      "name": "YouNotEnoughLPSFC",
+      "msg": "You not enough LPSFC"
+    },
+    {
+      "code": 6007,
+      "name": "NotEnoughSol",
+      "msg": "Not enough Sol"
+    },
+    {
+      "code": 6008,
+      "name": "VaultNotEnoughSol",
+      "msg": "Vault not enough Sol"
+    },
+    {
+      "code": 6009,
+      "name": "YouNotEnoughSol",
+      "msg": "You not enough Sol"
+    },
+    {
+      "code": 6010,
+      "name": "AccountNotEmpty",
+      "msg": "Account not empty"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidAmount",
+      "msg": "Invalid amount"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidTargetKey",
+      "msg": "Invalid target key"
+    },
+    {
+      "code": 6013,
+      "name": "AccountAlreadyInitialized",
+      "msg": "Account already initialized"
+    },
+    {
+      "code": 6014,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidAuthority",
+      "msg": "InvalidAuthority"
+    },
+    {
+      "code": 6016,
+      "name": "NameIsEmpty",
+      "msg": "Name is empty"
+    },
+    {
+      "code": 6017,
+      "name": "MessageIsEmpty",
+      "msg": "Message is empty"
+    }
+  ],
+  "types": [
+    {
+      "name": "UserInfor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_account",
+            "type": "u64"
+          },
+          {
+            "name": "account_name",
+            "type": "string"
+          },
+          {
+            "name": "k_value",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserTarget",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_target",
+            "docs": [
+              "because it involves interactions with external accounts, but no additional checks",
+              "through types are necessary as it's validated elsewhere in the program logic."
+            ],
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+  ]
+}
