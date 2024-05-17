@@ -8,16 +8,56 @@ import { InputQuantity } from "../components/Inputs";
 import { StatusStProps } from "../interfaces/CustomProps";
 import { useWallet } from "../hooks/useWallet";
 import { prettierPublickey } from "../utils/ManageWalletAccount";
+import { openAsset } from "../utils/AssetsCash";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { fetchPDA } from "../utils/coral";
+import { PublicKey } from "@solana/web3.js";
 
+const SettingBoard: FC = () => {
+    const { state } = useWallet();
+    const phantomAdapter = new PhantomWalletAdapter();
+    const [buttonClicked, setButtonClicked] = useState<boolean>(false);
 
-const ContentBoard1: FC = () => {
+    const userPublickey = state.myPublicKey.publicKey;
+    const walletName = state.myPublicKey.walletType;
+    // console.log("board1", userPublickey);
+
+    const handleOpenAssets = () => {
+        setButtonClicked(true);
+    }
+
+    useEffect(() => {
+        const connectAndOpenAsset = async () => {
+            if (buttonClicked && userPublickey && walletName) {
+                if (!phantomAdapter.connected) {
+                    await phantomAdapter.connect();
+                }
+                const [pda, num] = fetchPDA(new PublicKey(userPublickey), "client");
+                if (pda instanceof PublicKey) {
+                    openAsset(userPublickey, walletName, pda);
+                } else {
+                    console.log("PDA is not a publickey");
+                }
+                // console.log("pda in componet: ", pda.toString());
+            }
+        };
+
+        connectAndOpenAsset();
+        setButtonClicked(false);
+    }, [buttonClicked, userPublickey, walletName]);
+
     return (
         <div className="flex">
             <div className="mx-16px">
                 <div className="flex flex-col gap-4px">
                     <div className="text-fs-14 italic font-bold text-purple-500">Open & Close Asset</div>
                     <div className="flex gap-6px">
-                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Open" classNameCustom="text-purple-500" />
+                        <ButtonBuilder
+                            onClick={handleOpenAssets}
+                            btnName="Open"
+                            border="gray-border" btnType="circle"
+                            cursor="pointer" paddingSize="Medium"
+                            sizeVariant="medium" classNameCustom="text-purple-500" />
                         <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Close" classNameCustom="text-purple-500" />
                     </div>
                 </div>
@@ -57,7 +97,7 @@ const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon }) => {
     )
 }
 
-const ContentBoard2: FC = () => {
+const StatusBoard: FC = () => {
     const { state } = useWallet();
     const [userPrettyPublickey, setUserPublickey] = useState<string | undefined>(undefined);
     const userPublickey = state.myPublicKey.publicKey;
@@ -113,7 +153,7 @@ const ContentBoard2: FC = () => {
     )
 }
 
-const ContentBoard3: FC = () => {
+const CirculatingBoard: FC = () => {
     return (
         <div className="flex mx-16px">
             <div className="flex flex-col w-1/2">
@@ -142,10 +182,10 @@ const TabsHandle: FC = () => {
                 <ControlTabs />
                 <div className="flex flex-col gap-8px">
                     <div className="flex gap-8px">
-                        <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<ContentBoard1 />} width="w-[572px]" />
-                        <Board nameBoard="Status" content={<ContentBoard2 />} width="w-[572px]" />
+                        <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<SettingBoard />} width="w-[572px]" />
+                        <Board nameBoard="Status" content={<StatusBoard />} width="w-[572px]" />
                     </div>
-                    <Board nameBoard="Circulating Supply?" width="" content={<ContentBoard3 />} />
+                    <Board nameBoard="Circulating Supply?" width="" content={<CirculatingBoard />} />
                 </div>
             </div>
         </div>

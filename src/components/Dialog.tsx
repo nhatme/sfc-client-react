@@ -11,7 +11,7 @@ import {
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ButtonBuilder } from "./Button";
 import { DrawerRight } from "./Drawer";
-import { initWalletLocalStorage, removeItemLocalStorage } from "../utils/ManageLocalStorage";
+import { initWalletLocalStorage } from "../utils/ManageLocalStorage";
 import { useWallet } from "../hooks/useWallet";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";

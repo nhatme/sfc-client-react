@@ -8,7 +8,6 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { PublicKey } from "@solana/web3.js";
 import { fetchPDA } from "../utils/coral";
 
-
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
         <div className={`${className}`}>
@@ -57,10 +56,13 @@ const InputTargetAddress: FC = () => {
                 if (!phantomAdapter.connected) {
                     await phantomAdapter.connect();
                 }
-                lockTargetAddress(userPublickey, targetAddress, walletType);
-                const [pda, num] = fetchPDA(new PublicKey(userPublickey));
+                const [pda, num] = fetchPDA(new PublicKey(userPublickey), "target");
+                if (pda instanceof PublicKey) {
+                    lockTargetAddress(userPublickey, targetAddress, walletType, pda);
+                } else {
+                    console.log("PDA is not a publickey");
+                }
                 console.log(pda.toString());
-                
             }
         };
 
