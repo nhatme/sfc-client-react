@@ -3,8 +3,10 @@ import { InputCustomProps } from "../interfaces/CustomProps";
 import { ButtonBuilder } from "./Button";
 import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
 import { useWallet } from "../hooks/useWallet";
-import lockTargetAddress from "../utils/LockTargetAddress";
+import { lockTargetAddress } from "../utils/LockTargetAddress";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { PublicKey } from "@solana/web3.js";
+import { fetchPDA } from "../utils/coral";
 
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
@@ -56,9 +58,12 @@ const InputTargetAddress: FC = () => {
                     await phantomAdapter.connect();
                 }
                 lockTargetAddress(userPublickey, targetAddress, walletType);
+                const [pda, num] = fetchPDA(new PublicKey(userPublickey));
+                console.log(pda.toString());
+                
             }
         };
-    
+
         connectAndLock();
         setButtonClicked(false);
     }, [buttonClicked, targetAddress, userPublickey, walletType]);

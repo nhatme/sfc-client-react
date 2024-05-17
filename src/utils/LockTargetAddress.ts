@@ -15,12 +15,13 @@ const connection = new Connection("http://127.0.0.1:8899", "confirmed");
 const phantomAdapter = new PhantomWalletAdapter();
 const solflareAdapter = new SolflareWalletAdapter();
 
-const signAndConfirmTxh = async (userPublickey: PublicKey, program: Program, targetAddress: PublicKey,) => {
+const signAndConfirmTxh = async (userPublickey: PublicKey, program: Program, targetAddress: PublicKey) => {
+    const [targetDataPDA] = PublicKey.findProgramAddressSync(
+        [Buffer.from("target", "utf8"), userPublickey.toBuffer()],
+        new PublicKey(ProgramId)
+    );
+
     try {
-        const [targetDataPDA] = PublicKey.findProgramAddressSync(
-            [Buffer.from("target", "utf8"), userPublickey.toBuffer()],
-            new PublicKey(ProgramId)
-        );
         if (program) {
             alert(`You locking to this target`);
             let txInstruction = await program.methods
@@ -45,12 +46,14 @@ const signAndConfirmTxh = async (userPublickey: PublicKey, program: Program, tar
             await connection.confirmTransaction({ signature: txHash, ...await connection.getLatestBlockhash() }, "finalized");
             alert(`You has been lock to this target successful`);
             console.log("Successful", txHash);
+
             // window.open(`https://explorer.solana.com/tx/${txHash}?cluster=devnet`, "_blank");
             window.open(`https://explorer.solana.com/tx/${txHash}?cluster=custom&customUrl=http%3A%2F%2Flocalhost%3A8899`, "_blank");
 
         }
+
     } catch (error) {
-        alert(`Error: ${error}`);
+        alert(`Error signAndConfirm: ${error}`);
     }
 }
 
@@ -87,14 +90,14 @@ const anchorProgram = async (): Promise<Program | null> => {
         const IDL = await Program.fetchIdl(ProgramId);
         if (!IDL) {
             console.error("Error: IDL not found");
-            {/* @ts-ignore */ }
-            return new Program(idl, getProvider());
+            {/* @ts-ignore */}
+            return new Program(idl, getProvider()); 
         }
-        return new Program(IDL, getProvider());
+        return new Program(IDL, new PublicKey(ProgramId), getProvider());
     } catch (error) {
         console.error("Error fetching IDL: ", error);
         return null;
     }
 }
 
-export default lockTargetAddress;
+export { lockTargetAddress };
