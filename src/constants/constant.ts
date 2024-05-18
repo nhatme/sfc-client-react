@@ -8,6 +8,7 @@ declare type Border = 'gray-border' | 'black-border';
 declare type WalletExtensionName = "Phantom" | "Okx" | "Solflare" | "Backpack" | "Unknown";
 declare type WalletWatching = "WALLET_EXTENSION_WATCHING";
 declare type WalletPrevious = "open-wallet-previous";
+declare type ActionHandleButton = "open" | "close" | "mint" | "burn";
 
 export type {
     variant,
@@ -19,5 +20,6 @@ export type {
     Border,
     WalletExtensionName,
     WalletWatching,
-    WalletPrevious
+    WalletPrevious,
+    ActionHandleButton
 }

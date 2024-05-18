@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { InputCustomProps } from "../interfaces/CustomProps";
 import { ButtonBuilder } from "./Button";
 import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
@@ -34,6 +34,8 @@ const InputTargetAddress: FC = () => {
     const [targetAddress, setTargetAddress] = useState<string>("");
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
     const phantomAdapter = new PhantomWalletAdapter();
+    const userPublickey = state.myPublicKey.publicKey;
+    const walletType = state.myPublicKey.walletType;
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTargetAddress(event.target.value);
@@ -47,9 +49,6 @@ const InputTargetAddress: FC = () => {
         });
     };
 
-    const userPublickey = state.myPublicKey.publicKey;
-    const walletType = state.myPublicKey.walletType;
-
     useEffect(() => {
         const connectAndLock = async () => {
             if (buttonClicked && targetAddress && userPublickey && walletType) {
@@ -60,7 +59,7 @@ const InputTargetAddress: FC = () => {
                 if (pda instanceof PublicKey) {
                     lockTargetAddress(userPublickey, targetAddress, walletType, pda);
                 } else {
-                    console.log("PDA is not a publickey");
+                    console.log("PDA is not a publickey format");
                 }
                 console.log(pda.toString());
             }

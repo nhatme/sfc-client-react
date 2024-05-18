@@ -8,27 +8,36 @@ import { InputQuantity } from "../components/Inputs";
 import { StatusStProps } from "../interfaces/CustomProps";
 import { useWallet } from "../hooks/useWallet";
 import { prettierPublickey } from "../utils/ManageWalletAccount";
-import { openAsset } from "../utils/AssetsCash";
+import { closeAsset, openAsset } from "../utils/AssetsCash";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { fetchPDA } from "../utils/coral";
 import { PublicKey } from "@solana/web3.js";
+import { ActionHandleButton } from "../constants/constant";
+import mintTokenFromAsset from "../utils/MintAndBurn";
 
 const SettingBoard: FC = () => {
     const { state } = useWallet();
     const phantomAdapter = new PhantomWalletAdapter();
-    const [buttonClicked, setButtonClicked] = useState<boolean>(false);
+    const [action, setAction] = useState<ActionHandleButton | null>(null);
 
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
-    // console.log("board1", userPublickey);
 
-    const handleOpenAssets = () => {
-        setButtonClicked(true);
+    const handleOpenAsset = () => {
+        setAction("open");
+    }
+
+    const handleCloseAsset = () => {
+        setAction("close");
+    }
+
+    const handleMintToken = () => {
+        setAction("mint");
     }
 
     useEffect(() => {
         const connectAndOpenAsset = async () => {
-            if (buttonClicked && userPublickey && walletName) {
+            if (userPublickey && walletName) {
                 if (!phantomAdapter.connected) {
                     await phantomAdapter.connect();
                 }
@@ -38,13 +47,53 @@ const SettingBoard: FC = () => {
                 } else {
                     console.log("PDA is not a publickey");
                 }
-                // console.log("pda in componet: ", pda.toString());
             }
         };
 
-        connectAndOpenAsset();
-        setButtonClicked(false);
-    }, [buttonClicked, userPublickey, walletName]);
+        const connectAndCloseAsset = async () => {
+            if (userPublickey && walletName) {
+                if (!phantomAdapter.connected) {
+                    await phantomAdapter.connect();
+                }
+                const [pda, num] = fetchPDA(new PublicKey(userPublickey), "client");
+                if (pda instanceof PublicKey) {
+                    closeAsset(userPublickey, walletName, pda);
+                } else {
+                    console.log("PDA is not a publickey");
+                }
+            }
+        }
+
+        const connectAndMintToken = async () => {
+            if (userPublickey && walletName) {
+                if (!phantomAdapter.connected) {
+                    await phantomAdapter.connect();
+                }
+                mintTokenFromAsset(userPublickey, 5);
+            }
+        }
+
+        switch (action) {
+            case "open":
+                connectAndOpenAsset();
+                break;
+            case "close":
+                connectAndCloseAsset();
+                break;
+            case "mint":
+                connectAndMintToken();
+                break;
+            case "burn":
+                break;
+            default:
+                break;
+        }
+        setAction(null);
+
+        // if (action === "open") {
+        // } else if (action === "close") {
+        // }
+    }, [action, userPublickey, walletName]);
 
     return (
         <div className="flex">
@@ -53,20 +102,30 @@ const SettingBoard: FC = () => {
                     <div className="text-fs-14 italic font-bold text-purple-500">Open & Close Asset</div>
                     <div className="flex gap-6px">
                         <ButtonBuilder
-                            onClick={handleOpenAssets}
+                            onClick={handleOpenAsset}
                             btnName="Open"
                             border="gray-border" btnType="circle"
                             cursor="pointer" paddingSize="Medium"
                             sizeVariant="medium" classNameCustom="text-purple-500" />
-                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Close" classNameCustom="text-purple-500" />
+                        <ButtonBuilder
+                            onClick={handleCloseAsset}
+                            btnName="Close" border="gray-border" btnType="circle"
+                            cursor="pointer" paddingSize="Medium"
+                            sizeVariant="medium" classNameCustom="text-purple-500" />
                     </div>
                 </div>
                 <div className="flex flex-col gap-4px mt-12px">
                     <div className="text-fs-14 italic font-bold text-purple-500">Mint & Burn SFC token</div>
 
                     <div className="flex items-center gap-6px">
-                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Mint" classNameCustom="text-purple-500" />
-                        <ButtonBuilder border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Burn" classNameCustom="text-purple-500" />
+                        <ButtonBuilder
+                            onClick={handleMintToken}
+                            border="gray-border" btnType="circle"
+                            cursor="pointer" paddingSize="Medium" sizeVariant="medium"
+                            btnName="Mint" classNameCustom="text-purple-500" />
+                        <ButtonBuilder border="gray-border" btnType="circle"
+                            cursor="pointer" paddingSize="Medium" sizeVariant="medium"
+                            btnName="Burn" classNameCustom="text-purple-500" />
                         <CircleStackIcon className="h-5 w-5 text-gray-500" />
                     </div>
                     <div>
