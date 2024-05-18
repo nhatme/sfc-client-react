@@ -1,9 +1,9 @@
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { anchorProgram, createAnchorProvider, createTxhAndSend } from "./coral";
+import { anchorProgram, initAnchorProvider, createTxhAndSend } from "./coral";
 
 const openAsset = async (publicKey: string, walletName: string, pda: PublicKey) => {
     const userPublickey = new PublicKey(publicKey);
-    createAnchorProvider(walletName);
+    initAnchorProvider(walletName);
     try {
         const program = await anchorProgram();
         if (program) {
@@ -26,7 +26,7 @@ const openAsset = async (publicKey: string, walletName: string, pda: PublicKey) 
 
 const closeAsset = async (publicKey: string, walletName: string, pda: PublicKey) => {
     const userPublickey = new PublicKey(publicKey);
-    createAnchorProvider(walletName);
+    initAnchorProvider(walletName);
     try {
         const program = await anchorProgram();
         if (program) {

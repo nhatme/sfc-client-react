@@ -9,7 +9,7 @@ window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const phantomAdapter = new PhantomWalletAdapter();
 
-const createAnchorProvider = (walletName: string) => {
+const initAnchorProvider = (walletName: string) => {
     if (walletName === 'Phantom') {
         setProvider(new AnchorProvider(connection, providerPhantomWallet, {
             preflightCommitment: "processed"
@@ -25,6 +25,7 @@ const fetchPDA = (userPublickey: PublicKey, seedString: string) => {
     return targetDataPDA;
 }
 
+// fetch PDA from vault
 const fetchPDAfromVault = () => {
     const vaultPDA = PublicKey.findProgramAddressSync(
         [Buffer.from("vault")], new PublicKey(ProgramId)
@@ -42,11 +43,6 @@ const fetchTargetAddress = async (programTarget: Program, pda: PublicKey) => {
 
 const anchorProgram = async (): Promise<Program | null> => {
     try {
-
-        if (!phantomAdapter.connected) {
-            await phantomAdapter.connect();
-        }
-
         const IDL = await Program.fetchIdl(ProgramId);
         if (!IDL) {
             console.error("Error: IDL not found");
@@ -90,7 +86,7 @@ const createTxhAndSend = async (txInstruction: TransactionInstruction, userPubli
 }
 
 export {
-    createAnchorProvider,
+    initAnchorProvider,
     fetchPDA,
     fetchPDAfromVault,
     fetchTargetAddress,

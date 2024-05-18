@@ -13,7 +13,8 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { fetchPDA } from "../utils/coral";
 import { PublicKey } from "@solana/web3.js";
 import { ActionHandleButton } from "../constants/constant";
-import mintTokenFromAsset from "../utils/MintAndBurn";
+import { burnTokenSFC, mintTokenFromAsset } from "../utils/MintAndBurn";
+import getTokenBalances from "../utils/WalletInfomation";
 
 const SettingBoard: FC = () => {
     const { state } = useWallet();
@@ -33,6 +34,10 @@ const SettingBoard: FC = () => {
 
     const handleMintToken = () => {
         setAction("mint");
+    }
+
+    const handleBurnToken = () => {
+        setAction("burn");
     }
 
     useEffect(() => {
@@ -66,10 +71,14 @@ const SettingBoard: FC = () => {
 
         const connectAndMintToken = async () => {
             if (userPublickey && walletName) {
-                if (!phantomAdapter.connected) {
-                    await phantomAdapter.connect();
-                }
-                mintTokenFromAsset(userPublickey, 5);
+                mintTokenFromAsset(userPublickey, walletName, 10);
+            }
+        }
+
+        const connectAndBurnToken = async () => {
+            if (userPublickey && walletName) {
+                getTokenBalances(userPublickey);
+                burnTokenSFC(userPublickey, walletName, 5);
             }
         }
 
@@ -84,15 +93,12 @@ const SettingBoard: FC = () => {
                 connectAndMintToken();
                 break;
             case "burn":
+                connectAndBurnToken();
                 break;
             default:
                 break;
         }
         setAction(null);
-
-        // if (action === "open") {
-        // } else if (action === "close") {
-        // }
     }, [action, userPublickey, walletName]);
 
     return (
@@ -103,29 +109,20 @@ const SettingBoard: FC = () => {
                     <div className="flex gap-6px">
                         <ButtonBuilder
                             onClick={handleOpenAsset}
-                            btnName="Open"
-                            border="gray-border" btnType="circle"
-                            cursor="pointer" paddingSize="Medium"
-                            sizeVariant="medium" classNameCustom="text-purple-500" />
+                            btnName="Open" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500" />
                         <ButtonBuilder
-                            onClick={handleCloseAsset}
-                            btnName="Close" border="gray-border" btnType="circle"
-                            cursor="pointer" paddingSize="Medium"
-                            sizeVariant="medium" classNameCustom="text-purple-500" />
+                            onClick={handleCloseAsset} btnName="Close" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500" />
                     </div>
                 </div>
                 <div className="flex flex-col gap-4px mt-12px">
                     <div className="text-fs-14 italic font-bold text-purple-500">Mint & Burn SFC token</div>
 
                     <div className="flex items-center gap-6px">
+                        <ButtonBuilder onClick={handleMintToken}
+                            border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Mint" classNameCustom="text-purple-500" />
                         <ButtonBuilder
-                            onClick={handleMintToken}
-                            border="gray-border" btnType="circle"
-                            cursor="pointer" paddingSize="Medium" sizeVariant="medium"
-                            btnName="Mint" classNameCustom="text-purple-500" />
-                        <ButtonBuilder border="gray-border" btnType="circle"
-                            cursor="pointer" paddingSize="Medium" sizeVariant="medium"
-                            btnName="Burn" classNameCustom="text-purple-500" />
+                            onClick={handleBurnToken}
+                            border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Burn" classNameCustom="text-purple-500" />
                         <CircleStackIcon className="h-5 w-5 text-gray-500" />
                     </div>
                     <div>
@@ -251,4 +248,4 @@ const TabsHandle: FC = () => {
     )
 }
 
-export { TabsHandle };
+export default TabsHandle;

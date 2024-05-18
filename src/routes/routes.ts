@@ -1,6 +1,6 @@
 import defineRoutes from "../config/defineRoutes";
 import { Pool } from "../pages/Pool";
-import { TabsHandle } from "../pages/StableCoin";
+import TabsHandle from "../pages/StableCoin";
 import { Swap } from "../pages/Trading";
 
 const publicRoutes = [

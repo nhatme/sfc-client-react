@@ -1,11 +1,11 @@
 import { PublicKey, SystemProgram } from '@solana/web3.js';
-import { anchorProgram, createAnchorProvider, createTxhAndSend } from './coral';
+import { anchorProgram, initAnchorProvider, createTxhAndSend } from './coral';
 
 const lockTargetAddress = async (publicKey: string, targetKey: string, walletName: string, pda: PublicKey) => {
     if (publicKey !== undefined && targetKey !== undefined) {
         const targetAddress = new PublicKey(targetKey);
         const userPublickey = new PublicKey(publicKey);
-        createAnchorProvider(walletName);
+        initAnchorProvider(walletName);
         try {
             const program = await anchorProgram();
             if (program) {
