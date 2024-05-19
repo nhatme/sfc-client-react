@@ -1,3 +1,5 @@
+import { ActionHandleButton } from "../constants/constant";
+
 export type WalletName = "Phantom" | "Solflare" | "Backpack" | "Unknown";
 
 export interface State {
@@ -5,7 +7,11 @@ export interface State {
         publicKey: string | undefined,
         walletType: WalletName
     };
-    publicKeyTarget: string | undefined
+    publicKeyTarget: string | undefined,
+    mintAndBurn: {
+        amount: number,
+        type: ActionHandleButton
+    }
 }
 
 interface UpdatePublickeyAction {
@@ -23,4 +29,12 @@ interface UpdatePublickeyTargetAction {
     }
 }
 
-export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction; 
+interface UpdateAmountMintAndBurn {
+    type: 'UPDATE_AMOUNT_MINT_BURN';
+    payload: {
+        amount: number,
+        type: ActionHandleButton
+    }
+}
+
+export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn; 

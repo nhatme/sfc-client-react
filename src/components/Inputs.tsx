@@ -7,6 +7,9 @@ import { lockTargetAddress } from "../utils/LockTargetAddress";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { PublicKey } from "@solana/web3.js";
 import { fetchPDA } from "../utils/coral";
+import { ActionHandleButton } from "../constants/constant";
+import { burnTokenSFC, mintTokenFromAsset } from "../utils/MintAndBurn";
+import { Web3Dialog } from "./Dialog";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -79,10 +82,14 @@ const InputTargetAddress: FC = () => {
                 </div>
                 <ClipboardDocumentListIcon className="h-6 w-6 text-purple-500 hover:cursor-pointer" />
             </div>
-            <ButtonBuilder
-                onClick={handleButtonClick}
-                btnType="circle" sizeVariant="small" paddingSize="Medium" btnName="Confirm change?"
-                classNameCustom="text-white bg-purple-500" border="gray-border" cursor="pointer" />
+            {userPublickey ? (
+                <ButtonBuilder
+                    onClick={handleButtonClick}
+                    btnType="circle" sizeVariant="small" paddingSize="Medium" btnName="Confirm change?"
+                    classNameCustom="text-white bg-purple-500" border="gray-border" cursor="pointer" />
+            ) : <div>
+                <Web3Dialog />
+            </div>}
         </div>
     )
 }
@@ -92,20 +99,80 @@ const InputTargetAddress: FC = () => {
  * 
  * With w-full of input
 */
-const InputQuantity: FC = () => {
+const InputQuantityMintBurn: FC = () => {
+    const { state, dispatch } = useWallet();
+    const [amount, setAmount] = useState<string>("0");
+    const [action, setAction] = useState<ActionHandleButton | null>(null);
+    const userPublickey = state.myPublicKey.publicKey;
+    const walletName = state.myPublicKey.walletType;
+
+    const typeAction = state.mintAndBurn.type;
+
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+        // Regex to match non-numeric characters
+        const regex = /[^0-9]/g;
+        // Remove non-numeric characters
+        const sanitizedValue = inputValue.replace(regex, '');
+        setAmount(sanitizedValue);
+    };
+
+    const handleClickMintBurn = () => {
+        setAction(typeAction);
+        console.log('Setting action to:', typeAction);
+    }
+
+    useEffect(() => {
+
+        console.log('action changed to:', action);
+
+        const connectAndMintToken = async () => {
+            if (userPublickey && walletName) {
+                await mintTokenFromAsset(userPublickey, walletName, Number(amount));
+            }
+            setAction(null);
+        }
+
+        const connectAndBurnToken = async () => {
+            if (userPublickey && walletName) {
+                await burnTokenSFC(userPublickey, walletName, Number(amount));
+            }
+            setAction(null);
+        }
+
+        console.log(typeAction);
+        console.log(action);
+
+        if (action === "mint") {
+            connectAndMintToken();
+        } else if (action === "burn") {
+            connectAndBurnToken();
+        }
+    }, [action, typeAction, userPublickey, walletName]);
+
     return (
-        <div>
-            <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
-                <input type="number" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
-                <div className="text-fs-12 font-medium text-gray-200 text-right">~ 100,000 VND</div>
-            </div>
-            <ButtonBuilder
-                btnType="circle-square" sizeVariant="large" paddingSize="Small"
-                classNameCustom="mt-4px text-center text-white bg-purple-100"
-                btnName="Enter an amount" border="gray-border"
-            />
-        </div>
+        <>
+            {typeAction !== "unknown" && (
+                <div>
+                    <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                        <input
+                            value={amount === "0" ? "" : amount}
+                            onChange={handleInputChange}
+                            type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                        <div className="text-fs-12 font-medium text-gray-200 text-right">~ 100,000 VND</div>
+                    </div>
+                    <ButtonBuilder
+                        onClick={handleClickMintBurn}
+                        btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                        classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500"}`}
+                        cursor="not-allowed"
+                        btnName="Enter an amount" border="gray-border"
+                    />
+                </div>
+            )}
+
+        </>
     )
 }
 
-export { InputCustom, InputTargetAddress, InputQuantity };
+export { InputCustom, InputTargetAddress, InputQuantityMintBurn };

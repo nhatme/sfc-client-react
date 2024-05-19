@@ -1,5 +1,8 @@
 import { Connection, clusterApiUrl } from "@solana/web3.js";
 
+
+export const AdminAuthor = "Cy66eHC9PcTb9wqwU77vyVievDyzYSwdbFkysDKkBYii";
+
 /**
  * for @sfc token
  */
@@ -8,7 +11,7 @@ export const MintAddress = "4TndGJA5DeL6xZgdPLK3VETy6MVVuZgUWEdPk4KUMNCQ";
 /**
  * for @devnet
  */
-export const ProgramId = "F7TehQFrx3XkuMsLPcmKLz44UxTWWfyodNLSungdqoRX"; 
+export const ProgramId = "F7TehQFrx3XkuMsLPcmKLz44UxTWWfyodNLSungdqoRX";
 export const connection = new Connection(clusterApiUrl('devnet'), "finalized");
 
 /**

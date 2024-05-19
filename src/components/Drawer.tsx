@@ -1,4 +1,4 @@
-import { FC, Fragment, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import {
     Drawer,
     Typography,
@@ -13,13 +13,20 @@ import { useWallet } from "../hooks/useWallet";
 import { useBalance } from "../utils/Utilities";
 import { SOLANA_UNIT, SOLANA_PRICE } from "../constants/_solana_var";
 import { formatConverter } from "../utils/Tools";
+import { depositAsset, withdrawAsset } from "../utils/DepositAndWithdraw";
+import { AdminAuthor } from "../config/programConfig";
+import { ActionHandleAsset } from "../constants/constant";
 
 const DrawerRight: FC = () => {
     const { state, dispatch } = useWallet();
     const [openRight, setOpenRight] = useState(false);
     const openDrawerRight = () => setOpenRight(true);
     const closeDrawerRight = () => setOpenRight(false);
-    const walletPrettier = state.myPublicKey.publicKey ? prettierPublickey(state.myPublicKey.publicKey) : null;
+    const [action, setAction] = useState<ActionHandleAsset | null>(null);
+
+    const userPublickey = state.myPublicKey.publicKey;
+    const walletName = state.myPublicKey.walletType;
+    const walletPrettier = userPublickey ? prettierPublickey(userPublickey) : null;
 
     const handleDisconnect = async () => {
         if (state.myPublicKey.walletType === "Phantom") {
@@ -32,6 +39,41 @@ const DrawerRight: FC = () => {
             removeItemLocalStorage();
         }
     }
+
+    const handleButtonDeposit = () => {
+        setAction("deposit");
+    }
+
+    const handleButtonWithdraw = () => {
+        setAction("withdraw");
+    }
+
+    useEffect(() => {
+        const connectAndDeposit = async () => {
+            if (action && userPublickey && walletName) {
+                await depositAsset(userPublickey, walletName, 10000);
+            }
+        }
+
+        const connectAndWithdraw = async () => {
+            if (action && userPublickey && walletName) {
+                await withdrawAsset(userPublickey, walletName, 20000);
+            }
+        }
+
+        switch (action) {
+            case "deposit":
+                connectAndDeposit();
+                break;
+            case "withdraw":
+                connectAndWithdraw();
+                break;
+            default:
+                setAction(null);
+                break;
+        }
+        setAction(null);
+    }, [action, userPublickey, walletName]);
 
     const balance = useBalance();
     const balanceToUsd = (balance * SOLANA_PRICE).toFixed(2);
@@ -79,15 +121,40 @@ const DrawerRight: FC = () => {
                         </div>
                     </div>
                 </div>
-                <Typography color="gray" className="mb-8 pr-4 font-normal">
+                <Typography color="gray" className="pr-4 font-normal">
                     <div>
                         <div className="text-fs-lg">{formatConverter(balanceToUsd)}</div>
                         <div>~{balance.toFixed(2)} {SOLANA_UNIT}</div>
                     </div>
                 </Typography>
-                <hr className="mb-8" />
+                {userPublickey === AdminAuthor && (
+                    <div>
+                        <h5 style={{ color: "red" }} >For asset *</h5>
+                        <div className="flex gap-4px">
+                            <ButtonBuilder
+                                onClick={handleButtonDeposit}
+                                btnName="Deposit"
+                                btnType="circle-square"
+                                paddingSize="Small"
+                                sizeVariant="small" cursor="pointer"
+                                classNameCustom="text-white bg-purple-500 "
+                            />
+                            <ButtonBuilder
+                                onClick={handleButtonWithdraw}
+                                btnName="Withdraw"
+                                btnType="circle-square"
+                                paddingSize="Small"
+                                sizeVariant="small"
+                                border="black-border" cursor="pointer"
+                                classNameCustom="text-black bg-white"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                <hr className="mb-8 mt-8" />
                 <div>
-                    {/* <TabsDefault data={data} /> */}
+                    {/* <TabsDefault data={data} /> THIS IS FOR Tab data including list tokens and history txhash */}
                 </div>
             </Drawer>
         </Fragment>

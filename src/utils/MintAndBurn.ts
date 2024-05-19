@@ -33,7 +33,7 @@ const mintTokenFromAsset = async (userPublickey: string, walletName: string, amo
                     authority: vaultPDA
                 })
                 .instruction()
-            createTxhAndSend(txInstruction, userPubkey, "Minting", "Minting");
+            createTxhAndSend(txInstruction, userPubkey, "Minting", "Minted Success! We're directing to explorer after 3 seconds");
         }
     } catch (error) {
         console.log("Error: ", error);
@@ -64,7 +64,7 @@ const burnTokenSFC = async (userPublickey: string, walletName: string, amountInp
                     token: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
                 })
                 .instruction()
-            createTxhAndSend(txInstruction, userPubkey, "Burning", "Burning");
+            createTxhAndSend(txInstruction, userPubkey, "Burning", "Burned Success! We're directing to explorer after 3 seconds");
         }
     } catch (error) {
         console.log("Error: ", error);

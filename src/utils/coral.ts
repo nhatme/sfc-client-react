@@ -8,7 +8,6 @@ import { TransactionInstruction } from "@solana/web3.js";
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const phantomAdapter = new PhantomWalletAdapter();
-
 const initAnchorProvider = (walletName: string) => {
     if (walletName === 'Phantom') {
         setProvider(new AnchorProvider(connection, providerPhantomWallet, {
@@ -71,6 +70,9 @@ const signAndSendTransaction = async (transaction: Transaction, userPublickey: P
         await connection.confirmTransaction({ signature: txHash, ...await connection.getLatestBlockhash() }, "finalized");
         alert(`${alertMessage}`);
         console.log("Successful: ", txHash);
+        setTimeout(() => {
+            window.open(`https://explorer.solana.com/tx/${txHash}?cluster=devnet`, "_blank");
+        }, 3000);
     } catch (error) {
         console.log("signAndSendTransaction caught: ", error);
     }

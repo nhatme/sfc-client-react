@@ -5,7 +5,11 @@ const initialState: State = {
         publicKey: undefined,
         walletType: "Unknown"
     },
-    publicKeyTarget: ""
+    publicKeyTarget: "",
+    mintAndBurn: {
+        amount: 0,
+        type: "unknown"
+    }
 };
 
 const reducer = (state: State, action: Action): State => {
@@ -22,6 +26,14 @@ const reducer = (state: State, action: Action): State => {
             return {
                 ...state,
                 publicKeyTarget: action.payload.publicKey
+            }
+        case "UPDATE_AMOUNT_MINT_BURN":
+            return {
+                ...state,
+                mintAndBurn: {
+                    amount: action.payload.amount,
+                    type: action.payload.type
+                }
             }
         default:
             return state;

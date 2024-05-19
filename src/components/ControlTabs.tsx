@@ -4,6 +4,7 @@ import { InputTargetAddress } from './Inputs';
 import { useWallet } from '../hooks/useWallet';
 import { openTokenAcc } from '../utils/Tokens';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+import { Web3Dialog } from './Dialog';
 
 const ControlTabs: FC = () => {
     const { state } = useWallet();
@@ -23,7 +24,7 @@ const ControlTabs: FC = () => {
                     await phantomAdapter.connect();
                 }
                 openTokenAcc(userPublickey, walletType);
-            }  
+            }
         };
 
         connectAndOpenToken();
@@ -33,13 +34,22 @@ const ControlTabs: FC = () => {
     return (
         <div className='flex flex-col gap-10px'>
             <InputTargetAddress />
-            <ButtonBuilder
-                onClick={handleButtonClick}
-                btnName="Open Token Account" btnType='circle'
-                cursor='pointer' paddingSize='Large' sizeVariant='large'
-                classNameCustom='bg-purple-500 text-white'
-                border='gray-border'
-            />
+            {userPublickey ? (
+                <>
+                    <ButtonBuilder
+                        onClick={handleButtonClick}
+                        btnName="Create Token SFC Account" btnType='circle'
+                        cursor='pointer' paddingSize='Large' sizeVariant='large'
+                        classNameCustom='bg-purple-500 text-white'
+                        border='gray-border'
+                    />
+                    <div style={{color: "red"}}>* You need to have SFC account first, to own SFC token</div>
+                </>
+            ) : <div>
+                <Web3Dialog />
+            </div>
+            }
+
         </div>
     )
 }

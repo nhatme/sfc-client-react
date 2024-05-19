@@ -12,7 +12,7 @@ const ButtonHeader: FC<ButtonHeaderProps> = ({ buttonName, url }) => {
 }
 
 const ButtonBuilder: FC<ButtonBuilderProps> = ({ btnName, classNameCustom, sizeVariant, paddingSize, btnType, icon, cursor, onClick, border }) => {
-  const classNames: string[] = ["leading-lh-100"];
+  const classNames: string[] = ["leading-lh-100", "select-none"];
   const buttonPaddingAndRounded: SizeButton = updateButtonPaddingAndRounded(btnType)[`sizeButtonPadding${paddingSize}`];
   const buttonClasses = buttonPaddingAndRounded[sizeVariant];
   classNames.push(buttonClasses);
@@ -22,7 +22,7 @@ const ButtonBuilder: FC<ButtonBuilderProps> = ({ btnName, classNameCustom, sizeV
 
   return (
     <div onClick={onClick} className={classNames.join(" ") + ` ${classNameCustom}`}>
-      <div>{btnName}</div>
+      <div className='text-center'>{btnName}</div>
       <div>{icon}</div>
     </div>
   )

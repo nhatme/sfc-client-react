@@ -88,9 +88,9 @@ function updateButtonPaddingAndRounded(btnType: typeOfButton): any {
     if (btnType === "circle") {
         return {
             sizeButtonPaddingLarge: {
-                small: 'px-16px py-8px font-bold rounded-custom-xxl text-fs-sm', // Small variant classes
-                medium: 'px-16px py-8px font-bold rounded-custom-xxl text-fs-md', // Medium variant classes
-                large: 'px-16px py-8px font-bold rounded-custom-xxl text-fs-lg', // Large variant classes
+                small: 'px-16px py-8px font-medium rounded-custom-xxl text-fs-sm', // Small variant classes
+                medium: 'px-16px py-8px font-medium rounded-custom-xxl text-fs-md', // Medium variant classes
+                large: 'px-16px py-8px font-medium rounded-custom-xxl text-fs-lg', // Large variant classes
             },
             sizeButtonPaddingMedium: {
                 small: 'px-12px py-6px font-semibold rounded-custom-xxl text-fs-sm', // Small variant classes
@@ -106,9 +106,9 @@ function updateButtonPaddingAndRounded(btnType: typeOfButton): any {
     } else if (btnType === "circle-square") {
         return {
             sizeButtonPaddingSmall: {
-                small: 'p-6px font-bold rounded-custom-ssm text-fs-sm',
-                medium: 'p-6px font-bold rounded-custom-ssm text-fs-md',
-                large: 'p-6px font-bold rounded-custom-ssm text-fs-lg',
+                small: 'p-6px font-medium rounded-custom-ssm text-fs-sm',
+                medium: 'p-6px font-medium rounded-custom-ssm text-fs-md',
+                large: 'p-6px font-medium rounded-custom-ssm text-fs-lg',
             }, sizeButtonPaddingMedium: {
                 small: 'p-12px font-semibold rounded-custom-ssm text-fs-sm',
                 medium: 'p-12px font-semibold rounded-custom-ssm text-fs-md',

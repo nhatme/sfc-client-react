@@ -62,7 +62,8 @@ const Web3Dialog: FC = () => {
     if (!state.myPublicKey.publicKey) {
         return (
             <>
-                <ButtonBuilder onClick={handleOpen} btnName="Connect Wallet" paddingSize="Large" sizeVariant="medium" btnType="circle" cursor="pointer" border="gray-border" />
+                <ButtonBuilder onClick={handleOpen} classNameCustom="bg-white"
+                    btnName="Connect Wallet" paddingSize="Large" sizeVariant="medium" btnType="circle" cursor="pointer" border="gray-border" />
                 <Dialog size="xs" open={open} handler={handleOpen}
                     animate={{
                         mount: { scale: 1, y: 0 },
@@ -148,7 +149,7 @@ const Web3Dialog: FC = () => {
         );
     } else {
         return (
-            <DrawerRight/>
+            <DrawerRight />
         );
     }
 }
