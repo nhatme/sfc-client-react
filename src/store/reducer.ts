@@ -1,6 +1,6 @@
 import { Action, State } from "./types";
 
-const initialState: State = {
+export const initialState: State = {
     myPublicKey: {
         publicKey: undefined,
         walletType: "Unknown"
@@ -8,7 +8,9 @@ const initialState: State = {
     publicKeyTarget: "",
     mintAndBurn: {
         amount: 0,
-        type: "unknown"
+        type: "unknown",
+        isTarget: false
+
     }
 };
 
@@ -32,7 +34,8 @@ const reducer = (state: State, action: Action): State => {
                 ...state,
                 mintAndBurn: {
                     amount: action.payload.amount,
-                    type: action.payload.type
+                    type: action.payload.type,
+                    isTarget: action.payload.isTarget
                 }
             }
         default:
@@ -40,5 +43,4 @@ const reducer = (state: State, action: Action): State => {
     }
 };
 
-export { initialState };
 export default reducer;

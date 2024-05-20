@@ -39,7 +39,7 @@ const withdrawAsset = async (userPublickey: string, walletName: string, amountIn
     if (program) {
         const accountTarget = await program.account.userTarget.fetch(userPDA);
         const targetKey = (accountTarget.assetTarget) as PublicKey;
-        const [playerDataPDA] = fetchPDA(targetKey, "client");
+        const [clientPDA] = fetchPDA(targetKey, "client");
         const amount = Number(amountInput).valueOf();
         const amountBN = new BN(amount);
         alert(`You withdrawing ${amount} from this target`);
@@ -47,7 +47,7 @@ const withdrawAsset = async (userPublickey: string, walletName: string, amountIn
             .withdrawAsset(amountBN)
             .accounts({
                 target: userPDA,
-                client: playerDataPDA,
+                client: clientPDA,
                 signer: userPubkey
             })
             .instruction();

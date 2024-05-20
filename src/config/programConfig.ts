@@ -2,7 +2,7 @@ import { Connection, clusterApiUrl } from "@solana/web3.js";
 
 
 export const AdminAuthor = "Cy66eHC9PcTb9wqwU77vyVievDyzYSwdbFkysDKkBYii";
-
+export const SplToken = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 /**
  * for @sfc token
  */

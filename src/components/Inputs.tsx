@@ -8,7 +8,7 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { PublicKey } from "@solana/web3.js";
 import { fetchPDA } from "../utils/coral";
 import { ActionHandleButton } from "../constants/constant";
-import { burnTokenSFC, mintTokenFromAsset } from "../utils/MintAndBurn";
+import { burnTokenSFC, burnTokenSFCTarget, mintTokenFromAsset, mintTokenSFCTarget } from "../utils/MintAndBurn";
 import { Web3Dialog } from "./Dialog";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
@@ -64,7 +64,7 @@ const InputTargetAddress: FC = () => {
                 } else {
                     console.log("PDA is not a publickey format");
                 }
-                console.log(pda.toString());
+                // console.log(pda.toString());
             }
         };
 
@@ -107,9 +107,14 @@ const InputQuantityMintBurn: FC = () => {
     const walletName = state.myPublicKey.walletType;
 
     const typeAction = state.mintAndBurn.type;
+    const isTarget = state.mintAndBurn.isTarget;
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
+        if (inputValue == '') {
+            setAmount("0");
+            return;
+        }
         // Regex to match non-numeric characters
         const regex = /[^0-9]/g;
         // Remove non-numeric characters
@@ -118,37 +123,55 @@ const InputQuantityMintBurn: FC = () => {
     };
 
     const handleClickMintBurn = () => {
+        if (amount === "0") {
+            return;
+        }
         setAction(typeAction);
-        console.log('Setting action to:', typeAction);
     }
 
     useEffect(() => {
-
+        console.log("mint burn component", isTarget);
         console.log('action changed to:', action);
-
-        const connectAndMintToken = async () => {
+        const mintToken = async () => {
             if (userPublickey && walletName) {
                 await mintTokenFromAsset(userPublickey, walletName, Number(amount));
             }
             setAction(null);
         }
 
-        const connectAndBurnToken = async () => {
+        const burnToken = async () => {
             if (userPublickey && walletName) {
                 await burnTokenSFC(userPublickey, walletName, Number(amount));
             }
             setAction(null);
         }
 
-        console.log(typeAction);
-        console.log(action);
-
-        if (action === "mint") {
-            connectAndMintToken();
-        } else if (action === "burn") {
-            connectAndBurnToken();
+        const mintTokenTarget = async () => {
+            if (userPublickey && walletName) {
+                await mintTokenSFCTarget(userPublickey, walletName, Number(amount));
+            }
+            setAction(null);
         }
-    }, [action, typeAction, userPublickey, walletName]);
+
+        const burnTokenTarget = async () => {
+            if (userPublickey && walletName) {
+                await burnTokenSFCTarget(userPublickey, walletName, Number(amount));
+            }
+            setAction(null);
+        }
+
+        if (action === "mint" && isTarget == false) {
+            mintToken();
+        } else if (action === "burn" && isTarget == false) {
+            burnToken();
+        } else if (action === "mint" && isTarget == true) {
+            mintTokenTarget();
+            console.log("target is true so fucking mint");
+        } else if (action === "burn" && isTarget == true) {
+            burnTokenTarget();
+            console.log("target is true so fucking burn");
+        }
+    }, [action, typeAction, isTarget, userPublickey, walletName]);
 
     return (
         <>
@@ -164,7 +187,7 @@ const InputQuantityMintBurn: FC = () => {
                     <ButtonBuilder
                         onClick={handleClickMintBurn}
                         btnType="circle-square" sizeVariant="large" paddingSize="Small"
-                        classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500"}`}
+                        classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500 cursor-pointer"}`}
                         cursor="not-allowed"
                         btnName="Enter an amount" border="gray-border"
                     />

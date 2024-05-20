@@ -10,7 +10,8 @@ export interface State {
     publicKeyTarget: string | undefined,
     mintAndBurn: {
         amount: number,
-        type: ActionHandleButton
+        type: ActionHandleButton,
+        isTarget: boolean
     }
 }
 
@@ -33,7 +34,8 @@ interface UpdateAmountMintAndBurn {
     type: 'UPDATE_AMOUNT_MINT_BURN';
     payload: {
         amount: number,
-        type: ActionHandleButton
+        type: ActionHandleButton,
+        isTarget: boolean
     }
 }
 

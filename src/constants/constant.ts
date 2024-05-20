@@ -1,27 +1,12 @@
-declare type variant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "lead" | "paragraph" | "small";
-declare type sizeVariant = 'small' | 'medium' | 'large';
-declare type paddingSizeButton = 'Small' | 'Medium' | 'Large';
-declare type typeOfButton = 'circle' | 'circle-square';
-declare type GradientType = 'bg-gradient-117-to-r' | 'bg-gradient-117-to-l';
-declare type Cursor = 'pointer' | 'not-allowed';
-declare type Border = 'gray-border' | 'black-border';
-declare type WalletExtensionName = "Phantom" | "Okx" | "Solflare" | "Backpack" | "Unknown";
-declare type WalletWatching = "WALLET_EXTENSION_WATCHING";
-declare type WalletPrevious = "open-wallet-previous";
-declare type ActionHandleButton = "open" | "close" | "mint" | "burn" | "unknown";
-declare type ActionHandleAsset = "deposit" | "withdraw";
-
-export type {
-    variant,
-    sizeVariant,
-    paddingSizeButton,
-    typeOfButton,
-    GradientType,
-    Cursor,
-    Border,
-    WalletExtensionName,
-    WalletWatching,
-    WalletPrevious,
-    ActionHandleButton,
-    ActionHandleAsset
-}
+export type variant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "lead" | "paragraph" | "small";
+export type sizeVariant = 'small' | 'medium' | 'large';
+export type paddingSizeButton = 'Small' | 'Medium' | 'Large';
+export type typeOfButton = 'circle' | 'circle-square';
+export type GradientType = 'bg-gradient-117-to-r' | 'bg-gradient-117-to-l';
+export type Cursor = 'pointer' | 'not-allowed';
+export type Border = 'gray-border' | 'black-border';
+export type WalletExtensionName = "Phantom" | "Okx" | "Solflare" | "Backpack" | "Unknown";
+export type WalletWatching = "WALLET_EXTENSION_WATCHING";
+export type WalletPrevious = "open-wallet-previous";
+export type ActionHandleButton = "open" | "close" | "mint" | "burn" | "unknown";
+export type ActionHandleAsset = "deposit" | "withdraw";

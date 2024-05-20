@@ -8,7 +8,7 @@ const openTokenAcc = async (userPublickey: string, walletName: string) => {
     const userPubkey = new PublicKey(userPublickey);
     const tokenAccount = getAssociatedTokenAddressSync(mintAddressPubkey, userPubkey);
     const tokenAccInfo = await connection.getAccountInfo(tokenAccount);
-    console.log(tokenAccInfo);
+    // console.log(tokenAccInfo);
 
     initAnchorProvider(walletName);
     if (tokenAccInfo === null) {

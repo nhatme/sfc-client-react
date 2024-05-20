@@ -14,16 +14,24 @@ import { fetchPDA } from "../utils/coral";
 import { PublicKey } from "@solana/web3.js";
 import { ActionHandleButton } from "../constants/constant";
 import { Web3Dialog } from "../components/Dialog";
+import { Switch } from "@material-tailwind/react";
 
 const SettingBoard: FC = () => {
     const { state, dispatch } = useWallet();
     const phantomAdapter = new PhantomWalletAdapter();
     const [action, setAction] = useState<ActionHandleButton | null>(null);
+    const [checkedTarget, setCheckedTarget] = useState(false);
+    const [actionMintBurn, setActionMintBurn] = useState<ActionHandleButton | null>(null);
+
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
-    const amount = state.mintAndBurn.amount;
     const type = state.mintAndBurn.type;
 
+    const handleSwitch = () => {
+        setCheckedTarget(prevCheckedTarget => !prevCheckedTarget);
+        if (actionMintBurn)
+            dispatch({ type: "UPDATE_AMOUNT_MINT_BURN", payload: { amount: 0, type: actionMintBurn, isTarget: !checkedTarget } });
+    };
 
     const handleOpenAsset = () => {
         setAction("open");
@@ -34,11 +42,13 @@ const SettingBoard: FC = () => {
     }
 
     const handleMint = () => {
-        dispatch({ type: "UPDATE_AMOUNT_MINT_BURN", payload: { amount: 0, type: "mint" } });
+        dispatch({ type: "UPDATE_AMOUNT_MINT_BURN", payload: { amount: 0, type: "mint", isTarget: checkedTarget } });
+        setActionMintBurn("mint");
     }
 
     const handleBurn = () => {
-        dispatch({ type: "UPDATE_AMOUNT_MINT_BURN", payload: { amount: 0, type: "burn" } });
+        dispatch({ type: "UPDATE_AMOUNT_MINT_BURN", payload: { amount: 0, type: "burn", isTarget: checkedTarget } });
+        setActionMintBurn("burn");
     }
 
     useEffect(() => {
@@ -55,6 +65,8 @@ const SettingBoard: FC = () => {
                 }
             }
         };
+
+        console.log(checkedTarget);
 
         const connectAndCloseAsset = async () => {
             if (userPublickey && walletName) {
@@ -82,35 +94,44 @@ const SettingBoard: FC = () => {
                 break;
         }
         setAction(null);
-    }, [action, userPublickey, walletName]);
+    }, [action, checkedTarget, actionMintBurn, userPublickey, walletName]);
 
     return (
-        <div className={`flex ${userPublickey ? "" : "justify-evenly items-center"}`}>
+        <div className={`mx-16px ${userPublickey ? "" : ""} border-1 rounded-3xl p-16px shadow-md bg-gray-50`}>
             {userPublickey ? (
-                <div className="mx-16px">
+                <div className="">
                     <div className="flex flex-col gap-4px">
                         <div className="text-fs-14 italic font-bold text-purple-500">Open & Close Asset</div>
                         <div className="flex gap-6px">
                             <ButtonBuilder
                                 onClick={handleOpenAsset}
-                                btnName="Open" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500" />
+                                btnName="Open" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500 bg-white" />
                             <ButtonBuilder
-                                onClick={handleCloseAsset} btnName="Close" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500" />
+                                onClick={handleCloseAsset} btnName="Close" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500 bg-white" />
                         </div>
                     </div>
                     <div className="flex flex-col gap-4px mt-12px">
                         <div className="text-fs-14 italic font-bold text-purple-500">Mint & Burn SFC token</div>
 
-                        <div className="flex items-center gap-6px">
-                            <ButtonBuilder
-                                onClick={handleMint}
-                                border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Mint"
-                                classNameCustom={(type !== "unknown" && type === "mint") ? " text-white bg-purple-500" : "text-purple-500"} />
-                            <ButtonBuilder
-                                onClick={handleBurn}
-                                border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Burn"
-                                classNameCustom={(type !== "unknown" && type === "burn") ? " text-white bg-purple-500" : "text-purple-500"} />
-                            <CircleStackIcon className="h-5 w-5 text-gray-500" />
+                        <div className="flex items-center justify-between gap-6px">
+                            <div className="flex items-center gap-8px">
+                                <div className="flex gap-6px">
+                                    <ButtonBuilder
+                                        onClick={handleMint}
+                                        border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Mint"
+                                        classNameCustom={(type !== "unknown" && type === "mint") ? " text-white bg-purple-500" : "text-purple-500 bg-white"} />
+                                    <ButtonBuilder
+                                        onClick={handleBurn}
+                                        border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" btnName="Burn"
+                                        classNameCustom={(type !== "unknown" && type === "burn") ? " text-white bg-purple-500" : "text-purple-500 bg-white"} />
+                                </div>
+                                <CircleStackIcon className="h-5 w-5 text-gray-500" />
+                            </div>
+                            {type !== "unknown" ? (
+                                <div className="ml-28px text-xl italic text-purple-500">
+                                    <Switch onClick={handleSwitch} label="target?" color="purple" ripple={true} crossOrigin={undefined} />
+                                </div>
+                            ) : ""}
                         </div>
                         <div>
                             <InputQuantityMintBurn />
@@ -121,9 +142,8 @@ const SettingBoard: FC = () => {
                 <Web3Dialog />
                 <h3>Connect wallet before use this feature ~~</h3>
             </div>}
-
-            <div className="border-r-1 border-gray-border"></div>
-            <div className="mx-16px ">
+            <div className="border-b-1 border-gray-border my-32px"></div>
+            <div className="">
                 <div className="flex mb-4px">
                     <ButtonBuilder border="gray-border" btnType="circle" paddingSize="Medium" sizeVariant="medium" btnName="Transfer" cursor="pointer"
                         classNameCustom="text-purple-500 flex gap-4px" icon={<BoltIcon className="h-5 w-5 text-purple-500" />} />
@@ -229,12 +249,12 @@ const TabsHandle: FC = () => {
         <div className="flex items-start pt-10 h-full">
             <div className="flex flex-col gap-10px">
                 <ControlTabs />
-                <div className="flex flex-col gap-8px">
-                    <div className="flex gap-8px">
-                        <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<SettingBoard />} width="w-[572px]" />
+                <div className="flex gap-8px">
+                    <Board nameBoard="Settings" gradientType="bg-gradient-117-to-l" content={<SettingBoard />} width="w-[572px]" />
+                    <div className="flex flex-col gap-8px">
                         <Board nameBoard="Status" content={<StatusBoard />} width="w-[572px]" />
+                        <Board nameBoard="Circulating Supply?" width="" content={<CirculatingBoard />} />
                     </div>
-                    <Board nameBoard="Circulating Supply?" width="" content={<CirculatingBoard />} />
                 </div>
             </div>
         </div>

@@ -10,18 +10,19 @@ import { copyClipboard, prettierPublickey } from "../utils/ManageWalletAccount";
 import { removeItemLocalStorage } from "../utils/ManageLocalStorage";
 import { ArrowRightStartOnRectangleIcon, LinkIcon } from "@heroicons/react/16/solid";
 import { useWallet } from "../hooks/useWallet";
-import { useBalance } from "../utils/Utilities";
+import { fetchBalanceSFC, formatConverter, getListTokenFromWallet, getTokenMetadata } from "../utils/Utilities";
 import { SOLANA_UNIT, SOLANA_PRICE } from "../constants/_solana_var";
-import { formatConverter } from "../utils/Tools";
 import { depositAsset, withdrawAsset } from "../utils/DepositAndWithdraw";
 import { AdminAuthor } from "../config/programConfig";
 import { ActionHandleAsset } from "../constants/constant";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const DrawerRight: FC = () => {
     const { state, dispatch } = useWallet();
     const [openRight, setOpenRight] = useState(false);
     const openDrawerRight = () => setOpenRight(true);
     const closeDrawerRight = () => setOpenRight(false);
+    const [balanceSOLlamport, setBalanceSOLlamport] = useState(0);
     const [action, setAction] = useState<ActionHandleAsset | null>(null);
 
     const userPublickey = state.myPublicKey.publicKey;
@@ -72,11 +73,24 @@ const DrawerRight: FC = () => {
                 setAction(null);
                 break;
         }
+
+        if (userPublickey) {
+            (async () => {
+                try {
+                    const fetchSOLbalance = await fetchBalanceSFC(userPublickey);
+                    setBalanceSOLlamport(fetchSOLbalance !== undefined ? fetchSOLbalance : 0); // Handle undefined
+                    getListTokenFromWallet(userPublickey);
+                    getTokenMetadata(userPublickey);
+                } catch (error) {
+                    console.error('Error fetching balance:', error);
+                    setBalanceSOLlamport(0); // Optionally set balance to null or handle the error accordingly
+                }
+            })();
+        }
         setAction(null);
     }, [action, userPublickey, walletName]);
 
-    const balance = useBalance();
-    const balanceToUsd = (balance * SOLANA_PRICE).toFixed(2);
+    const balanceSOL = balanceSOLlamport / LAMPORTS_PER_SOL;
 
     return (
         <Fragment>
@@ -99,7 +113,7 @@ const DrawerRight: FC = () => {
                                 className="w-12 h-12 rounded-full mr-8px"
                             />
                             <div>
-                                {balance + " " + SOLANA_UNIT}
+                                {balanceSOL + " " + SOLANA_UNIT}
                                 <div>{walletPrettier}</div>
                             </div>
                         </div>
@@ -123,8 +137,8 @@ const DrawerRight: FC = () => {
                 </div>
                 <Typography color="gray" className="pr-4 font-normal">
                     <div>
-                        <div className="text-fs-lg">{formatConverter(balanceToUsd)}</div>
-                        <div>~{balance.toFixed(2)} {SOLANA_UNIT}</div>
+                        <div className="text-fs-lg">{formatConverter(balanceSOL * SOLANA_PRICE)}</div>
+                        <div>~{balanceSOL.toFixed(2)} {SOLANA_UNIT}</div>
                     </div>
                 </Typography>
                 {userPublickey === AdminAuthor && (

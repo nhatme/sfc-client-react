@@ -30,7 +30,6 @@ const fetchPDAfromVault = () => {
         [Buffer.from("vault")], new PublicKey(ProgramId)
     );
     return vaultPDA;
-
 }
 
 const fetchTargetAddress = async (programTarget: Program, pda: PublicKey) => {
