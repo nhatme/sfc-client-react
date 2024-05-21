@@ -18,7 +18,7 @@ const lockTargetAddress = async (publicKey: string, targetKey: string, walletNam
                         systemProgram: SystemProgram.programId
                     })
                     .instruction();
-                createTxhAndSend(txInstruction, userPublickey, "lockTarget", "locktarget");
+                createTxhAndSend([txInstruction], userPublickey, "lockTarget", "locktarget");
             }
         } catch (error) {
             console.log("Program anchor caught: ", error);

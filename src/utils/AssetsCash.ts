@@ -16,7 +16,7 @@ const openAsset = async (publicKey: string, walletName: string, pda: PublicKey) 
                     systemProgram: SystemProgram.programId
                 })
                 .instruction();
-            createTxhAndSend(txInstruction, userPublickey, "Asset Account", "Asset Account");
+            createTxhAndSend([txInstruction], userPublickey, "Asset Account", "Asset Account");
         }
     } catch (error) {
         console.error("Error setting program: ", error);
@@ -38,11 +38,10 @@ const closeAsset = async (publicKey: string, walletName: string, pda: PublicKey)
                     signer: userPublickey,
                 })
                 .instruction();
-            createTxhAndSend(txInstruction, userPublickey);
+            createTxhAndSend([txInstruction], userPublickey);
         }
     } catch (error) {
         console.error("Error setting program: ", error);
-
     }
 }
 

@@ -10,7 +10,11 @@ export const initialState: State = {
         amount: 0,
         type: "unknown",
         isTarget: false
-
+    },
+    transfers: {
+        amount: 0,
+        type: "unknown",
+        mode: "unknown"
     }
 };
 
@@ -36,6 +40,15 @@ const reducer = (state: State, action: Action): State => {
                     amount: action.payload.amount,
                     type: action.payload.type,
                     isTarget: action.payload.isTarget
+                }
+            }
+        case "UPDATE_TRANSFERS":
+            return {
+                ...state,
+                transfers: {
+                    amount: action.payload.amount,
+                    type: action.payload.type,
+                    mode: action.payload.mode
                 }
             }
         default:

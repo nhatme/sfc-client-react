@@ -1,4 +1,4 @@
-import { ActionHandleButton } from "../constants/constant";
+import { ActionHandleButton, ModeTransfer } from "../constants/constant";
 
 export type WalletName = "Phantom" | "Solflare" | "Backpack" | "Unknown";
 
@@ -12,6 +12,11 @@ export interface State {
         amount: number,
         type: ActionHandleButton,
         isTarget: boolean
+    },
+    transfers: {
+        amount: number,
+        type: ActionHandleButton,
+        mode: ModeTransfer
     }
 }
 
@@ -39,4 +44,13 @@ interface UpdateAmountMintAndBurn {
     }
 }
 
-export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn; 
+interface UpdateTransfers {
+    type: 'UPDATE_TRANSFERS';
+    payload: {
+        amount: number,
+        type: ActionHandleButton,
+        mode: ModeTransfer
+    }
+}
+
+export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers; 

@@ -4,7 +4,7 @@ import { Board } from "../components/Board";
 import { CircleStackIcon } from "@heroicons/react/24/outline";
 import { BoltIcon, CheckIcon, ClipboardDocumentListIcon, QuestionMarkCircleIcon } from "@heroicons/react/16/solid";
 import { ButtonBuilder } from "../components/Button";
-import { InputQuantityMintBurn } from "../components/Inputs";
+import { InputQtyMintBurn, InputQtyTransfer } from "../components/Inputs";
 import { StatusStProps } from "../interfaces/CustomProps";
 import { useWallet } from "../hooks/useWallet";
 import { prettierPublickey } from "../utils/ManageWalletAccount";
@@ -12,20 +12,21 @@ import { closeAsset, openAsset } from "../utils/AssetsCash";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { fetchPDA } from "../utils/coral";
 import { PublicKey } from "@solana/web3.js";
-import { ActionHandleButton } from "../constants/constant";
+import { ActionHandleButton, ModeTransfer } from "../constants/constant";
 import { Web3Dialog } from "../components/Dialog";
 import { Switch } from "@material-tailwind/react";
 
 const SettingBoard: FC = () => {
     const { state, dispatch } = useWallet();
     const phantomAdapter = new PhantomWalletAdapter();
-    const [action, setAction] = useState<ActionHandleButton | null>(null);
+    const [action, setAction] = useState<ActionHandleButton>("unknown");
+    const [switchMode, setSwitchMode] = useState<ModeTransfer>("unknown");
     const [checkedTarget, setCheckedTarget] = useState(false);
     const [actionMintBurn, setActionMintBurn] = useState<ActionHandleButton | null>(null);
-
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
     const type = state.mintAndBurn.type;
+    const typeTransfer = state.transfers.type;
 
     const handleSwitch = () => {
         setCheckedTarget(prevCheckedTarget => !prevCheckedTarget);
@@ -51,6 +52,24 @@ const SettingBoard: FC = () => {
         setActionMintBurn("burn");
     }
 
+    const handleTransfer = () => {
+        dispatch({ type: "UPDATE_TRANSFERS", payload: { amount: 0, type: "transfer", mode: "unknown" } });
+    }
+
+    const handleSwitchModeAsset = () => {
+        setSwitchMode("asset");
+        dispatch({ type: "UPDATE_TRANSFERS", payload: { amount: 0, type: "transfer", mode: "asset" } });
+    }
+    const handleSwitchModeSFC = () => {
+        setSwitchMode("SFC");
+        dispatch({ type: "UPDATE_TRANSFERS", payload: { amount: 0, type: "transfer", mode: "SFC" } });
+
+    }
+    const handleSwitchModeLP = () => {
+        setSwitchMode("LP");
+        dispatch({ type: "UPDATE_TRANSFERS", payload: { amount: 0, type: "transfer", mode: "LP" } });
+    }
+
     useEffect(() => {
         const connectAndOpenAsset = async () => {
             if (userPublickey && walletName) {
@@ -65,9 +84,6 @@ const SettingBoard: FC = () => {
                 }
             }
         };
-
-        console.log(checkedTarget);
-
         const connectAndCloseAsset = async () => {
             if (userPublickey && walletName) {
                 if (!phantomAdapter.connected) {
@@ -90,11 +106,11 @@ const SettingBoard: FC = () => {
                 connectAndCloseAsset();
                 break;
             default:
-                setAction(null);
+                setAction("unknown");
                 break;
         }
-        setAction(null);
-    }, [action, checkedTarget, actionMintBurn, userPublickey, walletName]);
+        setAction("unknown");
+    }, [action, checkedTarget, actionMintBurn, switchMode, userPublickey, walletName]);
 
     return (
         <div className={`mx-16px ${userPublickey ? "" : ""} border-1 rounded-3xl p-16px shadow-md bg-gray-50`}>
@@ -112,7 +128,6 @@ const SettingBoard: FC = () => {
                     </div>
                     <div className="flex flex-col gap-4px mt-12px">
                         <div className="text-fs-14 italic font-bold text-purple-500">Mint & Burn SFC token</div>
-
                         <div className="flex items-center justify-between gap-6px">
                             <div className="flex items-center gap-8px">
                                 <div className="flex gap-6px">
@@ -134,32 +149,55 @@ const SettingBoard: FC = () => {
                             ) : ""}
                         </div>
                         <div>
-                            <InputQuantityMintBurn />
+                            <InputQtyMintBurn />
+                        </div>
+                    </div>
+                    <div className="border-b-1 border-gray-border my-32px"></div>
+                    <div className="">
+                        <div className="border-1 mb-12px rounded-lg p-8px bg-gradient-117-to-l">
+                            <div className="flex mb-4px">
+                                {typeTransfer == "transfer" ? (
+                                    <ButtonBuilder
+                                        onClick={handleTransfer}
+                                        border="gray-border" btnType="circle" paddingSize="Medium" sizeVariant="medium" btnName="Transfer" cursor="pointer"
+                                        classNameCustom="text-white flex gap-4px bg-purple-500" icon={<BoltIcon className="h-5 w-5 text-white" />} />
+                                ) : (
+                                    <ButtonBuilder
+                                        onClick={handleTransfer}
+                                        border="gray-border" btnType="circle" paddingSize="Medium" sizeVariant="medium" btnName="Transfer" cursor="pointer"
+                                        classNameCustom="text-purple-500 flex gap-4px" icon={<BoltIcon className="h-5 w-5 text-purple-500" />} />
+                                )}
+                            </div>
+                            {typeTransfer == "transfer" && (
+                                <div className="flex items-center gap-8px">
+                                    <div className="text-xl italic rounded-lg bg-purple-200 py-4px px-12px font-bold">
+                                        <Switch checked={switchMode === "asset"} onClick={handleSwitchModeAsset} label="Asset" color="purple" ripple={true} crossOrigin={undefined} style={{ color: "white" }} />
+                                    </div>
+                                    <div className="text-xl italic rounded-lg bg-purple-200 py-4px px-12px font-bold">
+                                        <Switch checked={switchMode === "SFC"} onClick={handleSwitchModeSFC} label="SFC" color="purple" ripple={true} crossOrigin={undefined} />
+                                    </div>
+                                    <div className="text-xl italic rounded-lg bg-purple-200 py-4px px-12px font-bold ">
+                                        <Switch checked={switchMode === "LP"} onClick={handleSwitchModeLP} label="LP" color="purple" ripple={true} crossOrigin={undefined} />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <InputQtyTransfer />
                         </div>
                     </div>
                 </div>
             ) : <div>
                 <Web3Dialog />
-                <h3>Connect wallet before use this feature ~~</h3>
+                <h3 className="text-center mt-12px">Connect wallet before use this feature ~~</h3>
             </div>}
-            <div className="border-b-1 border-gray-border my-32px"></div>
-            <div className="">
-                <div className="flex mb-4px">
-                    <ButtonBuilder border="gray-border" btnType="circle" paddingSize="Medium" sizeVariant="medium" btnName="Transfer" cursor="pointer"
-                        classNameCustom="text-purple-500 flex gap-4px" icon={<BoltIcon className="h-5 w-5 text-purple-500" />} />
-                </div>
-                <div>
-                    <h5 style={{ color: "red" }}>* Maintain</h5>
-                    {/* <InputQuantityTransfer /> */}
-                </div>
-            </div>
         </div>
     )
 }
 
-const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon }) => {
+const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon, classNameCustom }) => {
     return (
-        <div className="flex justify-between text-purple-500 font-bold text-fs-sm">
+        <div className={`flex justify-between ${classNameCustom} text-purple-500 text-fs-sm`}>
             <div className="flex items-center gap-2px">{name}{icon}</div>
             <div>{value + " " + unit}</div>
         </div>
@@ -199,12 +237,17 @@ const StatusBoard: FC = () => {
                     />
                 </div>
                 <div className="border-r-1 border-gray-border mx-16px"></div>
-                <div className="flex flex-col gap-4px">
-                    <StatusOfSt name="Account name: " value="Meow Meow Meow" unit="" />
-                    <ButtonBuilder border="gray-border" btnName={`${userPrettyPublickey === undefined ? "" : userPrettyPublickey}`} btnType="circle" paddingSize="Medium" sizeVariant="small"
-                        classNameCustom="flex items-center gap-16px text-purple-500" icon={<ClipboardDocumentListIcon className="h-5 w-5 text-purple-500 cursor-pointer" />}
-                    />
-                    <div className="flex gap-4px">
+                <div className="">
+                    <div className="border-1 p-12px rounded-lg shadow-md bg-purple-500">
+                        <StatusOfSt name="Account name: " value="Meow Meow Meow" unit="" classNameCustom="text-white font-medium" />
+                        <div className="flex items-center gap-8px text-white font-medium">
+                            {userPrettyPublickey === undefined ? "" : userPrettyPublickey}
+                            <div>
+                                <ClipboardDocumentListIcon className="w-5 h-5 cursor-pointer" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex gap-4px mt-12px">
                         <img
                             className="h-48px w-48px rounded-full object-cover object-center shadow-xl"
                             src="https://www.economywatch.com/wp-content/uploads/2021/06/solana-1.jpg"

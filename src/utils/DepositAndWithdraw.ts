@@ -24,7 +24,7 @@ const depositAsset = async (userPublickey: string, walletName: string, amountInp
             })
             .instruction();
         try {
-            createTxhAndSend(txInstruction, userPubkey, "deposit catch", "deposit alert");
+            createTxhAndSend([txInstruction], userPubkey, "deposit catch", "deposit alert");
         } catch (error) {
             console.log("deposit error: ", error);
         }
@@ -52,7 +52,7 @@ const withdrawAsset = async (userPublickey: string, walletName: string, amountIn
             })
             .instruction();
         try {
-            createTxhAndSend(txInstruction, userPubkey, "withdraw catch", "withdraw alert");
+            createTxhAndSend([txInstruction], userPubkey, "withdraw catch", "withdraw alert");
         } catch (error) {
             console.log("withdraw error: ", error);
         }

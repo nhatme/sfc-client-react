@@ -77,9 +77,12 @@ const signAndSendTransaction = async (transaction: Transaction, userPublickey: P
     }
 }
 
-const createTxhAndSend = async (txInstruction: TransactionInstruction, userPublickey: PublicKey, catchMessageTitle?: string, alertMessage?: string) => {
+const createTxhAndSend = async (txInstruction: TransactionInstruction[], userPublickey: PublicKey, catchMessageTitle?: string, alertMessage?: string) => {
     try {
-        const transaction = new Transaction().add(txInstruction);
+        const transaction = new Transaction();
+        for (const instruction of txInstruction) {
+            transaction.add(instruction);
+        }
         await signAndSendTransaction(transaction, userPublickey, alertMessage);
     } catch (error) {
         console.log(`${catchMessageTitle} : ${error}`);

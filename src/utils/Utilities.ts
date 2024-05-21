@@ -37,7 +37,7 @@ const getTokenMetadata = async (userPublickey: string) => {
 }
 
 const formatConverter = (number: any): string => {
-    const formatNum = new Intl.NumberFormat("us-US", { style: 'currency', currency: 'USD' }).format(number)
+    const formatNum = new Intl.NumberFormat("vi-VN").format(number)
     return formatNum;
 }
 

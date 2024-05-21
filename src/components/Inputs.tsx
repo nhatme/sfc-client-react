@@ -7,9 +7,12 @@ import { lockTargetAddress } from "../utils/LockTargetAddress";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { PublicKey } from "@solana/web3.js";
 import { fetchPDA } from "../utils/coral";
-import { ActionHandleButton } from "../constants/constant";
+import { ActionHandleButton, ModeTransfer } from "../constants/constant";
 import { burnTokenSFC, burnTokenSFCTarget, mintTokenFromAsset, mintTokenSFCTarget } from "../utils/MintAndBurn";
 import { Web3Dialog } from "./Dialog";
+import { transferAssetTarget } from "../utils/Transfer";
+import { SFCprice } from "../config/programConfig";
+import { formatConverter } from "../utils/Utilities";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -64,7 +67,6 @@ const InputTargetAddress: FC = () => {
                 } else {
                     console.log("PDA is not a publickey format");
                 }
-                // console.log(pda.toString());
             }
         };
 
@@ -99,8 +101,8 @@ const InputTargetAddress: FC = () => {
  * 
  * With w-full of input
 */
-const InputQuantityMintBurn: FC = () => {
-    const { state, dispatch } = useWallet();
+const InputQtyMintBurn: FC = () => {
+    const { state } = useWallet();
     const [amount, setAmount] = useState<string>("0");
     const [action, setAction] = useState<ActionHandleButton | null>(null);
     const userPublickey = state.myPublicKey.publicKey;
@@ -115,10 +117,15 @@ const InputQuantityMintBurn: FC = () => {
             setAmount("0");
             return;
         }
-        // Regex to match non-numeric characters
-        const regex = /[^0-9]/g;
-        // Remove non-numeric characters
-        const sanitizedValue = inputValue.replace(regex, '');
+        // Regex to match non-numeric characters except for the decimal point
+        const regex = /[^0-9.]/g;
+        // Remove non-numeric characters except for the decimal point
+        let sanitizedValue = inputValue.replace(regex, '');
+        // Ensure there is only one decimal point
+        const decimalCount = (sanitizedValue.match(/\./g) || []).length;
+        if (decimalCount > 1) {
+            sanitizedValue = sanitizedValue.replace(/\.+$/, '');
+        }
         setAmount(sanitizedValue);
     };
 
@@ -166,13 +173,10 @@ const InputQuantityMintBurn: FC = () => {
             burnToken();
         } else if (action === "mint" && isTarget == true) {
             mintTokenTarget();
-            console.log("target is true so fucking mint");
         } else if (action === "burn" && isTarget == true) {
             burnTokenTarget();
-            console.log("target is true so fucking burn");
         }
     }, [action, typeAction, isTarget, userPublickey, walletName]);
-
     return (
         <>
             {typeAction !== "unknown" && (
@@ -182,7 +186,7 @@ const InputQuantityMintBurn: FC = () => {
                             value={amount === "0" ? "" : amount}
                             onChange={handleInputChange}
                             type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
-                        <div className="text-fs-12 font-medium text-gray-200 text-right">~ 100,000 VND</div>
+                        <div className="text-fs-12 font-medium text-gray-200 text-right">~ {amount && formatConverter(Number(amount) * SFCprice)} VND</div>
                     </div>
                     <ButtonBuilder
                         onClick={handleClickMintBurn}
@@ -198,4 +202,117 @@ const InputQuantityMintBurn: FC = () => {
     )
 }
 
-export { InputCustom, InputTargetAddress, InputQuantityMintBurn };
+const InputQtyTransfer: FC = () => {
+    const { state } = useWallet();
+    const [amount, setAmount] = useState<string>("0");
+    const [switchState, setStateSwitch] = useState<ModeTransfer>("unknown");
+    const [convertMoney, setConvertMoney] = useState<string>("");
+    const userPublickey = state.myPublicKey.publicKey;
+    const walletName = state.myPublicKey.walletType;
+    const typeAction = state.transfers.type;
+    const switchMode = state.transfers.mode;
+
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+        if (inputValue == '') {
+            setAmount("0");
+            setConvertMoney("");
+            return;
+        }
+        // Regex to match non-numeric characters except for the decimal point
+        const regex = /[^0-9.]/g;
+        // Remove non-numeric characters except for the decimal point
+        let sanitizedValue = inputValue.replace(regex, '');
+        // Ensure there is only one decimal point
+        const decimalCount = (sanitizedValue.match(/\./g) || []).length;
+        if (decimalCount > 1) {
+            sanitizedValue = sanitizedValue.replace(/\.+$/, '');
+        }
+        setAmount(sanitizedValue);
+
+        // Update convertMoney whenever amount changes
+        const numericValue = parseFloat(sanitizedValue);
+        if (!isNaN(numericValue)) {
+            setConvertMoney(convertAmount(numericValue, switchMode));
+        } else {
+            setConvertMoney("");
+        }
+    };
+
+    const handleClickTransfer = () => {
+        if (amount === "0") return;
+        setStateSwitch(switchMode);
+    }
+
+    useEffect(() => {
+        const transferAsset = async () => {
+            if (userPublickey && walletName) {
+                transferAssetTarget(userPublickey, walletName, Number(amount));
+            }
+            setStateSwitch("unknown");
+        }
+
+        switch (switchState) {
+            case "asset":
+                console.log("asset");
+                transferAsset();
+                break;
+            case "SFC":
+                console.log("sfc");
+                break;
+            case "LP":
+                console.log("lp");
+                break;
+            default:
+                setStateSwitch("unknown");
+                break;
+        }
+    }, [switchMode, amount, walletName, userPublickey, switchState]);
+
+    useEffect(() => {
+        const numericValue = parseFloat(amount);
+        if (!isNaN(numericValue)) {
+            setConvertMoney(convertAmount(numericValue, switchMode));
+        } else {
+            setConvertMoney("");
+        }
+    }, [switchMode, amount]);
+
+    const convertAmount = (amount: number, mode: ModeTransfer): string => {
+        switch (mode) {
+            case "asset":
+                return formatConverter(amount);
+            case "SFC":
+                return formatConverter(amount * SFCprice);
+            case "LP":
+                return "";
+            default:
+                return "";
+        }
+    };
+
+    return (
+        <>
+            {typeAction == "transfer" && (
+                <div>
+                    <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                        <input
+                            value={amount === "0" ? "" : amount}
+                            onChange={handleInputChange}
+                            type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                        <div className="text-fs-12 font-medium text-gray-200 text-right">~ {convertMoney ? `${convertMoney} VND` : ""}</div>
+                    </div>
+                    <ButtonBuilder
+                        onClick={handleClickTransfer}
+                        btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                        classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500 cursor-pointer"}`}
+                        cursor="not-allowed"
+                        btnName="Enter an amount" border="gray-border"
+                    />
+                </div>
+            )}
+        </>
+    )
+}
+
+export { InputCustom, InputTargetAddress, InputQtyMintBurn, InputQtyTransfer };

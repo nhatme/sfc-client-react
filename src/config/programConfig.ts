@@ -5,9 +5,10 @@ export const AdminAuthor = "Cy66eHC9PcTb9wqwU77vyVievDyzYSwdbFkysDKkBYii";
 export const SplToken = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 /**
  * for @sfc token
+ * 1 @sfc = 10.000 VND
  */
 export const MintAddress = "4TndGJA5DeL6xZgdPLK3VETy6MVVuZgUWEdPk4KUMNCQ";
-
+export const SFCprice = 10000;
 /**
  * for @devnet
  */

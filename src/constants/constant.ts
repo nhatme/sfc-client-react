@@ -8,5 +8,6 @@ export type Border = 'gray-border' | 'black-border';
 export type WalletExtensionName = "Phantom" | "Okx" | "Solflare" | "Backpack" | "Unknown";
 export type WalletWatching = "WALLET_EXTENSION_WATCHING";
 export type WalletPrevious = "open-wallet-previous";
-export type ActionHandleButton = "open" | "close" | "mint" | "burn" | "unknown";
+export type ActionHandleButton = "open" | "close" | "mint" | "burn" | "transfer" | "unknown";
 export type ActionHandleAsset = "deposit" | "withdraw";
+export type ModeTransfer = "asset" | "SFC" | "LP" | "unknown";

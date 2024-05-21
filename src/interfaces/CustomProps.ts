@@ -63,7 +63,8 @@ export interface StatusStProps {
     name: string,
     value?: string,
     unit?: string,
-    icon?: JSX.Element
+    icon?: JSX.Element,
+    classNameCustom?: string
 }
 
 export interface ButtonBuilderProps {
@@ -125,13 +126,6 @@ function updateButtonPaddingAndRounded(btnType: typeOfButton): any {
 export interface StatePublicKey {
     publickey: string,
     disconnect: () => void,
-}
-
-export interface WalletContextProps {
-    phantomStatePublickey: any;
-    setPhantomPublickey: Dispatch<SetStateAction<any>>;
-    solflareStatePublickey: any;
-    setSolflarePublickey: Dispatch<SetStateAction<any>>; // Define the correct type for the setter
 }
 
 export { updateButtonPaddingAndRounded };

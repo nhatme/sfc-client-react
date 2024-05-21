@@ -4,6 +4,7 @@ import { anchorProgram, initAnchorProvider, createTxhAndSend, fetchPDA, fetchPDA
 import { providerPhantomWallet } from "./WalletProvider";
 import { BN } from "@coral-xyz/anchor";
 import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
+import { transferAssets } from "./Transfer";
 
 const mintAddress = new PublicKey(MintAddress);
 const [vaultPDA, vaultBump] = fetchPDAfromVault();
@@ -34,7 +35,7 @@ const mintTokenFromAsset = async (userPublickey: string, walletName: string, amo
                     authority: vaultPDA
                 })
                 .instruction();
-            createTxhAndSend(txInstruction, userPubkey, "Minting", "Minted Success! We're directing to explorer after 3 seconds");
+            createTxhAndSend([txInstruction], userPubkey, "Minting", "Minted Success! We're directing to explorer after 3 seconds");
         }
     } catch (error) {
         console.log("Error Instruction: ", error);
@@ -70,7 +71,7 @@ const mintTokenSFCTarget = async (userPublickey: string, walletName: string, amo
                     authority: vaultPDA
                 })
                 .instruction();
-            createTxhAndSend(txInstruction, userPubkey, "Minting to target", "Minted target Success! We're directing to explorer after 3 seconds");
+            createTxhAndSend([txInstruction], userPubkey, "Minting to target", "Minted target Success! We're directing to explorer after 3 seconds");
         } catch (error) {
             console.log("Error Instruction: ", error);
         }
@@ -101,7 +102,7 @@ const burnTokenSFC = async (userPublickey: string, walletName: string, amountInp
                     token: new PublicKey(SplToken),
                 })
                 .instruction();
-            createTxhAndSend(txInstruction, userPubkey, "Burning", "Burnt Success! We're directing to explorer after 3 seconds");
+            createTxhAndSend([txInstruction], userPubkey, "Burning", "Burnt Success! We're directing to explorer after 3 seconds");
         }
     } catch (error) {
         console.log("Error Instruction: ", error);
@@ -114,7 +115,6 @@ const burnTokenSFCTarget = async (userPublickey: string, walletName: string, amo
     const tokenAccount = await getOrCreateAssociatedTokenAccount(
         connection, providerPhantomWallet, mintAddress, userPubkey
     );
-    console.log(tokenAccount.address.toString());
     const amount = (Number(amountInput).valueOf()) * LAMPORTS_PER_SOL;
     const amountBN = new BN(amount);
     initAnchorProvider(walletName);
@@ -133,7 +133,9 @@ const burnTokenSFCTarget = async (userPublickey: string, walletName: string, amo
                     token: new PublicKey(SplToken),
                 })
                 .instruction();
-            createTxhAndSend(txInstruction, userPubkey, "Burning to target", "Burnt target Success! We're directing to explorer after 3 seconds");
+            const transferInstruction = await transferAssets(userPublickey, walletName, amount);
+            if (transferInstruction)
+                createTxhAndSend([txInstruction, transferInstruction], userPubkey, "Burning to target", "Burnt target Success! We're directing to explorer after 3 seconds");
         } catch (error) {
             console.log("Error Instruction: ", error);
         }
