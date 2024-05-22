@@ -15,7 +15,18 @@ export const initialState: State = {
         amount: 0,
         type: "unknown",
         mode: "unknown"
-    }
+    },
+    listToken: [
+        {
+            mintAddress: "",
+            balance: 0,
+            tokenName: '',
+            tokenSymbol: '',
+            tokenImg: ''
+
+        },
+
+    ]
 };
 
 const reducer = (state: State, action: Action): State => {
@@ -43,13 +54,24 @@ const reducer = (state: State, action: Action): State => {
                 }
             }
         case "UPDATE_TRANSFERS":
+            const { amount, type, mode } = action.payload;
             return {
                 ...state,
                 transfers: {
-                    amount: action.payload.amount,
-                    type: action.payload.type,
-                    mode: action.payload.mode
+                    amount: amount,
+                    type: type,
+                    mode: mode
                 }
+            }
+        case "UPDATE_BALANCE_TOKEN_WALLET":
+            const { mintAddress, balance, tokenName, tokenSymbol, tokenImg } = action.payload;
+            return {
+                ...state,
+                listToken: [
+                    ...state.listToken,
+                    { mintAddress, balance, tokenName, tokenSymbol, tokenImg }
+                ]
+
             }
         default:
             return state;

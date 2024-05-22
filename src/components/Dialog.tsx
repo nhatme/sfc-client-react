@@ -11,45 +11,70 @@ import {
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ButtonBuilder } from "./Button";
 import { DrawerRight } from "./Drawer";
-import { initWalletLocalStorage } from "../utils/ManageLocalStorage";
+import { initWalletLocalStorage, removeItemLocalStorage } from "../utils/ManageLocalStorage";
 import { useWallet } from "../hooks/useWallet";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
+import { disConnect, providerPhantomWallet } from "../utils/WalletProvider";
+import { getListTokenFromWallet } from "../utils/Utilities";
 
 const Web3Dialog: FC = () => {
-    const [phantomAdapter, setPhantomAdapter] = useState<PhantomWalletAdapter | null>(null);
-    const [solflareAdapter, setSolflareAdapter] = useState<SolflareWalletAdapter | null>(null);
+    const [phantomAdapter, setPhantomAdapter] = useState<any | null>(null);
+    const [solflareAdapter, setSolflareAdapter] = useState<any | null>(null);
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = () => setOpen((cur) => !cur);
     const [loading, setLoading] = useState<boolean>(false);
     const { state, dispatch } = useWallet();
+    const userPublicKey = state.myPublicKey.publicKey;
 
     useEffect(() => {
         const phantomAdapter = new PhantomWalletAdapter();
-        setPhantomAdapter(phantomAdapter);
         const solflareAdapter = new SolflareWalletAdapter();
+        setPhantomAdapter(phantomAdapter);
         setSolflareAdapter(solflareAdapter);
 
-        phantomAdapter.on("connect", () => {
-            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: phantomAdapter.publicKey?.toString(), walletType: "Phantom" } });
-            initWalletLocalStorage("Phantom", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
-        });
-
-        phantomAdapter.on("readyStateChange", (event) => {
-            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: event.toString(), walletType: "Phantom" } });
-        })
-
-        solflareAdapter.on("connect", () => {
-            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: solflareAdapter.publicKey?.toString(), walletType: "Solflare" } });
-            initWalletLocalStorage("Solflare", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
-        });
-
-        return () => {
-            phantomAdapter.disconnect();
-            solflareAdapter.disconnect();
+        if (userPublicKey) {
+            (async () => {
+                const lists = await getListTokenFromWallet(userPublicKey);
+                console.log(lists);
+            })();
         }
 
-    }, []);
+        const handlePhantomConnect = () => {
+            dispatch({
+                type: "UPDATE_PUBLICKEY_ACTION",
+                payload: { publicKey: phantomAdapter.publicKey?.toString(), walletType: "Phantom" }
+            });
+            initWalletLocalStorage("Phantom", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+        };
+
+        const handleSolflareConnect = () => {
+            dispatch({
+                type: "UPDATE_PUBLICKEY_ACTION",
+                payload: { publicKey: solflareAdapter.publicKey?.toString(), walletType: "Solflare" }
+            });
+            initWalletLocalStorage("Solflare", "WALLET_EXTENSION_WATCHING", "open-wallet-previous");
+        };
+
+        const handlePhantomReadyStateChange = () => {
+            console.log("uar alo");
+            disConnect(providerPhantomWallet);
+            removeItemLocalStorage();
+        };
+
+        phantomAdapter.on("connect", handlePhantomConnect);
+        solflareAdapter.on("connect", handleSolflareConnect);
+        phantomAdapter.on("readyStateChange", handlePhantomReadyStateChange);
+
+        return () => {
+            phantomAdapter.off("connect", handlePhantomConnect);
+            solflareAdapter.off("connect", handleSolflareConnect);
+            phantomAdapter.off("readyStateChange", handlePhantomReadyStateChange);
+
+            phantomAdapter.disconnect();
+            solflareAdapter.disconnect();
+        };
+    }, [dispatch, userPublicKey]);
 
     const connect = async (adapter: any) => {
         try {

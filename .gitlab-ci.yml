@@ -1,0 +1,6 @@
+build project:
+  image: node:20.12.2
+  script: 
+    - yarn insall
+    # - yarn test
+    - yarn build

@@ -1,60 +1,41 @@
-import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js"
+import { LAMPORTS_PER_SOL, PublicKey, TokenAccountsFilter } from "@solana/web3.js"
 import { anchorProgram, initAnchorProvider, fetchPDA, createTxhAndSend } from "./coral";
 import { BN } from "@coral-xyz/anchor";
+import { MintAddress, SplToken, connection } from "../config/programConfig";
 
 const transferSFCtoken = async (userPublickey: string, walletName: string, amountInput: number) => {
-    const userPubkey = new PublicKey(userPublickey);
-    const [pda] = fetchPDA(userPubkey, "target");
-    initAnchorProvider(walletName);
-    const program = await anchorProgram();
-    if (program) {
-        const userTarget = await program.account.userTarget.fetch(pda)
-        const targetKey = userTarget.assertTarget as PublicKey;
-        try {
-            const amount = new BN(amountInput * LAMPORTS_PER_SOL);
-            const txInstruction = await program.methods
-                .tranferSol(amount)
-                .accounts({
-                    target: targetKey,
-                    signer: userPubkey,
-                    systemProgram: SystemProgram.programId
-                })
-                .instruction();
-            return txInstruction;
-        } catch (error) {
-            console.log(error);
-        }
-    }
-}
-
-const transferAssets = async (userPublickey: string, walletName: string, amountInput: number) => {
+    alert(`You transfering to this target`);
+    const amount = new BN(amountInput * LAMPORTS_PER_SOL);
     const userPubkey = new PublicKey(userPublickey);
     const [targetPDA] = fetchPDA(userPubkey, "target");
     initAnchorProvider(walletName);
     const program = await anchorProgram();
     const userTarget = await program?.account.userTarget.fetch(targetPDA);
-    const targetAddress = (userTarget?.assetTarget) as PublicKey;
-    const [receivePDA] = fetchPDA(targetAddress, "client");
-    const [fromPDA] = fetchPDA(userPubkey, "client");
-    const amountBN = new BN(amountInput / 100000);
-    alert(`Transfer Asset burnt ${amountInput} to target wallet`);
+    const targetKey = userTarget?.assetTarget as PublicKey;
+    const tokenFiltSFC: TokenAccountsFilter = {
+        mint: new PublicKey(MintAddress),
+        programId: new PublicKey(SplToken)
+    }
+    const fromTokenAcc = await connection.getParsedTokenAccountsByOwner(userPubkey, tokenFiltSFC);
+    const toTokenAcc = await connection.getParsedTokenAccountsByOwner(targetKey, tokenFiltSFC);
     try {
         const txInstruction = await program?.methods
-            .tranferAsset(amountBN)
+            .tranferToken(amount, true)
             .accounts({
-                target: targetPDA,
-                fromclient: fromPDA,
-                toclient: receivePDA,
-                signer: userPubkey
+                token: new PublicKey(SplToken),
+                fromtoken: fromTokenAcc.value[0].pubkey,
+                totoken: toTokenAcc.value[0].pubkey,
+                signer: userPubkey,
             })
             .instruction();
-        return txInstruction;
+        if (txInstruction)
+            createTxhAndSend([txInstruction], userPubkey, "transfer sfc", "transfer sfc successful")
     } catch (error) {
         console.log(error);
     }
 }
 
-const transferAssetTarget = async (userPublickey: string, walletName: string, amountInput: number) => {
+const transferAssets = async (userPublickey: string, walletName: string, amountInput: number, state?: string) => {
     const userPubkey = new PublicKey(userPublickey);
     const [userTarget] = fetchPDA(userPubkey, "target");
     const [fromPDA] = fetchPDA(userPubkey, "client");
@@ -63,8 +44,14 @@ const transferAssetTarget = async (userPublickey: string, walletName: string, am
     const accountTarget = await program?.account.userTarget.fetch(userTarget);
     const targetAddress = accountTarget?.assetTarget as PublicKey;
     const [receiveTarget] = fetchPDA(targetAddress, "client");
-    const amountBN = new BN(amountInput);
-    alert(`Transfer Asset ${amountInput} to target wallet`);
+    let amountBN: BN;
+    if (state) {
+        amountBN = new BN(amountInput / 100000);
+        alert(`Transfer Asset burnt ${amountInput} to target wallet`);
+    } else {
+        amountBN = new BN(amountInput);
+        alert(`Transfer Asset ${amountInput} to target wallet`);
+    }
     try {
         const txInstruction = await program?.methods
             .tranferAsset(amountBN)
@@ -75,11 +62,15 @@ const transferAssetTarget = async (userPublickey: string, walletName: string, am
                 signer: userPubkey
             })
             .instruction();
-        if (txInstruction)
-            createTxhAndSend([txInstruction], userPubkey, "transfered", "transfered successful, 3-2-1 direct");
+        if (state) {
+            return txInstruction;
+        } else {
+            if (txInstruction)
+                createTxhAndSend([txInstruction], userPubkey, "transfered", "transfered successful, 3-2-1 direct");
+        }
     } catch (error) {
-
+        console.log(error);
     }
 }
 
-export { transferAssets, transferSFCtoken, transferAssetTarget };
+export { transferSFCtoken, transferAssets };

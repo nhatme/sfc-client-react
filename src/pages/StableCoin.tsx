@@ -11,10 +11,11 @@ import { prettierPublickey } from "../utils/ManageWalletAccount";
 import { closeAsset, openAsset } from "../utils/AssetsCash";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { fetchPDA } from "../utils/coral";
-import { PublicKey } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { ActionHandleButton, ModeTransfer } from "../constants/constant";
 import { Web3Dialog } from "../components/Dialog";
 import { Switch } from "@material-tailwind/react";
+import { fetchBalanceSOL, formatConverter, getAssetUser, getStableSFC } from "../utils/Utilities";
 
 const SettingBoard: FC = () => {
     const { state, dispatch } = useWallet();
@@ -154,7 +155,7 @@ const SettingBoard: FC = () => {
                     </div>
                     <div className="border-b-1 border-gray-border my-32px"></div>
                     <div className="">
-                        <div className="border-1 mb-12px rounded-lg p-8px bg-gradient-117-to-l">
+                        <div className="border-1 mb-12px rounded-lg p-8px bg-gradient-117-to-l shadow-md">
                             <div className="flex mb-4px">
                                 {typeTransfer == "transfer" ? (
                                     <ButtonBuilder
@@ -197,9 +198,9 @@ const SettingBoard: FC = () => {
 
 const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon, classNameCustom }) => {
     return (
-        <div className={`flex justify-between ${classNameCustom} text-purple-500 text-fs-sm`}>
-            <div className="flex items-center gap-2px">{name}{icon}</div>
-            <div>{value + " " + unit}</div>
+        <div className={`flex justify-between ${classNameCustom} text-purple-500`}>
+            <div className="flex items-center gap-2px text-fs-sm">{name}{icon}</div>
+            <div className="text-fs-md">{value + " " + unit}</div>
         </div>
     )
 }
@@ -207,18 +208,42 @@ const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon, classNameCusto
 const StatusBoard: FC = () => {
     const { state } = useWallet();
     const [userPrettyPublickey, setUserPublickey] = useState<string | undefined>(undefined);
+    const [balance, setBalance] = useState(0);
+    const [walletAsset, setWalletAsset] = useState(0);
+    const [balanceSOL, setBalanceSOL] = useState(0);
     const userPublickey = state.myPublicKey.publicKey;
+    const walletName = state.myPublicKey.walletType;
+
     useEffect(() => {
-        if (userPublickey !== undefined) {
+        if (userPublickey && walletName) {
+
+            (async () => {
+                const SOL = await fetchBalanceSOL(userPublickey);
+                if (SOL)
+                    setBalanceSOL(SOL);
+            })();
+
+            getStableSFC(userPublickey)
+                .then(balance => {
+                    if (typeof balance == "number") {
+                        setBalance(balance);
+                    }
+                }).catch(err => { setBalance(0); });
+
+            (async () => {
+                const userWalletAsset = await getAssetUser(userPublickey, walletName);
+                setWalletAsset(Number(userWalletAsset.toString()));
+            })();
             setUserPublickey(prettierPublickey(userPublickey));
         }
-    }, [userPublickey]);
+    }, [userPublickey, walletAsset, balance, balanceSOL]);
+
     return (
         <div>
             <div className="mx-16px flex flex-col gap-8px">
-                <StatusOfSt name="Tokenomics" value="100" unit="SFC" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
-                <StatusOfSt name="SOL Balance" value="100" unit="SOL" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
-                <StatusOfSt name="Asset Balance" value="100" unit="VND" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
+                <StatusOfSt name="Tokenomics" value={`${formatConverter(balance.toFixed(1))}`} unit="SFC" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
+                <StatusOfSt name="SOL Balance" value={`${formatConverter((balanceSOL / LAMPORTS_PER_SOL).toFixed(5))}`} unit="SOL" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
+                <StatusOfSt name="Asset Balance" value={`${formatConverter(walletAsset)}`} unit="VND" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
             </div>
             <div className="border-b-1 border-gray-border my-16px"></div>
             <div className="mx-16px flex justify-between">
@@ -238,16 +263,20 @@ const StatusBoard: FC = () => {
                 </div>
                 <div className="border-r-1 border-gray-border mx-16px"></div>
                 <div className="">
-                    <div className="border-1 p-12px rounded-lg shadow-md bg-purple-500">
-                        <StatusOfSt name="Account name: " value="Meow Meow Meow" unit="" classNameCustom="text-white font-medium" />
-                        <div className="flex items-center gap-8px text-white font-medium">
-                            {userPrettyPublickey === undefined ? "" : userPrettyPublickey}
-                            <div>
-                                <ClipboardDocumentListIcon className="w-5 h-5 cursor-pointer" />
+
+                    {userPublickey && (
+                        <div className="border-1 p-12px rounded-lg shadow-md bg-gradient-117-to-r">
+                            <StatusOfSt name="Account name: " value="Meow Meow Meow" unit="" classNameCustom="text-purple-500 font-medium" />
+                            <div className="flex items-center gap-8px text-purple-500 font-medium shadow-md">
+                                {userPrettyPublickey === undefined ? "" : userPrettyPublickey}
+                                <div>
+                                    <ClipboardDocumentListIcon className="w-5 h-5 cursor-pointer" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="flex gap-4px mt-12px">
+                    )}
+
+                    {/* <div className="flex gap-4px mt-12px">
                         <img
                             className="h-48px w-48px rounded-full object-cover object-center shadow-xl"
                             src="https://www.economywatch.com/wp-content/uploads/2021/06/solana-1.jpg"
@@ -258,7 +287,7 @@ const StatusBoard: FC = () => {
                             src="https://www.economywatch.com/wp-content/uploads/2021/06/solana-1.jpg"
                             alt="nature image"
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

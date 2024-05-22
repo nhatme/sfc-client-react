@@ -1,12 +1,31 @@
-import { PublicKey } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, PublicKey, TokenAccountsFilter } from '@solana/web3.js';
 import { MintAddress, SplToken, connection } from '../config/programConfig';
+import { BN } from '@coral-xyz/anchor';
+import { anchorProgram, fetchPDA, initAnchorProvider } from './coral';
 
-const fetchBalanceSFC = async (userPublickey: string) => {
+const fetchBalanceSOL = async (userPublickey: string) => {
     const publicKey = new PublicKey(userPublickey);
     try {
         return await connection.getBalance(publicKey, "confirmed");
     } catch (error) {
         console.error("Error fetching balance:", error);
+    }
+}
+
+const getStableSFC = async (userPublickey: string) => {
+    const userPubkey = new PublicKey(userPublickey);
+    const tokenFilt: TokenAccountsFilter = {
+        mint: new PublicKey(MintAddress),
+        programId: new PublicKey(SplToken)
+    }
+    const sfcToken = await connection.getTokenAccountsByOwner(userPubkey, tokenFilt);
+
+    if (sfcToken.value.length > 0) {
+        const pubblicKeyToken = sfcToken.value[0].pubkey;
+        const walletStableCoin = await connection.getTokenAccountBalance(pubblicKeyToken);
+        return new BN(walletStableCoin.value.amount) / LAMPORTS_PER_SOL;
+    } else {
+        return "this wallet doesn't have this token, deposit now!";
     }
 }
 
@@ -16,12 +35,14 @@ const getListTokenFromWallet = async (userPublickey: string) => {
         const tokenAccounts = await connection.getParsedTokenAccountsByOwner(userPubkey, {
             programId: new PublicKey(SplToken)
         });
+        let mintAddressList: string[] = [];
         tokenAccounts.value.forEach((tokenAccount) => {
             const accountData = tokenAccount.account.data;
             const tokenAmount = accountData['parsed']['info']['tokenAmount']['uiAmount'];
             const tokenMintAddress = accountData['parsed']['info']['mint'];
-            console.log(`Token Mint Address: ${tokenMintAddress}, Balance: ${tokenAmount}`);
+            mintAddressList.push(tokenMintAddress);
         });
+        return mintAddressList;
     } catch (err) {
         console.error('Error fetching token balances:', err);
     }
@@ -36,9 +57,19 @@ const getTokenMetadata = async (userPublickey: string) => {
     }
 }
 
+const getAssetUser = async (userPublickey: string, walletName: string) => {
+    const userPubkey = new PublicKey(userPublickey);
+    const [userPDA] = fetchPDA(userPubkey, "client");
+    initAnchorProvider(walletName);
+    const program = await anchorProgram();
+    const userInfo = await program?.account.userInfor.fetch(userPDA);
+    const userWalletAsset = userInfo?.assetAccount as PublicKey;
+    return userWalletAsset;
+}
+
 const formatConverter = (number: any): string => {
-    const formatNum = new Intl.NumberFormat("vi-VN").format(number)
+    const formatNum = new Intl.NumberFormat("vi-VN").format(number);
     return formatNum;
 }
 
-export { fetchBalanceSFC, formatConverter, getListTokenFromWallet, getTokenMetadata };
+export { fetchBalanceSOL, formatConverter, getListTokenFromWallet, getTokenMetadata, getStableSFC, getAssetUser };

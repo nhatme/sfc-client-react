@@ -8,9 +8,9 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { PublicKey } from "@solana/web3.js";
 import { fetchPDA } from "../utils/coral";
 import { ActionHandleButton, ModeTransfer } from "../constants/constant";
-import { burnTokenSFC, burnTokenSFCTarget, mintTokenFromAsset, mintTokenSFCTarget } from "../utils/MintAndBurn";
+import { burnTokenSFCandTarget, mintTokenFromAsset, mintTokenSFCTarget } from "../utils/MintAndBurn";
 import { Web3Dialog } from "./Dialog";
-import { transferAssetTarget } from "../utils/Transfer";
+import { transferAssets, transferSFCtoken } from "../utils/Transfer";
 import { SFCprice } from "../config/programConfig";
 import { formatConverter } from "../utils/Utilities";
 
@@ -148,7 +148,7 @@ const InputQtyMintBurn: FC = () => {
 
         const burnToken = async () => {
             if (userPublickey && walletName) {
-                await burnTokenSFC(userPublickey, walletName, Number(amount));
+                await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget);
             }
             setAction(null);
         }
@@ -162,7 +162,7 @@ const InputQtyMintBurn: FC = () => {
 
         const burnTokenTarget = async () => {
             if (userPublickey && walletName) {
-                await burnTokenSFCTarget(userPublickey, walletName, Number(amount));
+                await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget, typeAction);
             }
             setAction(null);
         }
@@ -197,7 +197,6 @@ const InputQtyMintBurn: FC = () => {
                     />
                 </div>
             )}
-
         </>
     )
 }
@@ -247,7 +246,14 @@ const InputQtyTransfer: FC = () => {
     useEffect(() => {
         const transferAsset = async () => {
             if (userPublickey && walletName) {
-                transferAssetTarget(userPublickey, walletName, Number(amount));
+                transferAssets(userPublickey, walletName, Number(amount));
+            }
+            setStateSwitch("unknown");
+        }
+
+        const transferSFC = () => {
+            if (userPublickey && walletName) {
+                transferSFCtoken(userPublickey, walletName, Number(amount));
             }
             setStateSwitch("unknown");
         }
@@ -258,6 +264,7 @@ const InputQtyTransfer: FC = () => {
                 transferAsset();
                 break;
             case "SFC":
+                transferSFC();
                 console.log("sfc");
                 break;
             case "LP":
