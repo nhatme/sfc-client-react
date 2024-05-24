@@ -13,6 +13,8 @@ import { Web3Dialog } from "./Dialog";
 import { transferAssets, transferSFCtoken } from "../utils/Transfer";
 import { SFCprice } from "../config/programConfig";
 import { formatConverter } from "../utils/Utilities";
+import { Bounce, ToastContainer } from "react-toastify";
+import { notifyError, notifyProcess, notifySuccess } from "../notification/ToastMessage";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -137,32 +139,68 @@ const InputQtyMintBurn: FC = () => {
     }
 
     useEffect(() => {
-        console.log("mint burn component", isTarget);
-        console.log('action changed to:', action);
+        // console.log("mint burn component", isTarget);
+        // console.log('action changed to:', action);
         const mintToken = async () => {
             if (userPublickey && walletName) {
-                await mintTokenFromAsset(userPublickey, walletName, Number(amount));
+                try {
+                    const txHash = await mintTokenFromAsset(userPublickey, walletName, Number(amount));
+                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                } catch (error: unknown) {
+                    if (error instanceof Error) {
+                        notifyError(<span>Transaction failed: {error.message}</span>);
+                    } else {
+                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                    }
+                }
             }
             setAction(null);
         }
 
         const burnToken = async () => {
             if (userPublickey && walletName) {
-                await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget);
+                try {
+                    const txHash = await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget);
+                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                } catch (error: unknown) {
+                    if (error instanceof Error) {
+                        notifyError(<span>Transaction failed: {error.message}</span>);
+                    } else {
+                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                    }
+                }
             }
             setAction(null);
         }
 
         const mintTokenTarget = async () => {
             if (userPublickey && walletName) {
-                await mintTokenSFCTarget(userPublickey, walletName, Number(amount));
+                try {
+                    const txHash = await mintTokenSFCTarget(userPublickey, walletName, Number(amount));
+                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                } catch (error: unknown) {
+                    if (error instanceof Error) {
+                        notifyError(<span>Transaction failed: {error.message}</span>);
+                    } else {
+                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                    }
+                }
             }
             setAction(null);
         }
 
         const burnTokenTarget = async () => {
             if (userPublickey && walletName) {
-                await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget, typeAction);
+                try {
+                    const txHash = await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget, typeAction);
+                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                } catch (error: unknown) {
+                    if (error instanceof Error) {
+                        notifyError(<span>Transaction failed: {error.message}</span>);
+                    } else {
+                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                    }
+                }
             }
             setAction(null);
         }
@@ -197,6 +235,19 @@ const InputQtyMintBurn: FC = () => {
                     />
                 </div>
             )}
+            <ToastContainer
+                position="bottom-left"
+                autoClose={5000}
+                hideProgressBar={true}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+                transition={Bounce}
+            />
         </>
     )
 }
@@ -246,14 +297,32 @@ const InputQtyTransfer: FC = () => {
     useEffect(() => {
         const transferAsset = async () => {
             if (userPublickey && walletName) {
-                transferAssets(userPublickey, walletName, Number(amount));
+                try {
+                    const txHash = await transferAssets(userPublickey, walletName, Number(amount));
+                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                } catch (error: unknown) {
+                    if (error instanceof Error) {
+                        notifyError(<span>Transaction failed: {error.message}</span>);
+                    } else {
+                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                    }
+                }
             }
             setStateSwitch("unknown");
         }
 
-        const transferSFC = () => {
+        const transferSFC = async () => {
             if (userPublickey && walletName) {
-                transferSFCtoken(userPublickey, walletName, Number(amount));
+                try {
+                    const txHash = await transferSFCtoken(userPublickey, walletName, Number(amount));
+                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                } catch (error: unknown) {
+                    if (error instanceof Error) {
+                        notifyError(<span>Transaction failed: {error.message}</span>);
+                    } else {
+                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                    }
+                }
             }
             setStateSwitch("unknown");
         }

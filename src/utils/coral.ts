@@ -66,14 +66,14 @@ const signAndSendTransaction = async (transaction: Transaction, userPublickey: P
 
     try {
         const txHash = await phantomAdapter.sendTransaction(transaction, connection);
-        await connection.confirmTransaction({ signature: txHash, ...await connection.getLatestBlockhash() }, "finalized");
-        alert(`${alertMessage}`);
-        console.log("Successful: ", txHash);
-        setTimeout(() => {
-            window.open(`https://explorer.solana.com/tx/${txHash}?cluster=devnet`, "_blank");
-        }, 3000);
+        await connection.confirmTransaction({ signature: txHash, ...await connection.getLatestBlockhash() }, "confirmed");
+        return txHash;
     } catch (error) {
-        console.log("signAndSendTransaction caught: ", error);
+        if (error instanceof Error) {
+            throw new Error(error.message || "Transaction canceled");
+        } else {
+            throw new Error("Transaction canceled");
+        }
     }
 }
 
@@ -83,9 +83,9 @@ const createTxhAndSend = async (txInstruction: TransactionInstruction[], userPub
         for (const instruction of txInstruction) {
             transaction.add(instruction);
         }
-        await signAndSendTransaction(transaction, userPublickey, alertMessage);
+        return await signAndSendTransaction(transaction, userPublickey, alertMessage);
     } catch (error) {
-        console.log(`${catchMessageTitle} : ${error}`);
+        throw error;
     }
 }
 

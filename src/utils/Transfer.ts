@@ -29,9 +29,9 @@ const transferSFCtoken = async (userPublickey: string, walletName: string, amoun
             })
             .instruction();
         if (txInstruction)
-            createTxhAndSend([txInstruction], userPubkey, "transfer sfc", "transfer sfc successful")
+            return createTxhAndSend([txInstruction], userPubkey);
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 }
 
@@ -47,10 +47,10 @@ const transferAssets = async (userPublickey: string, walletName: string, amountI
     let amountBN: BN;
     if (state) {
         amountBN = new BN(amountInput / 100000);
-        alert(`Transfer Asset burnt ${amountInput} to target wallet`);
+        // alert(`Transfer Asset burnt ${amountInput} to target wallet`);
     } else {
         amountBN = new BN(amountInput);
-        alert(`Transfer Asset ${amountInput} to target wallet`);
+        // alert(`Transfer Asset ${amountInput} to target wallet`);
     }
     try {
         const txInstruction = await program?.methods
@@ -66,10 +66,10 @@ const transferAssets = async (userPublickey: string, walletName: string, amountI
             return txInstruction;
         } else {
             if (txInstruction)
-                createTxhAndSend([txInstruction], userPubkey, "transfered", "transfered successful, 3-2-1 direct");
+                return createTxhAndSend([txInstruction], userPubkey);
         }
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 }
 

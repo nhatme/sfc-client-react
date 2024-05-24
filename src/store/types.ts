@@ -27,6 +27,8 @@ export interface State {
         mode: ModeTransfer
     };
     listToken: Token[];
+    tokenAccount: boolean,
+    assetAccount: boolean
 }
 
 export interface UpdatePublickeyAction {
@@ -73,4 +75,25 @@ export interface UpdateSFCbalance {
     }
 }
 
-export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers | UpdateSFCbalance; 
+export interface UpdateTokenAccount {
+    type: "UPDATE_TOKEN_ACCOUNT",
+    payload: {
+        openTokenAcc: boolean
+    }
+}
+
+export interface UpdateAssetAccount {
+    type: "UPDATE_ASSET_ACCOUNT",
+    payload: {
+        openAssetAcc: boolean
+    }
+}
+
+interface MessageTransaction {
+    type: "UPDATE_MESSAGE_TRANSACTION",
+    payload: {
+        
+    }
+}
+
+export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers | UpdateSFCbalance | UpdateTokenAccount | UpdateAssetAccount; 

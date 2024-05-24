@@ -23,10 +23,10 @@ export const initialState: State = {
             tokenName: '',
             tokenSymbol: '',
             tokenImg: ''
-
-        },
-
-    ]
+        }
+    ],
+    tokenAccount: false,
+    assetAccount: false
 };
 
 const reducer = (state: State, action: Action): State => {
@@ -71,7 +71,16 @@ const reducer = (state: State, action: Action): State => {
                     ...state.listToken,
                     { mintAddress, balance, tokenName, tokenSymbol, tokenImg }
                 ]
-
+            }
+        case "UPDATE_TOKEN_ACCOUNT":
+            return {
+                ...state,
+                tokenAccount: action.payload.openTokenAcc,
+            }
+        case "UPDATE_ASSET_ACCOUNT":
+            return {
+                ...state,
+                assetAccount: action.payload.openAssetAcc
             }
         default:
             return state;

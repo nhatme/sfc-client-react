@@ -20,7 +20,6 @@ const openAsset = async (publicKey: string, walletName: string, pda: PublicKey) 
         }
     } catch (error) {
         console.error("Error setting program: ", error);
-
     }
 }
 

@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { publicRoutes } from './routes/routes';
 import { AppLayout } from './layouts/AppLayout';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   return (
     <>

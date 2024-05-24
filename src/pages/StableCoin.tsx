@@ -28,6 +28,7 @@ const SettingBoard: FC = () => {
     const walletName = state.myPublicKey.walletType;
     const type = state.mintAndBurn.type;
     const typeTransfer = state.transfers.type;
+    const openAssetAcc = state.assetAccount;
 
     const handleSwitch = () => {
         setCheckedTarget(prevCheckedTarget => !prevCheckedTarget);
@@ -72,6 +73,10 @@ const SettingBoard: FC = () => {
     }
 
     useEffect(() => {
+        console.log(openAssetAcc);
+    }, [openAssetAcc])
+
+    useEffect(() => {
         const connectAndOpenAsset = async () => {
             if (userPublickey && walletName) {
                 if (!phantomAdapter.connected) {
@@ -84,7 +89,7 @@ const SettingBoard: FC = () => {
                     console.log("PDA is not a publickey");
                 }
             }
-        };
+        }
         const connectAndCloseAsset = async () => {
             if (userPublickey && walletName) {
                 if (!phantomAdapter.connected) {
@@ -117,16 +122,18 @@ const SettingBoard: FC = () => {
         <div className={`mx-16px ${userPublickey ? "" : ""} border-1 rounded-3xl p-16px shadow-md bg-gray-50`}>
             {userPublickey ? (
                 <div className="">
-                    <div className="flex flex-col gap-4px">
-                        <div className="text-fs-14 italic font-bold text-purple-500">Open & Close Asset</div>
-                        <div className="flex gap-6px">
-                            <ButtonBuilder
-                                onClick={handleOpenAsset}
-                                btnName="Open" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500 bg-white" />
-                            <ButtonBuilder
-                                onClick={handleCloseAsset} btnName="Close" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500 bg-white" />
+                    {!openAssetAcc && (
+                        <div className="flex flex-col gap-4px">
+                            <div className="text-fs-14 italic font-bold text-purple-500">Open & Close Asset</div>
+                            <div className="flex gap-6px">
+                                <ButtonBuilder
+                                    onClick={handleOpenAsset}
+                                    btnName="Open" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500 bg-white" />
+                                <ButtonBuilder
+                                    onClick={handleCloseAsset} btnName="Close" border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium" classNameCustom="text-purple-500 bg-white" />
+                            </div>
                         </div>
-                    </div>
+                    )}
                     <div className="flex flex-col gap-4px mt-12px">
                         <div className="text-fs-14 italic font-bold text-purple-500">Mint & Burn SFC token</div>
                         <div className="flex items-center justify-between gap-6px">
@@ -206,13 +213,25 @@ const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon, classNameCusto
 }
 
 const StatusBoard: FC = () => {
-    const { state } = useWallet();
+    const { state, dispatch } = useWallet();
     const [userPrettyPublickey, setUserPublickey] = useState<string | undefined>(undefined);
     const [balance, setBalance] = useState(0);
     const [walletAsset, setWalletAsset] = useState(0);
     const [balanceSOL, setBalanceSOL] = useState(0);
+    const [assetPubkey, setAssetPubkey] = useState<PublicKey | null>(null);
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
+    const openTokenAcc = state.tokenAccount;
+
+    useEffect(() => {
+        if (userPublickey)
+            getStableSFC(userPublickey)
+                .then(balance => {
+                    if (typeof balance == "number") {
+                        setBalance(balance);
+                    }
+                }).catch(err => { setBalance(0); });
+    }, [balance, userPublickey]);
 
     useEffect(() => {
         if (userPublickey && walletName) {
@@ -223,20 +242,15 @@ const StatusBoard: FC = () => {
                     setBalanceSOL(SOL);
             })();
 
-            getStableSFC(userPublickey)
-                .then(balance => {
-                    if (typeof balance == "number") {
-                        setBalance(balance);
-                    }
-                }).catch(err => { setBalance(0); });
-
             (async () => {
                 const userWalletAsset = await getAssetUser(userPublickey, walletName);
                 setWalletAsset(Number(userWalletAsset.toString()));
+                setAssetPubkey(userWalletAsset);
+                dispatch({ type: "UPDATE_ASSET_ACCOUNT", payload: { openAssetAcc: true } });
             })();
             setUserPublickey(prettierPublickey(userPublickey));
         }
-    }, [userPublickey, walletAsset, balance, balanceSOL]);
+    }, [userPublickey, walletAsset, balanceSOL]);
 
     return (
         <div>
@@ -248,22 +262,20 @@ const StatusBoard: FC = () => {
             <div className="border-b-1 border-gray-border my-16px"></div>
             <div className="mx-16px flex justify-between">
                 <div className="flex flex-col gap-6px">
-                    <ButtonBuilder border="gray-border" btnName="Open Asset" btnType="circle" paddingSize="Small" sizeVariant="small"
-                        classNameCustom="flex items-center gap-4px text-purple-500"
-                        icon={<CheckIcon className="h-4 w-4 text-success-500" />}
-                    />
-                    <ButtonBuilder border="gray-border" btnName="open Asset" btnType="circle" paddingSize="Small" sizeVariant="small"
-                        classNameCustom="flex items-center gap-4px text-purple-500"
-                        icon={<CheckIcon className="h-4 w-4 text-success-500" />}
-                    />
-                    <ButtonBuilder border="gray-border" btnName="Open SFC" btnType="circle" paddingSize="Small" sizeVariant="small"
-                        classNameCustom="flex items-center gap-4px text-purple-500"
-                        icon={<CheckIcon className="h-4 w-4 text-success-500" />}
-                    />
+                    {openTokenAcc && (
+                        <ButtonBuilder border="gray-border" btnName="Open SFC" btnType="circle" paddingSize="Small" sizeVariant="small"
+                            classNameCustom="flex items-center gap-4px text-purple-500"
+                            icon={<CheckIcon className="h-4 w-4 text-success-500" />}
+                        />
+                    )}
+                    {assetPubkey && (
+                        <ButtonBuilder border="gray-border" btnName="Open Asset" btnType="circle" paddingSize="Small" sizeVariant="small"
+                            classNameCustom="flex items-center gap-4px text-purple-500"
+                            icon={<CheckIcon className="h-4 w-4 text-success-500" />}
+                        />
+                    )}
                 </div>
-                <div className="border-r-1 border-gray-border mx-16px"></div>
                 <div className="">
-
                     {userPublickey && (
                         <div className="border-1 p-12px rounded-lg shadow-md bg-gradient-117-to-r">
                             <StatusOfSt name="Account name: " value="Meow Meow Meow" unit="" classNameCustom="text-purple-500 font-medium" />
@@ -275,19 +287,6 @@ const StatusBoard: FC = () => {
                             </div>
                         </div>
                     )}
-
-                    {/* <div className="flex gap-4px mt-12px">
-                        <img
-                            className="h-48px w-48px rounded-full object-cover object-center shadow-xl"
-                            src="https://www.economywatch.com/wp-content/uploads/2021/06/solana-1.jpg"
-                            alt="nature image"
-                        />
-                        <img
-                            className="h-48px w-48px rounded-full object-cover object-center shadow-xl"
-                            src="https://www.economywatch.com/wp-content/uploads/2021/06/solana-1.jpg"
-                            alt="nature image"
-                        />
-                    </div> */}
                 </div>
             </div>
         </div>

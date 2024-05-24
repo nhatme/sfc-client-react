@@ -36,7 +36,7 @@ const Web3Dialog: FC = () => {
         if (userPublicKey) {
             (async () => {
                 const lists = await getListTokenFromWallet(userPublicKey);
-                console.log(lists);
+                // console.log(lists);
             })();
         }
 

@@ -21,8 +21,7 @@ const mintTokenFromAsset = async (userPublickey: string, walletName: string, amo
     initAnchorProvider(walletName);
     try {
         const program = await anchorProgram();
-
-        alert(`You minting ${amount / LAMPORTS_PER_SOL} the SFC token from the Vault`);
+        // alert(`You minting ${amount / LAMPORTS_PER_SOL} the SFC token from the Vault`);
         const txInstruction = await program?.methods
             .tributeAsset(amountBN, bumpBN)
             .accounts({
@@ -36,10 +35,9 @@ const mintTokenFromAsset = async (userPublickey: string, walletName: string, amo
             })
             .instruction();
         if (txInstruction)
-            createTxhAndSend([txInstruction], userPubkey, "Minting", "Minted Success! We're directing to explorer after 3 seconds");
-
+            return createTxhAndSend([txInstruction], userPubkey, "Minting", "Minted Success! We're directing to explorer after 3 seconds");
     } catch (error) {
-        console.log("Error Instruction: ", error);
+        throw error;
     }
 }
 
@@ -72,9 +70,9 @@ const mintTokenSFCTarget = async (userPublickey: string, walletName: string, amo
             })
             .instruction();
         if (txInstruction)
-            createTxhAndSend([txInstruction], userPubkey, "Minting to target", "Minted target Success! We're directing to explorer after 3 seconds");
+            return createTxhAndSend([txInstruction], userPubkey, "Minting to target", "Minted target Success! We're directing to explorer after 3 seconds");
     } catch (error) {
-        console.log("Error Instruction: ", error);
+        throw error;
     }
 
 }
@@ -103,15 +101,15 @@ const burnTokenSFCandTarget = async (userPublickey: string, walletName: string, 
                 })
                 .instruction();
             if (!isTarget) {
-                createTxhAndSend([txInstruction], userPubkey, "Burning", "Burnt Success! We're directing to explorer after 3 seconds");
+                return createTxhAndSend([txInstruction], userPubkey);
             } else {
                 const transferInstruction = await transferAssets(userPublickey, walletName, amount, state);
-                if (transferInstruction)
-                    createTxhAndSend([txInstruction, transferInstruction], userPubkey, "Burning to target", "Burnt target Success! We're directing to explorer after 3 seconds");
+                if (transferInstruction && typeof transferInstruction !== "string")
+                    return createTxhAndSend([txInstruction, transferInstruction], userPubkey);
             }
 
         } catch (error) {
-            console.log("Error Instruction: ", error);
+            throw error;
         }
     }
 }
