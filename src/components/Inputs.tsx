@@ -14,7 +14,7 @@ import { transferAssets, transferSFCtoken } from "../utils/Transfer";
 import { SFCprice } from "../config/programConfig";
 import { formatConverter } from "../utils/Utilities";
 import { Bounce, ToastContainer } from "react-toastify";
-import { notifyError, notifyProcess, notifySuccess } from "../notification/ToastMessage";
+import { notifyError, notifySuccess } from "../notification/ToastMessage";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -391,4 +391,12 @@ const InputQtyTransfer: FC = () => {
     )
 }
 
-export { InputCustom, InputTargetAddress, InputQtyMintBurn, InputQtyTransfer };
+const InputQtyBuyAndSell: FC = () => {
+    return (
+        <div>
+            
+        </div>
+    )
+}
+
+export { InputCustom, InputTargetAddress, InputQtyMintBurn, InputQtyTransfer, InputQtyBuyAndSell };

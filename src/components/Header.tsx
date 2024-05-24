@@ -31,10 +31,8 @@ export const Header: FC = () => {
             <div className="flex justify-between mx-8 h-20">
                 <div className="flex gap-[40px] items-center">
                     <Link to={"/"} >
-                        <div><img width="55px" height="32px" src={logo} alt="logo" /></div>
+                        <ButtonHeader buttonName={"Home"} url="/" />
                     </Link>
-                    <ButtonHeader buttonName={"Swap"} url="/ex_" />
-                    <ButtonHeader buttonName={"Pool"} url="/pool" />
                     <ButtonHeader buttonName={"Stable SFC"} url="/stable_sfc" />
                 </div>
                 <div className="flex items-center">
