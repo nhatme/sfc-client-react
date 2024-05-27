@@ -33,12 +33,12 @@ const Web3Dialog: FC = () => {
         setPhantomAdapter(phantomAdapter);
         setSolflareAdapter(solflareAdapter);
 
-        if (userPublicKey) {
-            (async () => {
-                const lists = await getListTokenFromWallet(userPublicKey);
-                // console.log(lists);
-            })();
-        }
+        // if (userPublicKey) {
+        //     (async () => {
+        //         const lists = await getListTokenFromWallet(userPublicKey);
+        //         console.log(lists);
+        //     })();
+        // }
 
         const handlePhantomConnect = () => {
             dispatch({

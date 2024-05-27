@@ -2,14 +2,6 @@ import { ActionHandleButton, ModeTransfer } from "../constants/constant";
 
 export type WalletName = "Phantom" | "Solflare" | "Backpack" | "Unknown";
 
-export interface Token {
-    mintAddress: string,
-    balance: number;
-    tokenName: string;
-    tokenSymbol: string;
-    tokenImg: string;
-}
-
 export interface State {
     myPublicKey: {
         publicKey: string | undefined,
@@ -26,12 +18,16 @@ export interface State {
         type: ActionHandleButton,
         mode: ModeTransfer
     };
-    listToken: Token[];
     tokenAccount: boolean,
-    assetAccount: boolean
+    assetAccount: boolean,
+    walletBalance: {
+        sol: number,
+        sfc: number,
+        asset: number
+    }
 }
 
-export interface UpdatePublickeyAction {
+interface UpdatePublickeyAction {
     type: 'UPDATE_PUBLICKEY_ACTION';
     payload: {
         publicKey: string | undefined,
@@ -39,14 +35,14 @@ export interface UpdatePublickeyAction {
     }
 }
 
-export interface UpdatePublickeyTargetAction {
+interface UpdatePublickeyTargetAction {
     type: 'UPDATE_PUBLICKEY_TARGET_ACTION';
     payload: {
         publicKey: string | undefined
     }
 }
 
-export interface UpdateAmountMintAndBurn {
+interface UpdateAmountMintAndBurn {
     type: 'UPDATE_AMOUNT_MINT_BURN';
     payload: {
         amount: number,
@@ -55,7 +51,7 @@ export interface UpdateAmountMintAndBurn {
     }
 }
 
-export interface UpdateTransfers {
+interface UpdateTransfers {
     type: 'UPDATE_TRANSFERS';
     payload: {
         amount: number,
@@ -64,7 +60,7 @@ export interface UpdateTransfers {
     }
 }
 
-export interface UpdateSFCbalance {
+interface UpdateSFCbalance {
     type: "UPDATE_BALANCE_TOKEN_WALLET",
     payload: {
         mintAddress: string,
@@ -75,25 +71,27 @@ export interface UpdateSFCbalance {
     }
 }
 
-export interface UpdateTokenAccount {
+interface UpdateTokenAccount {
     type: "UPDATE_TOKEN_ACCOUNT",
     payload: {
         openTokenAcc: boolean
     }
 }
 
-export interface UpdateAssetAccount {
+interface UpdateAssetAccount {
     type: "UPDATE_ASSET_ACCOUNT",
     payload: {
         openAssetAcc: boolean
     }
 }
 
-interface MessageTransaction {
-    type: "UPDATE_MESSAGE_TRANSACTION",
+interface UpdateBalance {
+    type: "UPDATE_BALANCE",
     payload: {
-        
+        sol: number,
+        sfc: number,
+        asset: number
     }
 }
 
-export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers | UpdateSFCbalance | UpdateTokenAccount | UpdateAssetAccount; 
+export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers | UpdateSFCbalance | UpdateTokenAccount | UpdateAssetAccount | UpdateBalance; 

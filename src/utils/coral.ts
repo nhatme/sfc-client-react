@@ -8,7 +8,7 @@ import { TransactionInstruction } from "@solana/web3.js";
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const phantomAdapter = new PhantomWalletAdapter();
-const initAnchorProvider = (walletName: string) => {
+const initAnchorProvider = (walletName: string): void => {
     if (walletName === 'Phantom') {
         setProvider(new AnchorProvider(connection, providerPhantomWallet, {
             preflightCommitment: "processed"
@@ -16,7 +16,7 @@ const initAnchorProvider = (walletName: string) => {
     }
 }
 
-const fetchPDA = (userPublickey: PublicKey, seedString: string) => {
+const fetchPDA = (userPublickey: PublicKey, seedString: string): [PublicKey, number] => {
     const targetDataPDA = PublicKey.findProgramAddressSync(
         [Buffer.from(`${seedString}`, "utf8"), userPublickey.toBuffer()],
         new PublicKey(ProgramId)
@@ -25,7 +25,7 @@ const fetchPDA = (userPublickey: PublicKey, seedString: string) => {
 }
 
 // fetch PDA from vault
-const fetchPDAfromVault = () => {
+const fetchPDAfromVault = (): [PublicKey, number] => {
     const vaultPDA = PublicKey.findProgramAddressSync(
         [Buffer.from("vault")], new PublicKey(ProgramId)
     );
@@ -43,11 +43,10 @@ const anchorProgram = async (): Promise<Program | null> => {
     try {
         const IDL = await Program.fetchIdl(ProgramId);
         if (!IDL) {
-            console.error("Error: IDL not found");
+            console.error("Error: IDL not found, use locally instead");
             {/* @ts-ignore */ }
             return new Program(idl, new PublicKey(ProgramId), getProvider());
         }
-
         return new Program(IDL, new PublicKey(ProgramId), getProvider());
     } catch (error) {
         console.error(error);

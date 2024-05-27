@@ -4,7 +4,6 @@ import { BN } from "@coral-xyz/anchor";
 import { MintAddress, SplToken, connection } from "../config/programConfig";
 
 const transferSFCtoken = async (userPublickey: string, walletName: string, amountInput: number) => {
-    alert(`You transfering to this target`);
     const amount = new BN(amountInput * LAMPORTS_PER_SOL);
     const userPubkey = new PublicKey(userPublickey);
     const [targetPDA] = fetchPDA(userPubkey, "target");
@@ -47,10 +46,8 @@ const transferAssets = async (userPublickey: string, walletName: string, amountI
     let amountBN: BN;
     if (state) {
         amountBN = new BN(amountInput / 100000);
-        // alert(`Transfer Asset burnt ${amountInput} to target wallet`);
     } else {
         amountBN = new BN(amountInput);
-        // alert(`Transfer Asset ${amountInput} to target wallet`);
     }
     try {
         const txInstruction = await program?.methods

@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/liberty.jpg";
 import { ButtonBuilder, ButtonHeader } from "./Button";
 import { Web3Dialog } from "./Dialog";
 import { getStableSFC } from "../utils/Utilities";
@@ -12,6 +11,11 @@ export const Header: FC = () => {
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
     const userPublickey = state.myPublicKey.publicKey;
+    const getSfcBalance = state.walletBalance.sfc;
+
+    useEffect(() => {
+        setBalance(getSfcBalance)
+    }, [getSfcBalance]);
 
     useEffect(() => {
         if (userPublickey) {
@@ -26,6 +30,7 @@ export const Header: FC = () => {
                 .finally(() => { setLoading(false); });
         }
     }, [userPublickey]);
+
     return (
         <div className="">
             <div className="flex justify-between mx-8 h-20">

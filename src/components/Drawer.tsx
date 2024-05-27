@@ -10,7 +10,7 @@ import { copyClipboard, prettierPublickey } from "../utils/ManageWalletAccount";
 import { removeItemLocalStorage } from "../utils/ManageLocalStorage";
 import { ArrowRightStartOnRectangleIcon, LinkIcon } from "@heroicons/react/16/solid";
 import { useWallet } from "../hooks/useWallet";
-import { fetchBalanceSOL, formatConverter, getTokenMetadata } from "../utils/Utilities";
+import { fetchBalanceSOL, formatConverter } from "../utils/Utilities";
 import { SOLANA_UNIT, SOLANA_PRICE } from "../constants/_solana_var";
 import { depositAsset, withdrawAsset } from "../utils/DepositAndWithdraw";
 import { AdminAuthor } from "../config/programConfig";
@@ -24,11 +24,12 @@ const DrawerRight: FC = () => {
     const closeDrawerRight = () => setOpenRight(false);
     const [balanceSOLlamport, setBalanceSOLlamport] = useState(0);
     const [action, setAction] = useState<ActionHandleAsset | null>(null);
-
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
-    const walletPrettier = userPublickey ? prettierPublickey(userPublickey) : null;
 
+    const updateBalanceSol = state.walletBalance.sol;
+
+    const walletPrettier = userPublickey ? prettierPublickey(userPublickey) : null;
     const handleDisconnect = async () => {
         if (state.myPublicKey.walletType === "Phantom") {
             await disConnect(providerPhantomWallet);
@@ -48,6 +49,10 @@ const DrawerRight: FC = () => {
     const handleButtonWithdraw = () => {
         setAction("withdraw");
     }
+
+    useEffect(() => {
+        setBalanceSOLlamport(updateBalanceSol * LAMPORTS_PER_SOL);
+    }, [updateBalanceSol]);
 
     useEffect(() => {
         const connectAndDeposit = async () => {
@@ -81,10 +86,9 @@ const DrawerRight: FC = () => {
                     if (fetchSOLbalance) {
                         setBalanceSOLlamport(fetchSOLbalance !== undefined ? fetchSOLbalance : 0); // Handle undefined
                     }
-                    // getTokenMetadata(userPublickey);
                 } catch (error) {
                     console.error('Error fetching balance:', error);
-                    setBalanceSOLlamport(0); // Optionally set balance to null or handle the error accordingly
+                    setBalanceSOLlamport(0);
                 }
             })();
         }

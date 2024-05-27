@@ -13,7 +13,7 @@ export const SFCprice = 10000;
  * for @devnet
  */
 export const ProgramId = "F7TehQFrx3XkuMsLPcmKLz44UxTWWfyodNLSungdqoRX";
-export const connection = new Connection(clusterApiUrl('devnet'), "finalized");
+export const connection = new Connection(clusterApiUrl('devnet'), { commitment: "confirmed" });
 
 /**
  * for @localnet

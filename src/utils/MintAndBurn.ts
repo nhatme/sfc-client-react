@@ -21,7 +21,6 @@ const mintTokenFromAsset = async (userPublickey: string, walletName: string, amo
     initAnchorProvider(walletName);
     try {
         const program = await anchorProgram();
-        // alert(`You minting ${amount / LAMPORTS_PER_SOL} the SFC token from the Vault`);
         const txInstruction = await program?.methods
             .tributeAsset(amountBN, bumpBN)
             .accounts({
@@ -55,7 +54,6 @@ const mintTokenSFCTarget = async (userPublickey: string, walletName: string, amo
     const tokenAccount = await getOrCreateAssociatedTokenAccount(
         connection, providerPhantomWallet, mintAddress, targetKey
     );
-    alert(`You minting ${amountInput} to target address`);
     try {
         const txInstruction = await program?.methods
             .tributeAsset(amountBN, bumpBN)
@@ -87,7 +85,6 @@ const burnTokenSFCandTarget = async (userPublickey: string, walletName: string, 
     initAnchorProvider(walletName);
     const program = await anchorProgram();
     if (program) {
-        alert(`You burning ${amountInput} to address`);
         try {
             const txInstruction = await program.methods
                 .summonAsset(amountBN)

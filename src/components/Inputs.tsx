@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, ReactNode, forwardRef, useEffect, useState } from "react";
 import { InputCustomProps } from "../interfaces/CustomProps";
 import { ButtonBuilder } from "./Button";
 import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
@@ -13,8 +13,7 @@ import { Web3Dialog } from "./Dialog";
 import { transferAssets, transferSFCtoken } from "../utils/Transfer";
 import { SFCprice } from "../config/programConfig";
 import { formatConverter } from "../utils/Utilities";
-import { Bounce, ToastContainer } from "react-toastify";
-import { notifyError, notifySuccess } from "../notification/ToastMessage";
+import { Alert, AlertProps, Snackbar } from "@mui/material";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -39,11 +38,27 @@ const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCur
  * */
 const InputTargetAddress: FC = () => {
     const { state, dispatch } = useWallet();
+    const [open, setOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | string>("");
+    const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
     const [targetAddress, setTargetAddress] = useState<string>("");
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
     const phantomAdapter = new PhantomWalletAdapter();
     const userPublickey = state.myPublicKey.publicKey;
     const walletType = state.myPublicKey.walletType;
+
+    const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
+        function SnackbarAlert(props, ref) {
+            return <Alert elevation={6} ref={ref} {...props} />
+        }
+    )
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpen(false);
+    }
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTargetAddress(event.target.value);
@@ -58,21 +73,29 @@ const InputTargetAddress: FC = () => {
     };
 
     useEffect(() => {
-        const connectAndLock = async () => {
+        (async () => {
             if (buttonClicked && targetAddress && userPublickey && walletType) {
-                if (!phantomAdapter.connected) {
-                    await phantomAdapter.connect();
-                }
-                const [pda, num] = fetchPDA(new PublicKey(userPublickey), "target");
-                if (pda instanceof PublicKey) {
-                    lockTargetAddress(userPublickey, targetAddress, walletType, pda);
-                } else {
-                    console.log("PDA is not a publickey format");
+                try {
+                    const txHash = await lockTargetAddress(userPublickey, targetAddress, walletType);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Lock target successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
+                } catch (error: unknown) {
+                    setSeverity('error');
+                    if (error instanceof Error) {
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
+                    } else {
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
+                    }
+                    setOpen(true);
                 }
             }
-        };
-
-        connectAndLock();
+        })();
         setButtonClicked(false);
     }, [buttonClicked, targetAddress, userPublickey, walletType]);
 
@@ -94,6 +117,14 @@ const InputTargetAddress: FC = () => {
             ) : <div>
                 <Web3Dialog />
             </div>}
+            <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center"
+            }}>
+                <SnackbarAlert onClose={handleClose} severity={severity}>
+                    {snackbarMessage}
+                </SnackbarAlert>
+            </Snackbar >
         </div>
     )
 }
@@ -106,12 +137,28 @@ const InputTargetAddress: FC = () => {
 const InputQtyMintBurn: FC = () => {
     const { state } = useWallet();
     const [amount, setAmount] = useState<string>("0");
+    const [open, setOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | string>("");
+    const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
     const [action, setAction] = useState<ActionHandleButton | null>(null);
+
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
-
     const typeAction = state.mintAndBurn.type;
     const isTarget = state.mintAndBurn.isTarget;
+
+    const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
+        function SnackbarAlert(props, ref) {
+            return <Alert elevation={6} ref={ref} {...props} />
+        }
+    )
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpen(false);
+    }
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
@@ -139,19 +186,26 @@ const InputQtyMintBurn: FC = () => {
     }
 
     useEffect(() => {
-        // console.log("mint burn component", isTarget);
-        // console.log('action changed to:', action);
         const mintToken = async () => {
             if (userPublickey && walletName) {
                 try {
                     const txHash = await mintTokenFromAsset(userPublickey, walletName, Number(amount));
-                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Transaction successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
                 } catch (error: unknown) {
+                    setSeverity('error');
                     if (error instanceof Error) {
-                        notifyError(<span>Transaction failed: {error.message}</span>);
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
                     } else {
-                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
                     }
+                    setOpen(true);
                 }
             }
             setAction(null);
@@ -161,13 +215,22 @@ const InputQtyMintBurn: FC = () => {
             if (userPublickey && walletName) {
                 try {
                     const txHash = await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget);
-                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Transaction successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
                 } catch (error: unknown) {
+                    setSeverity('error');
                     if (error instanceof Error) {
-                        notifyError(<span>Transaction failed: {error.message}</span>);
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
                     } else {
-                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
                     }
+                    setOpen(true);
                 }
             }
             setAction(null);
@@ -177,13 +240,22 @@ const InputQtyMintBurn: FC = () => {
             if (userPublickey && walletName) {
                 try {
                     const txHash = await mintTokenSFCTarget(userPublickey, walletName, Number(amount));
-                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Transaction successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
                 } catch (error: unknown) {
+                    setSeverity('error');
                     if (error instanceof Error) {
-                        notifyError(<span>Transaction failed: {error.message}</span>);
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
                     } else {
-                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
                     }
+                    setOpen(true);
                 }
             }
             setAction(null);
@@ -193,13 +265,22 @@ const InputQtyMintBurn: FC = () => {
             if (userPublickey && walletName) {
                 try {
                     const txHash = await burnTokenSFCandTarget(userPublickey, walletName, Number(amount), isTarget, typeAction);
-                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Transaction successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
                 } catch (error: unknown) {
+                    setSeverity('error');
                     if (error instanceof Error) {
-                        notifyError(<span>Transaction failed: {error.message}</span>);
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
                     } else {
-                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
                     }
+                    setOpen(true);
                 }
             }
             setAction(null);
@@ -215,6 +296,7 @@ const InputQtyMintBurn: FC = () => {
             burnTokenTarget();
         }
     }, [action, typeAction, isTarget, userPublickey, walletName]);
+
     return (
         <>
             {typeAction !== "unknown" && (
@@ -235,19 +317,14 @@ const InputQtyMintBurn: FC = () => {
                     />
                 </div>
             )}
-            <ToastContainer
-                position="bottom-left"
-                autoClose={5000}
-                hideProgressBar={true}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-                transition={Bounce}
-            />
+            <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center"
+            }}>
+                <SnackbarAlert onClose={handleClose} severity={severity}>
+                    {snackbarMessage}
+                </SnackbarAlert>
+            </Snackbar >
         </>
     )
 }
@@ -255,12 +332,28 @@ const InputQtyMintBurn: FC = () => {
 const InputQtyTransfer: FC = () => {
     const { state } = useWallet();
     const [amount, setAmount] = useState<string>("0");
+    const [open, setOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | string>("");
+    const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
     const [switchState, setStateSwitch] = useState<ModeTransfer>("unknown");
     const [convertMoney, setConvertMoney] = useState<string>("");
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
     const typeAction = state.transfers.type;
     const switchMode = state.transfers.mode;
+
+    const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
+        function SnackbarAlert(props, ref) {
+            return <Alert elevation={6} ref={ref} {...props} />
+        }
+    )
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpen(false);
+    }
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
@@ -299,13 +392,22 @@ const InputQtyTransfer: FC = () => {
             if (userPublickey && walletName) {
                 try {
                     const txHash = await transferAssets(userPublickey, walletName, Number(amount));
-                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Transaction successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
                 } catch (error: unknown) {
+                    setSeverity('error');
                     if (error instanceof Error) {
-                        notifyError(<span>Transaction failed: {error.message}</span>);
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
                     } else {
-                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
                     }
+                    setOpen(true);
                 }
             }
             setStateSwitch("unknown");
@@ -315,13 +417,22 @@ const InputQtyTransfer: FC = () => {
             if (userPublickey && walletName) {
                 try {
                     const txHash = await transferSFCtoken(userPublickey, walletName, Number(amount));
-                    notifySuccess(<a href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer</a >);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Transaction successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
                 } catch (error: unknown) {
+                    setSeverity('error');
                     if (error instanceof Error) {
-                        notifyError(<span>Transaction failed: {error.message}</span>);
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
                     } else {
-                        notifyError(<span>Transaction failed: Unknown error occurred</span>);
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
                     }
+                    setOpen(true);
                 }
             }
             setStateSwitch("unknown");
@@ -387,6 +498,14 @@ const InputQtyTransfer: FC = () => {
                     />
                 </div>
             )}
+            <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center"
+            }}>
+                <SnackbarAlert onClose={handleClose} severity={severity}>
+                    {snackbarMessage}
+                </SnackbarAlert>
+            </Snackbar >
         </>
     )
 }
@@ -394,7 +513,7 @@ const InputQtyTransfer: FC = () => {
 const InputQtyBuyAndSell: FC = () => {
     return (
         <div>
-            
+
         </div>
     )
 }

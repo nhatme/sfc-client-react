@@ -215,27 +215,40 @@ const StatusOfSt: FC<StatusStProps> = ({ name, value, unit, icon, classNameCusto
 const StatusBoard: FC = () => {
     const { state, dispatch } = useWallet();
     const [userPrettyPublickey, setUserPublickey] = useState<string | undefined>(undefined);
-    const [balance, setBalance] = useState(0);
+
+    const [SFCbalance, setSFCBalance] = useState(0);
     const [walletAsset, setWalletAsset] = useState(0);
     const [balanceSOL, setBalanceSOL] = useState(0);
-    const [assetPubkey, setAssetPubkey] = useState<PublicKey | null>(null);
+
+    // const [bunchOfBalance, setBunchOfBalance] = useState({ sol: 0, sfc: 0, asset: 0 });
+    const [assetPubkey, setAssetPubkey] = useState<string | null>(null);
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
     const openTokenAcc = state.tokenAccount;
+
+    const getSolBalance = state.walletBalance.sol;
+    const getSfcBalance = state.walletBalance.sfc;
+    const getAssetBalance = state.walletBalance.asset;
+
+    useEffect(() => {
+        setSFCBalance(getSfcBalance);
+        setWalletAsset(getAssetBalance);
+        setBalanceSOL(getSolBalance);
+    }, [getSolBalance, getSfcBalance, getAssetBalance]);
 
     useEffect(() => {
         if (userPublickey)
             getStableSFC(userPublickey)
                 .then(balance => {
                     if (typeof balance == "number") {
-                        setBalance(balance);
+                        setSFCBalance(balance);
                     }
-                }).catch(err => { setBalance(0); });
-    }, [balance, userPublickey]);
+                }).catch(err => { setSFCBalance(0); });
+    }, [SFCbalance, userPublickey]);
 
     useEffect(() => {
-        if (userPublickey && walletName) {
-
+        if (userPublickey) {
+            // init balance
             (async () => {
                 const SOL = await fetchBalanceSOL(userPublickey);
                 if (SOL)
@@ -244,7 +257,7 @@ const StatusBoard: FC = () => {
 
             (async () => {
                 const userWalletAsset = await getAssetUser(userPublickey, walletName);
-                setWalletAsset(Number(userWalletAsset.toString()));
+                setWalletAsset(Number(userWalletAsset));
                 setAssetPubkey(userWalletAsset);
                 dispatch({ type: "UPDATE_ASSET_ACCOUNT", payload: { openAssetAcc: true } });
             })();
@@ -255,8 +268,8 @@ const StatusBoard: FC = () => {
     return (
         <div>
             <div className="mx-16px flex flex-col gap-8px">
-                <StatusOfSt name="Tokenomics" value={`${formatConverter(balance.toFixed(1))}`} unit="SFC" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
-                <StatusOfSt name="SOL Balance" value={`${formatConverter((balanceSOL / LAMPORTS_PER_SOL).toFixed(5))}`} unit="SOL" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
+                <StatusOfSt name="Tokenomics" value={`${formatConverter(SFCbalance.toFixed(1))}`} unit="SFC" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
+                <StatusOfSt name="SOL Balance" value={`${formatConverter((balanceSOL / LAMPORTS_PER_SOL))}`} unit="SOL" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
                 <StatusOfSt name="Asset Balance" value={`${formatConverter(walletAsset)}`} unit="VND" icon={<QuestionMarkCircleIcon className="h-4 w-4 text-purple-200" />} />
             </div>
             <div className="border-b-1 border-gray-border my-16px"></div>
