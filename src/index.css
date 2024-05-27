@@ -16,6 +16,10 @@
     font-family: "Kanit", sans-serif !important;
 }
 
+body {
+    background: linear-gradient(140deg, #D9EFE6 0%, #E7DCF1 100%);
+}
+
 .scroll_hidable::-webkit-scrollbar {
     width: 8px;
     background-color: gray;

@@ -4,9 +4,6 @@ import { ButtonBuilder } from "./Button";
 import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
 import { useWallet } from "../hooks/useWallet";
 import { lockTargetAddress } from "../utils/LockTargetAddress";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
-import { PublicKey } from "@solana/web3.js";
-import { fetchPDA } from "../utils/coral";
 import { ActionHandleButton, ModeTransfer } from "../constants/constant";
 import { burnTokenSFCandTarget, mintTokenFromAsset, mintTokenSFCTarget } from "../utils/MintAndBurn";
 import { Web3Dialog } from "./Dialog";
@@ -43,7 +40,6 @@ const InputTargetAddress: FC = () => {
     const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
     const [targetAddress, setTargetAddress] = useState<string>("");
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
-    const phantomAdapter = new PhantomWalletAdapter();
     const userPublickey = state.myPublicKey.publicKey;
     const walletType = state.myPublicKey.walletType;
 
@@ -118,7 +114,7 @@ const InputTargetAddress: FC = () => {
                 <Web3Dialog />
             </div>}
             <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
-                vertical: "bottom",
+                vertical: "top",
                 horizontal: "center"
             }}>
                 <SnackbarAlert onClose={handleClose} severity={severity}>
@@ -318,7 +314,7 @@ const InputQtyMintBurn: FC = () => {
                 </div>
             )}
             <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
-                vertical: "bottom",
+                vertical: "top",
                 horizontal: "center"
             }}>
                 <SnackbarAlert onClose={handleClose} severity={severity}>
@@ -499,7 +495,7 @@ const InputQtyTransfer: FC = () => {
                 </div>
             )}
             <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
-                vertical: "bottom",
+                vertical: "top",
                 horizontal: "center"
             }}>
                 <SnackbarAlert onClose={handleClose} severity={severity}>
@@ -511,10 +507,91 @@ const InputQtyTransfer: FC = () => {
 }
 
 const InputQtyBuyAndSell: FC = () => {
-    return (
-        <div>
+    const { state } = useWallet();
+    const [amount, setAmount] = useState<string>("0");
+    const [open, setOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | string>("");
+    const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
+    const [switchState, setStateSwitch] = useState<ModeTransfer>("unknown");
+    const [convertMoney, setConvertMoney] = useState<string>("");
+    const userPublickey = state.myPublicKey.publicKey;
+    const walletName = state.myPublicKey.walletType;
+    const typeAction = state.transfers.type;
+    const switchMode = state.transfers.mode;
 
-        </div>
+    const buySolType = state.buyAndSellSol.type;
+    const buySolIsTarget = state.buyAndSellSol.isTarget;
+
+    useEffect(() => {
+        console.log(buySolType);
+    }, [buySolType]);
+
+    useEffect(() => {
+        console.log(buySolIsTarget);
+    }, [buySolIsTarget])
+
+    const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
+        function SnackbarAlert(props, ref) {
+            return <Alert elevation={6} ref={ref} {...props} />
+        }
+    )
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpen(false);
+    }
+
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+        if (inputValue == '') {
+            setAmount("0");
+            setConvertMoney("");
+            return;
+        }
+        // Regex to match non-numeric characters except for the decimal point
+        const regex = /[^0-9.]/g;
+        // Remove non-numeric characters except for the decimal point
+        let sanitizedValue = inputValue.replace(regex, '');
+        // Ensure there is only one decimal point
+        const decimalCount = (sanitizedValue.match(/\./g) || []).length;
+        if (decimalCount > 1) {
+            sanitizedValue = sanitizedValue.replace(/\.+$/, '');
+        }
+        setAmount(sanitizedValue);
+
+        // Update convertMoney whenever amount changes
+        const numericValue = parseFloat(sanitizedValue);
+    };
+    return (
+        <>
+            {typeAction == "transfer" && (
+                <div>
+                    <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                        <input
+                            value={amount === "0" ? "" : amount}
+                            onChange={handleInputChange}
+                            type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                        <div className="text-fs-12 font-medium text-gray-200 text-right">~ {convertMoney ? `${convertMoney} VND` : ""}</div>
+                    </div>
+                    <ButtonBuilder
+                        btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                        classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500 cursor-pointer"}`}
+                        cursor="not-allowed"
+                        btnName="Enter an amount" border="gray-border"
+                    />
+                </div>
+            )}
+            <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
+                vertical: "top",
+                horizontal: "center"
+            }}>
+                <SnackbarAlert onClose={handleClose} severity={severity}>
+                    {snackbarMessage}
+                </SnackbarAlert>
+            </Snackbar >
+        </>
     )
 }
 

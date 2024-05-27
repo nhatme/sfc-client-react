@@ -64,7 +64,7 @@ const ControlTabs: FC = () => {
                 ) : <div></div>}
             </div>
             <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
-                vertical: "bottom",
+                vertical: "top",
                 horizontal: "center"
             }}>
                 <SnackbarAlert onClose={handleClose} severity='info'>

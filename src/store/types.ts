@@ -18,12 +18,17 @@ export interface State {
         type: ActionHandleButton,
         mode: ModeTransfer
     };
-    tokenAccount: boolean,
-    assetAccount: boolean,
+    tokenAccount: boolean;
+    assetAccount: boolean;
     walletBalance: {
         sol: number,
         sfc: number,
         asset: number
+    };
+    buyAndSellSol: {
+        type: ActionHandleButton,
+        amount: number,
+        isTarget: boolean
     }
 }
 
@@ -60,17 +65,6 @@ interface UpdateTransfers {
     }
 }
 
-interface UpdateSFCbalance {
-    type: "UPDATE_BALANCE_TOKEN_WALLET",
-    payload: {
-        mintAddress: string,
-        balance: number,
-        tokenName: string,
-        tokenSymbol: string,
-        tokenImg: string
-    }
-}
-
 interface UpdateTokenAccount {
     type: "UPDATE_TOKEN_ACCOUNT",
     payload: {
@@ -94,4 +88,13 @@ interface UpdateBalance {
     }
 }
 
-export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers | UpdateSFCbalance | UpdateTokenAccount | UpdateAssetAccount | UpdateBalance; 
+interface UpdateBuyAndSellSol {
+    type: "UPDATE_BUY_SELL_SOL",
+    payload: {
+        type: ActionHandleButton,
+        amount: number,
+        isTarget: boolean
+    }
+}
+
+export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers | UpdateTokenAccount | UpdateAssetAccount | UpdateBalance | UpdateBuyAndSellSol; 

@@ -56,7 +56,7 @@ export interface BoardProps {
     gradientType?: GradientType,
     nameBoard: string,
     content?: JSX.Element,
-    width: string
+    width?: string
 }
 
 export interface StatusStProps {

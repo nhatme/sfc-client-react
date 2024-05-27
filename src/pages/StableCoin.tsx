@@ -136,7 +136,7 @@ const SettingBoard: FC = () => {
                     )}
                     <div className="flex flex-col gap-4px mt-12px">
                         <div className="text-fs-14 italic font-bold text-purple-500">Mint & Burn SFC token</div>
-                        <div className="flex items-center justify-between gap-6px">
+                        <div className="flex items-center gap-6px">
                             <div className="flex items-center gap-8px">
                                 <div className="flex gap-6px">
                                     <ButtonBuilder
@@ -330,7 +330,7 @@ const CirculatingBoard: FC = () => {
 
 const TabsHandle: FC = () => {
     return (
-        <div className="flex items-start pt-10 h-full">
+        <div className="flex items-start py-16">
             <div className="flex flex-col gap-10px">
                 <ControlTabs />
                 <div className="flex gap-8px">

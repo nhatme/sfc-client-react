@@ -22,6 +22,11 @@ export const initialState: State = {
         sol: 0,
         sfc: 0,
         asset: 0
+    },
+    buyAndSellSol: {
+        type: "unknown",
+        amount: 0,
+        isTarget: false
     }
 };
 
@@ -50,14 +55,10 @@ const reducer = (state: State, action: Action): State => {
                 }
             }
         case "UPDATE_TRANSFERS":
-            const { amount, type, mode } = action.payload;
+            const { amount: transferAmount, type: transferType, mode: transferMode } = action.payload;
             return {
                 ...state,
-                transfers: {
-                    amount: amount,
-                    type: type,
-                    mode: mode
-                }
+                transfers: { amount: transferAmount, type: transferType, mode: transferMode }
             }
         case "UPDATE_TOKEN_ACCOUNT":
             return {
@@ -74,6 +75,12 @@ const reducer = (state: State, action: Action): State => {
             return {
                 ...state,
                 walletBalance: { sol: sol, sfc: sfc, asset: asset }
+            }
+        case "UPDATE_BUY_SELL_SOL":
+            const { type: buySellType, amount: buySellAmount, isTarget: buySellIsTarget } = action.payload;
+            return {
+                ...state,
+                buyAndSellSol: { type: buySellType, amount: buySellAmount, isTarget: buySellIsTarget }
             }
         default:
             return state;
