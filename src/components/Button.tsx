@@ -6,7 +6,7 @@ import { ButtonBuilderProps, ButtonHeaderProps, SizeButton, updateButtonPaddingA
 const ButtonHeader: FC<ButtonHeaderProps> = ({ buttonName, url }) => {
   return (
     <Link to={url}>
-      <Button variant="text" size='sm' className="text-black text-sm font-bold">{buttonName}</Button>
+      <Button color='purple' variant="text" size='sm' className="text-sm font-bold">{buttonName}</Button>
     </Link>
   )
 }

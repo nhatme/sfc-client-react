@@ -9,7 +9,6 @@ import { StatusStProps } from "../interfaces/CustomProps";
 import { useWallet } from "../hooks/useWallet";
 import { prettierPublickey } from "../utils/ManageWalletAccount";
 import { closeAsset, openAsset } from "../utils/AssetsCash";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { fetchPDA } from "../utils/coral";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { ActionHandleButton, ModeTransfer } from "../constants/constant";
@@ -19,7 +18,6 @@ import { fetchBalanceSOL, formatConverter, getAssetUser, getStableSFC } from "..
 
 const SettingBoard: FC = () => {
     const { state, dispatch } = useWallet();
-    const phantomAdapter = new PhantomWalletAdapter();
     const [action, setAction] = useState<ActionHandleButton>("unknown");
     const [switchMode, setSwitchMode] = useState<ModeTransfer>("unknown");
     const [checkedTarget, setCheckedTarget] = useState(false);
@@ -79,9 +77,6 @@ const SettingBoard: FC = () => {
     useEffect(() => {
         const connectAndOpenAsset = async () => {
             if (userPublickey && walletName) {
-                if (!phantomAdapter.connected) {
-                    await phantomAdapter.connect();
-                }
                 const [pda, num] = fetchPDA(new PublicKey(userPublickey), "client");
                 if (pda instanceof PublicKey) {
                     openAsset(userPublickey, walletName, pda);
@@ -92,9 +87,6 @@ const SettingBoard: FC = () => {
         }
         const connectAndCloseAsset = async () => {
             if (userPublickey && walletName) {
-                if (!phantomAdapter.connected) {
-                    await phantomAdapter.connect();
-                }
                 const [pda, num] = fetchPDA(new PublicKey(userPublickey), "client");
                 if (pda instanceof PublicKey) {
                     closeAsset(userPublickey, walletName, pda);
@@ -328,7 +320,7 @@ const CirculatingBoard: FC = () => {
     )
 }
 
-const TabsHandle: FC = () => {
+const ParentBoard: FC = () => {
     return (
         <div className="flex items-start py-16">
             <div className="flex flex-col gap-10px">
@@ -345,4 +337,4 @@ const TabsHandle: FC = () => {
     )
 }
 
-export default TabsHandle;
+export default ParentBoard;

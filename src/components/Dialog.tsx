@@ -33,13 +33,6 @@ const Web3Dialog: FC = () => {
         setPhantomAdapter(phantomAdapter);
         setSolflareAdapter(solflareAdapter);
 
-        // if (userPublicKey) {
-        //     (async () => {
-        //         const lists = await getListTokenFromWallet(userPublicKey);
-        //         console.log(lists);
-        //     })();
-        // }
-
         const handlePhantomConnect = () => {
             dispatch({
                 type: "UPDATE_PUBLICKEY_ACTION",
@@ -87,7 +80,7 @@ const Web3Dialog: FC = () => {
     if (!state.myPublicKey.publicKey) {
         return (
             <>
-                <ButtonBuilder onClick={handleOpen} classNameCustom="bg-white"
+                <ButtonBuilder onClick={handleOpen} classNameCustom="bg-white text-purple-500"
                     btnName="Connect Wallet" paddingSize="Large" sizeVariant="medium" btnType="circle" cursor="pointer" border="gray-border" />
                 <Dialog size="xs" open={open} handler={handleOpen}
                     animate={{

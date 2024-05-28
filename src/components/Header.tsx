@@ -38,6 +38,8 @@ export const Header: FC = () => {
                     <Link to={"/"} >
                         <ButtonHeader buttonName={"Home"} url="/" />
                     </Link>
+                    <ButtonHeader buttonName={"Buy & Sell"} url="/ex_" />
+                    <ButtonHeader buttonName={"Liquid Pool"} url="/pool" />
                     <ButtonHeader buttonName={"Stable SFC"} url="/stable_sfc" />
                 </div>
                 <div className="flex items-center">

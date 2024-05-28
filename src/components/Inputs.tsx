@@ -143,6 +143,14 @@ const InputQtyMintBurn: FC = () => {
     const typeAction = state.mintAndBurn.type;
     const isTarget = state.mintAndBurn.isTarget;
 
+    // useEffect(() => {
+    //     console.log(isTarget);
+    // }, [isTarget]);
+
+    // useEffect(() => {
+    //     console.log(typeAction);
+    // }, [typeAction]);
+
     const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
         function SnackbarAlert(props, ref) {
             return <Alert elevation={6} ref={ref} {...props} />
@@ -295,7 +303,7 @@ const InputQtyMintBurn: FC = () => {
 
     return (
         <>
-            {typeAction !== "unknown" && (
+            {(typeAction === "mint" || typeAction === "burn") && (
                 <div>
                     <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
                         <input
@@ -510,25 +518,22 @@ const InputQtyBuyAndSell: FC = () => {
     const { state } = useWallet();
     const [amount, setAmount] = useState<string>("0");
     const [open, setOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | string>("");
-    const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
-    const [switchState, setStateSwitch] = useState<ModeTransfer>("unknown");
+    const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | null>(null);
+    const [severity, setSeverity] = useState<'success' | 'error' | 'info' | 'warning'>("info");
     const [convertMoney, setConvertMoney] = useState<string>("");
+
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
-    const typeAction = state.transfers.type;
-    const switchMode = state.transfers.mode;
-
-    const buySolType = state.buyAndSellSol.type;
+    const solType = state.buyAndSellSol.type;
     const buySolIsTarget = state.buyAndSellSol.isTarget;
 
     useEffect(() => {
-        console.log(buySolType);
-    }, [buySolType]);
+        console.log(solType);
+    }, [solType]);
 
     useEffect(() => {
         console.log(buySolIsTarget);
-    }, [buySolIsTarget])
+    }, [buySolIsTarget]);
 
     const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
         function SnackbarAlert(props, ref) {
@@ -560,13 +565,15 @@ const InputQtyBuyAndSell: FC = () => {
             sanitizedValue = sanitizedValue.replace(/\.+$/, '');
         }
         setAmount(sanitizedValue);
-
         // Update convertMoney whenever amount changes
         const numericValue = parseFloat(sanitizedValue);
     };
+
+
+
     return (
         <>
-            {typeAction == "transfer" && (
+            {(solType === "buySOL" || solType === "sellSOL") && (
                 <div>
                     <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
                         <input
@@ -595,4 +602,39 @@ const InputQtyBuyAndSell: FC = () => {
     )
 }
 
-export { InputCustom, InputTargetAddress, InputQtyMintBurn, InputQtyTransfer, InputQtyBuyAndSell };
+const InputLiquidPool: FC = () => {
+    const [amount, setAmount] = useState<string>("0");
+
+    return (
+        <div>
+            <div>
+                <img className="w-8 h-8 mb-2" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
+                <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                    <input
+                        // value={amount === "0" ? "" : amount}
+                        // onChange={handleInputChange}
+                        type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                    <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+                </div>
+            </div>
+            <div className="mt-4">
+                <img className="w-8 h-8 mb-2" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
+                <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                    <input
+                        // value={amount === "0" ? "" : amount}
+                        // onChange={handleInputChange}
+                        type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                    <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+                </div>
+            </div>
+            <ButtonBuilder
+                btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500 cursor-pointer"}`}
+                cursor="not-allowed"
+                btnName="Enter an amount" border="gray-border"
+            />
+        </div>
+    )
+}
+
+export { InputCustom, InputTargetAddress, InputQtyMintBurn, InputQtyTransfer, InputQtyBuyAndSell, InputLiquidPool };
