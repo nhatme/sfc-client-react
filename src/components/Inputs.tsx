@@ -11,6 +11,7 @@ import { transferAssets, transferSFCtoken } from "../utils/Transfer";
 import { SFCprice } from "../config/programConfig";
 import { formatConverter } from "../utils/Utilities";
 import { Alert, AlertProps, Snackbar } from "@mui/material";
+import { fetchLPtokenSupply } from "../utils/LiquidProvide/mod";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -569,8 +570,6 @@ const InputQtyBuyAndSell: FC = () => {
         const numericValue = parseFloat(sanitizedValue);
     };
 
-
-
     return (
         <>
             {(solType === "buySOL" || solType === "sellSOL") && (
@@ -603,36 +602,69 @@ const InputQtyBuyAndSell: FC = () => {
 }
 
 const InputLiquidPool: FC = () => {
-    const [amount, setAmount] = useState<string>("0");
+    const { state } = useWallet();
+    const [amountLP, setAmountLP] = useState(0);
+    const [isLPexist, setLPexist] = useState(false);
+    const [amountSOL, setAmountSOL] = useState(0);
+    const [amountSFC, setAmountSFC] = useState(0);
+
+    const userPublickey = state.myPublicKey.publicKey;
+
+    (async () => {
+        const supply = await fetchLPtokenSupply();
+        // console.log(supply);
+    })();
 
     return (
-        <div>
-            <div>
-                <img className="w-8 h-8 mb-2" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
-                <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
-                    <input
-                        // value={amount === "0" ? "" : amount}
-                        // onChange={handleInputChange}
-                        type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
-                    <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+        <div className="flex w-full">
+            <div className="w-2/3 mr-4">
+                <div>
+                    <img className="w-8 h-8 mb-2" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
+                    <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                        <input
+                            // value={amount === "0" ? "" : amount}
+                            // onChange={handleInputChange}
+                            type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                        <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+                    </div>
+                </div>
+                <div className="mt-4">
+                    <img className="w-8 h-8 mb-2 rounded-full" src="https://i.ibb.co/vxRnDKx/SFC-VND.jpg" alt="" />
+                    <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                        <input
+                            // value={amount === "0" ? "" : amount}
+                            // onChange={handleInputChange}
+                            type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                        <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+                    </div>
+                </div>
+                <ButtonBuilder
+                    btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                    classNameCustom={`mt-4px text-center text-white ${isLPexist === false ? "bg-purple-100 cursor-not-allowed" : "bg-purple-500 cursor-pointer"}`}
+                    cursor="not-allowed"
+                    btnName="Enter an amount" border="gray-border"
+                />
+            </div>
+            {/* /////////////////////////////////////// */}
+            <div className="w-1/3 flex flex-col justify-end">
+                <p className="text-purple-500">Enter your LP token you want to mint first, based on that we can calculate the SOL/SFC liquidity you have to provide </p>
+                <div>
+                    <img className="w-8 h-8 mb-2 rounded-full" src="https://i.ibb.co/wMRXC4M/LP-Token-Logo.webp" alt="" />
+                    <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                        <input
+                            // value={amount === "0" ? "" : amount}
+                            // onChange={handleInputChange}
+                            type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                        <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+                    </div>
+                    <ButtonBuilder
+                        btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                        classNameCustom={`mt-4px text-center text-white text-[24px] ${amountLP === 0 ? "bg-purple-100 cursor-not-allowed" : "bg-purple-500 cursor-pointer"}`}
+                        cursor="not-allowed"
+                        btnName="Enter an amount" border="gray-border"
+                    />
                 </div>
             </div>
-            <div className="mt-4">
-                <img className="w-8 h-8 mb-2" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
-                <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
-                    <input
-                        // value={amount === "0" ? "" : amount}
-                        // onChange={handleInputChange}
-                        type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
-                    <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
-                </div>
-            </div>
-            <ButtonBuilder
-                btnType="circle-square" sizeVariant="large" paddingSize="Small"
-                classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500 cursor-pointer"}`}
-                cursor="not-allowed"
-                btnName="Enter an amount" border="gray-border"
-            />
         </div>
     )
 }
