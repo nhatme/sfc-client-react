@@ -16,7 +16,6 @@ import { useWallet } from "../hooks/useWallet";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 import { disConnect, providerPhantomWallet } from "../utils/WalletProvider";
-import { getListTokenFromWallet } from "../utils/Utilities";
 
 const Web3Dialog: FC = () => {
     const [phantomAdapter, setPhantomAdapter] = useState<any | null>(null);

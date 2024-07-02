@@ -24,9 +24,21 @@ export const initialState: State = {
         asset: 0
     },
     buyAndSellSol: {
-        type: "unknown",
+        type: "buy",
         amount: 0,
         isTarget: false
+    },
+    liquidPool: {
+        poolSOL: 0,
+        poolSFC: 0,
+        LPtokenSupply: 0,
+        currentSOL: 0,
+        currentSFC: 0
+    },
+    liquidPoolRealtime: {
+        poolSOL: 0,
+        poolSFC: 0,
+        LPtokenSupply: 0
     }
 };
 
@@ -81,6 +93,17 @@ const reducer = (state: State, action: Action): State => {
             return {
                 ...state,
                 buyAndSellSol: { type: buySellType, amount: buySellAmount, isTarget: buySellIsTarget }
+            }
+        case "UPDATE_LIQUID_POOL":
+            const { poolSOL, poolSFC, LPtokenSupply, currentSOL, currentSFC } = action.payload;
+            return {
+                ...state,
+                liquidPool: { poolSOL: poolSOL, poolSFC: poolSFC, LPtokenSupply: LPtokenSupply, currentSOL: currentSOL, currentSFC: currentSFC }
+            }
+        case "UPDATE_LIQUID_REALTIME":
+            return {
+                ...state,
+                liquidPoolRealtime: { poolSOL: action.payload.poolSOL, poolSFC: action.payload.poolSFC, LPtokenSupply: action.payload.LPtokenSupply }
             }
         default:
             return state;

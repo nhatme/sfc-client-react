@@ -51,7 +51,7 @@ export const Header: FC = () => {
                                 ) : (
                                     balance === 0 ? <ButtonBuilder paddingSize="Medium" sizeVariant="medium" btnName="Deposit now"
                                         classNameCustom="bg-purple-500 text-white" btnType="circle-square" cursor="pointer" /> :
-                                        <ButtonBuilder paddingSize="Large" sizeVariant="medium" btnName={`${balance.toFixed(1)} SFC`} btnType="circle" classNameCustom="text-purple-500" />
+                                        <ButtonBuilder paddingSize="Large" sizeVariant="medium" btnName={`${balance.toFixed(2)} SFC`} btnType="circle" classNameCustom="text-purple-500" />
                                 )}
                             </div>
                         )}

@@ -10,8 +10,12 @@ import { Web3Dialog } from "./Dialog";
 import { transferAssets, transferSFCtoken } from "../utils/Transfer";
 import { SFCprice } from "../config/programConfig";
 import { formatConverter } from "../utils/Utilities";
-import { Alert, AlertProps, Snackbar } from "@mui/material";
-import { fetchLPtokenSupply } from "../utils/LiquidProvide/mod";
+import { Alert, AlertProps, Snackbar, SnackbarCloseReason } from "@mui/material";
+import { mintAndBurnLPtoken } from "../utils/LiquidProvide/liquidprovider";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { typeliquidity } from "../utils/LiquidProvide/liquidprovider";
+import SnackbarComponent from "./Notification";
+import buyAndSellSOLviaSFC from "../utils/Trade/BuyAndSellSol";
 
 const InputCustom: FC<InputCustomProps> = ({ className, label, dropdown, unitCurrencyConverter, walletBalance, placeHolder, type, inputClassName }) => {
     return (
@@ -143,14 +147,6 @@ const InputQtyMintBurn: FC = () => {
     const walletName = state.myPublicKey.walletType;
     const typeAction = state.mintAndBurn.type;
     const isTarget = state.mintAndBurn.isTarget;
-
-    // useEffect(() => {
-    //     console.log(isTarget);
-    // }, [isTarget]);
-
-    // useEffect(() => {
-    //     console.log(typeAction);
-    // }, [typeAction]);
 
     const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
         function SnackbarAlert(props, ref) {
@@ -517,30 +513,17 @@ const InputQtyTransfer: FC = () => {
 
 const InputQtyBuyAndSell: FC = () => {
     const { state } = useWallet();
-    const [amount, setAmount] = useState<string>("0");
+    const [amount, setAmount] = useState(0);
+    const [convertMoney, setConvertMoney] = useState<string>("");
+
+    const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
     const [open, setOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | null>(null);
-    const [severity, setSeverity] = useState<'success' | 'error' | 'info' | 'warning'>("info");
-    const [convertMoney, setConvertMoney] = useState<string>("");
 
     const userPublickey = state.myPublicKey.publicKey;
     const walletName = state.myPublicKey.walletType;
     const solType = state.buyAndSellSol.type;
     const buySolIsTarget = state.buyAndSellSol.isTarget;
-
-    useEffect(() => {
-        console.log(solType);
-    }, [solType]);
-
-    useEffect(() => {
-        console.log(buySolIsTarget);
-    }, [buySolIsTarget]);
-
-    const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
-        function SnackbarAlert(props, ref) {
-            return <Alert elevation={6} ref={ref} {...props} />
-        }
-    )
 
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === "clickaway") {
@@ -552,119 +535,277 @@ const InputQtyBuyAndSell: FC = () => {
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
         if (inputValue == '') {
-            setAmount("0");
+            setAmount(0);
             setConvertMoney("");
             return;
         }
-        // Regex to match non-numeric characters except for the decimal point
         const regex = /[^0-9.]/g;
-        // Remove non-numeric characters except for the decimal point
         let sanitizedValue = inputValue.replace(regex, '');
-        // Ensure there is only one decimal point
         const decimalCount = (sanitizedValue.match(/\./g) || []).length;
         if (decimalCount > 1) {
             sanitizedValue = sanitizedValue.replace(/\.+$/, '');
         }
-        setAmount(sanitizedValue);
-        // Update convertMoney whenever amount changes
         const numericValue = parseFloat(sanitizedValue);
+        console.log(numericValue);
+
+        setAmount(numericValue);
     };
+
+    const handleBuyAndSellSolviaSfc = async () => {
+        if (userPublickey && amount !== 0) {
+            console.log("hello");
+            try {
+                const txHash = await buyAndSellSOLviaSFC(userPublickey, amount, walletName, solType);
+                setSeverity('success');
+                setSnackbarMessage(
+                    <div className="flex items-center gap-6px">
+                        <p>Transaction successful!</p>
+                        <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                    </div>
+                );
+                setOpen(true);
+            } catch (error: unknown) {
+                setSeverity('error');
+                if (error instanceof Error) {
+                    setSnackbarMessage(`Transaction failed: ${error.message}`);
+                } else {
+                    setSnackbarMessage('Transaction failed: Unknown error occurred');
+                }
+                setOpen(true);
+            }
+        }
+    }
 
     return (
         <>
-            {(solType === "buySOL" || solType === "sellSOL") && (
-                <div>
-                    <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
-                        <input
-                            value={amount === "0" ? "" : amount}
-                            onChange={handleInputChange}
-                            type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
-                        <div className="text-fs-12 font-medium text-gray-200 text-right">~ {convertMoney ? `${convertMoney} VND` : ""}</div>
+            {(solType === "buy" || solType === "sell") && (
+                <div className="mt-2">
+                    <div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center pb-2">
+                                <img className="w-8 h-8" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
+                                <div className="ml-3 text-2xl font-semibold text-purple-500">SOL</div>
+                            </div>
+                            <div className="text-sm text-purple-500">Balance: 0</div>
+                        </div>
+                        <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                            <input
+                                value={amount === 0 ? "" : amount}
+                                onChange={handleInputChange}
+                                type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                            <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+                        </div>
                     </div>
-                    <ButtonBuilder
-                        btnType="circle-square" sizeVariant="large" paddingSize="Small"
-                        classNameCustom={`mt-4px text-center text-white ${(amount === "0" || amount == "") ? "bg-purple-100" : "bg-purple-500 cursor-pointer"}`}
-                        cursor="not-allowed"
-                        btnName="Enter an amount" border="gray-border"
-                    />
+                    <div className="mt-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center pb-2">
+                                <img className="w-8 h-8 rounded-full" src="https://i.ibb.co/vxRnDKx/SFC-VND.jpg" alt="" />
+                                <div className="ml-3 text-2xl font-semibold text-purple-500">SFC</div>
+                            </div>
+                            <div className="text-sm text-purple-500">Balance: 0</div>
+                        </div>
+                        <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
+                            <input
+                                disabled
+                                type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
+                            <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
+                        </div>
+                    </div>
+                    {userPublickey ? (
+                        <ButtonBuilder
+                            onClick={handleBuyAndSellSolviaSfc}
+                            btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                            classNameCustom={`mt-4px text-center text-white ${(amount === 0) ? "bg-purple-100" : "bg-purple-500 cursor-pointer"}`}
+                            cursor="not-allowed"
+                            btnName="Enter an amount" border="gray-border"
+                        />
+                    ) : <div className="mt-4px"><Web3Dialog /></div>}
                 </div>
             )}
-            <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{
-                vertical: "top",
-                horizontal: "center"
-            }}>
-                <SnackbarAlert onClose={handleClose} severity={severity}>
-                    {snackbarMessage}
-                </SnackbarAlert>
-            </Snackbar >
+            <SnackbarComponent open={open} severity={severity} message={snackbarMessage} onClose={handleClose} />
         </>
     )
 }
 
-const InputLiquidPool: FC = () => {
+const InputLiquidPool: FC<{ typeLiquid: typeliquidity }> = ({ typeLiquid }) => {
     const { state } = useWallet();
-    const [amountLP, setAmountLP] = useState(0);
-    const [isLPexist, setLPexist] = useState(false);
-    const [amountSOL, setAmountSOL] = useState(0);
-    const [amountSFC, setAmountSFC] = useState(0);
+    const [stateData, setStateData] = useState({
+        amountLP: 0,
+        SFCprovide: 0,
+        SOLprovide: 0,
+        mySolBalance: 0,
+        mySfcBalance: 0,
+        poolSOL: 0,
+        poolSFC: 0,
+        LPtokenSupply: 0,
+    });
+
+    const [severity, setSeverity] = useState<'success' | 'error' | 'info'>('info');
+    const [open, setOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState<ReactNode | null>(null);
 
     const userPublickey = state.myPublicKey.publicKey;
+    const walletName = state.myPublicKey.walletType;
 
-    (async () => {
-        const supply = await fetchLPtokenSupply();
-        // console.log(supply);
-    })();
+    const solBalance = state.walletBalance.sol;
+    const sfcBalance = state.walletBalance.sfc;
+
+    // initial state balance of pool and user
+    useEffect(() => {
+        if (userPublickey && state.liquidPool) {
+            const { poolSOL, poolSFC, LPtokenSupply, currentSOL, currentSFC } = state.liquidPool;
+            setStateData(prevState => ({
+                ...prevState,
+                poolSOL,
+                poolSFC,
+                LPtokenSupply,
+                mySolBalance: currentSOL,
+                mySfcBalance: currentSFC,
+            }));
+        } else {
+            setStateData(prevState => ({
+                ...prevState,
+                poolSOL: 0,
+                poolSFC: 0,
+                LPtokenSupply: 0,
+                mySolBalance: 0,
+                mySfcBalance: 0,
+            }));
+        }
+    }, [userPublickey, state.liquidPool]);
+
+    useEffect(() => {
+        if (solBalance !== undefined && sfcBalance !== undefined) {
+            setStateData(prevState => ({
+                ...prevState,
+                mySolBalance: solBalance,
+                mySfcBalance: sfcBalance,
+            }));
+        }
+    }, [solBalance, sfcBalance]);
+
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+        if (inputValue === '') {
+            setStateData(prevState => ({ ...prevState, amountLP: 0 }));
+            return;
+        }
+        const regex = /[^0-9.]/g;
+        let sanitizedValue = inputValue.replace(regex, '');
+        const decimalCount = (sanitizedValue.match(/\./g) || []).length;
+        if (decimalCount > 1) {
+            sanitizedValue = sanitizedValue.replace(/\.+$/, '');
+        }
+        const numericValue = parseFloat(sanitizedValue);
+        setStateData(prevState => ({ ...prevState, amountLP: numericValue }));
+    };
+
+    useEffect(() => {
+        const { amountLP, LPtokenSupply, poolSOL, poolSFC } = stateData;
+        if (LPtokenSupply > 0) {
+            const SOLprovide = (amountLP / LPtokenSupply) * poolSOL;
+            const SFCprovide = SOLprovide * (poolSFC / poolSOL); // for 1 SOL ~ ... SFC
+            setStateData(prevState => ({
+                ...prevState,
+                SOLprovide: SOLprovide / LAMPORTS_PER_SOL,
+                SFCprovide: SFCprovide / LAMPORTS_PER_SOL,
+            }));
+        }
+    }, [stateData.amountLP, stateData.LPtokenSupply, stateData.poolSFC, stateData.poolSOL]);
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpen(false);
+    }
+
+    const handleMintTokenLP = async () => {
+        if (userPublickey) {
+            if (stateData.amountLP !== 0) {
+                try {
+                    const txHash = await mintAndBurnLPtoken(userPublickey, stateData.amountLP, walletName, typeLiquid);
+                    setSeverity('success');
+                    setSnackbarMessage(
+                        <div className="flex items-center gap-6px">
+                            <p>Transaction successful!</p>
+                            <a className="underline" href={`https://explorer.solana.com/tx/${txHash}?cluster=devnet`} target="_blank">Click to check on Explorer.</a>
+                        </div>
+                    );
+                    setOpen(true);
+                    setStateData(prevState => ({
+                        ...prevState, amountLP: 0
+                    }));
+                } catch (error: unknown) {
+                    setSeverity('error');
+                    if (error instanceof Error) {
+                        setSnackbarMessage(`Transaction failed: ${error.message}`);
+                    } else {
+                        setSnackbarMessage('Transaction failed: Unknown error occurred');
+                    }
+                    setOpen(true);
+                }
+            }
+        }
+    }
 
     return (
         <div className="flex w-full">
             <div className="w-2/3 mr-4">
                 <div>
-                    <img className="w-8 h-8 mb-2" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center pb-2">
+                            <img className="w-8 h-8" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png" alt="" />
+                            <div className="ml-3 text-2xl font-semibold text-purple-500">SOL</div>
+                        </div>
+                        <div className="text-sm text-purple-500">Balance: {stateData.mySolBalance !== 0 ? stateData.mySolBalance.toFixed(4) : 0.0}</div>
+                    </div>
                     <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
                         <input
-                            // value={amount === "0" ? "" : amount}
-                            // onChange={handleInputChange}
+                            disabled value={isNaN(stateData.SOLprovide) ? "" : stateData.SOLprovide * LAMPORTS_PER_SOL}
                             type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
                         <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
                     </div>
                 </div>
                 <div className="mt-4">
-                    <img className="w-8 h-8 mb-2 rounded-full" src="https://i.ibb.co/vxRnDKx/SFC-VND.jpg" alt="" />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center pb-2">
+                            <img className="w-8 h-8 rounded-full" src="https://i.ibb.co/vxRnDKx/SFC-VND.jpg" alt="" />
+                            <div className="ml-3 text-2xl font-semibold text-purple-500">SFC</div>
+                        </div>
+                        <div className="text-sm text-purple-500">Balance: {stateData.mySfcBalance !== 0 ? stateData.mySfcBalance.toFixed(2) : 0.0}</div>
+                    </div>
                     <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
                         <input
-                            // value={amount === "0" ? "" : amount}
-                            // onChange={handleInputChange}
+                            disabled value={isNaN(stateData.SFCprovide) ? "" : stateData.SFCprovide * LAMPORTS_PER_SOL}
                             type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
                         <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
                     </div>
                 </div>
-                <ButtonBuilder
-                    btnType="circle-square" sizeVariant="large" paddingSize="Small"
-                    classNameCustom={`mt-4px text-center text-white ${isLPexist === false ? "bg-purple-100 cursor-not-allowed" : "bg-purple-500 cursor-pointer"}`}
-                    cursor="not-allowed"
-                    btnName="Enter an amount" border="gray-border"
-                />
+                {userPublickey ? (
+                    <ButtonBuilder
+                        onClick={handleMintTokenLP}
+                        btnType="circle-square" sizeVariant="large" paddingSize="Small"
+                        classNameCustom={`mt-4px text-center text-white ${stateData.amountLP === 0 ? "bg-purple-100 cursor-not-allowed" : "bg-purple-500 cursor-pointer"}`}
+                        cursor="not-allowed"
+                        btnName="Enter an amount" border="gray-border" />
+                ) : <div className="mt-4px"><Web3Dialog /></div>}
             </div>
-            {/* /////////////////////////////////////// */}
+            {/* ////////////////////////////////////////////////////////////////////////////// */}
             <div className="w-1/3 flex flex-col justify-end">
-                <p className="text-purple-500">Enter your LP token you want to mint first, based on that we can calculate the SOL/SFC liquidity you have to provide </p>
+                {/* <p className="text-purple-500 mb-2">Enter your LP token you want to mint first, based on that we can calculate the SOL/SFC liquidity you have to provide </p> */}
                 <div>
                     <img className="w-8 h-8 mb-2 rounded-full" src="https://i.ibb.co/wMRXC4M/LP-Token-Logo.webp" alt="" />
                     <div className="flex flex-col p-6px gap-4px border-1 border-gray-border rounded-custom-ssm bg-purple-50">
                         <input
-                            // value={amount === "0" ? "" : amount}
-                            // onChange={handleInputChange}
+                            value={stateData.amountLP}
+                            onChange={handleInputChange}
                             type="text" className="text-right text-fs-24 text-purple-500 font-medium outline-none bg-purple-50 w-full" placeholder="0.0" />
                         <div className="text-fs-12 font-medium text-gray-200 text-right">~</div>
                     </div>
-                    <ButtonBuilder
-                        btnType="circle-square" sizeVariant="large" paddingSize="Small"
-                        classNameCustom={`mt-4px text-center text-white text-[24px] ${amountLP === 0 ? "bg-purple-100 cursor-not-allowed" : "bg-purple-500 cursor-pointer"}`}
-                        cursor="not-allowed"
-                        btnName="Enter an amount" border="gray-border"
-                    />
                 </div>
             </div>
+            <SnackbarComponent open={open} severity={severity} message={snackbarMessage} onClose={handleClose} />
         </div>
     )
 }

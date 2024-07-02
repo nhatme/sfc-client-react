@@ -33,7 +33,7 @@ const DrawerRight: FC = () => {
     const handleDisconnect = async () => {
         if (state.myPublicKey.walletType === "Phantom") {
             await disConnect(providerPhantomWallet);
-            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: "", walletType: "Unknown" } });
+            dispatch({ type: "UPDATE_PUBLICKEY_ACTION", payload: { publicKey: undefined, walletType: "Unknown" } });
             removeItemLocalStorage();
         } else if (state.myPublicKey.walletType === "Solflare") {
             await disConnect(providerSolflareWallet);

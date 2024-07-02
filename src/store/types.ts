@@ -1,6 +1,7 @@
 import { ActionHandleButton, ModeTransfer } from "../constants/constant";
 
 export type WalletName = "Phantom" | "Solflare" | "Backpack" | "Unknown";
+export type Trading = "buy" | "sell";
 
 export interface State {
     myPublicKey: {
@@ -26,9 +27,21 @@ export interface State {
         asset: number
     };
     buyAndSellSol: {
-        type: ActionHandleButton,
+        type: Trading,
         amount: number,
         isTarget: boolean
+    },
+    liquidPool: {
+        poolSOL: number,
+        poolSFC: number,
+        LPtokenSupply: number,
+        currentSOL: number,
+        currentSFC: number
+    },
+    liquidPoolRealtime: {
+        poolSOL: number,
+        poolSFC: number,
+        LPtokenSupply: number,
     }
 }
 
@@ -91,10 +104,41 @@ interface UpdateBalance {
 interface UpdateBuyAndSellSol {
     type: "UPDATE_BUY_SELL_SOL",
     payload: {
-        type: ActionHandleButton,
+        type: Trading,
         amount: number,
         isTarget: boolean
     }
 }
 
-export type Action = UpdatePublickeyAction | UpdatePublickeyTargetAction | UpdateAmountMintAndBurn | UpdateTransfers | UpdateTokenAccount | UpdateAssetAccount | UpdateBalance | UpdateBuyAndSellSol; 
+// only for initial
+interface UpdateLiquidPool {
+    type: "UPDATE_LIQUID_POOL",
+    payload: {
+        poolSOL: number,
+        poolSFC: number,
+        LPtokenSupply: number,
+        currentSOL: number,
+        currentSFC: number
+    }
+}
+
+interface UpdateLiquidPoolRealtime {
+    type: "UPDATE_LIQUID_REALTIME",
+    payload: {
+        poolSOL: number,
+        poolSFC: number,
+        LPtokenSupply: number,
+    }
+}
+
+export type Action =
+    | UpdatePublickeyAction
+    | UpdatePublickeyTargetAction
+    | UpdateAmountMintAndBurn
+    | UpdateTransfers
+    | UpdateTokenAccount
+    | UpdateAssetAccount
+    | UpdateBalance
+    | UpdateBuyAndSellSol
+    | UpdateLiquidPool
+    | UpdateLiquidPoolRealtime;

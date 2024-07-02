@@ -3,14 +3,16 @@ import { MintAddress, MintAddressLP, connection } from "../../config/programConf
 import { fetchPDAfromVault } from "../coral";
 
 const [pdaVault] = fetchPDAfromVault();
+
 const fetchLPtokenSupply = async () => {
     const mint = new PublicKey(MintAddressLP);
     const getLPsupply = await connection.getTokenSupply(mint);
-    return getLPsupply.value.amount;
+    return Number(getLPsupply.value.amount);
 }
 
 const fetchSOLfromVault = async () => {
-    return await connection.getBalance(pdaVault);
+    const poolSOL = await connection.getBalance(pdaVault);
+    return poolSOL; // data in lamport
 }
 
 const fetchSFCfromVault = async () => {
@@ -19,9 +21,13 @@ const fetchSFCfromVault = async () => {
         programId: new PublicKey(MintAddressLP)
     }
     const tokenAccSFC = await connection.getTokenAccountsByOwner(pdaVault, tokenFiltSFC);
-    if (tokenAccSFC) {
-        console.log("getTokenAccountsByOwner: ", tokenAccSFC.value[0].pubkey.toString());
+    if (tokenAccSFC.value.length > 0) {
+        const tokenAccPubkey = tokenAccSFC.value[0].pubkey;
+        const poolSFC = await connection.getTokenAccountBalance(tokenAccPubkey);
+        return Number(poolSFC.value.amount); // data in lamport
+    } else {
+        return 0;
     }
 }
 
-export { fetchLPtokenSupply, fetchSFCfromVault }
+export { fetchLPtokenSupply, fetchSFCfromVault, fetchSOLfromVault }

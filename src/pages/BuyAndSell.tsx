@@ -4,12 +4,14 @@ import { CurrencyDollarIcon } from "@heroicons/react/16/solid"
 import { InputQtyBuyAndSell } from "../components/Inputs"
 import { useWallet } from "../hooks/useWallet"
 import { Switch } from "@material-tailwind/react"
-import { ActionHandleButton } from "../constants/constant"
+import { Trading } from "../store/types"
+
+
 
 const BuyAndSell: FC = () => {
     const { dispatch } = useWallet();
     const [isTarget, setTarget] = useState(false);
-    const [actionBuySellSol, setActionBuySellSol] = useState<ActionHandleButton | null>(null);
+    const [actionBuySellSol, setActionBuySellSol] = useState<Trading>("buy");
 
     const handleSwitchBtn = () => {
         setTarget(prevIsTarget => !prevIsTarget);
@@ -18,13 +20,13 @@ const BuyAndSell: FC = () => {
     }
 
     const handleBuyBtn = () => {
-        dispatch({ type: "UPDATE_BUY_SELL_SOL", payload: { type: "buySOL", amount: 0, isTarget: isTarget } });
-        setActionBuySellSol("buySOL");
+        dispatch({ type: "UPDATE_BUY_SELL_SOL", payload: { type: "buy", amount: 0, isTarget: isTarget } });
+        setActionBuySellSol("buy");
     }
 
     const handleSellBtn = () => {
-        dispatch({ type: "UPDATE_BUY_SELL_SOL", payload: { type: "sellSOL", amount: 0, isTarget: isTarget } });
-        setActionBuySellSol("sellSOL");
+        dispatch({ type: "UPDATE_BUY_SELL_SOL", payload: { type: "sell", amount: 0, isTarget: isTarget } });
+        setActionBuySellSol("sell");
     }
 
     return (
@@ -39,11 +41,11 @@ const BuyAndSell: FC = () => {
                                     <ButtonBuilder
                                         btnName="Buy" onClick={handleBuyBtn}
                                         border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium"
-                                        classNameCustom={(actionBuySellSol !== "unknown" && actionBuySellSol === "buySOL") ? " text-white bg-purple-500" : "text-purple-500 bg-white"} />
+                                        classNameCustom={actionBuySellSol === "buy" ? " text-white bg-purple-500" : "text-purple-500 bg-white"} />
                                     <ButtonBuilder
                                         btnName="Sell" onClick={handleSellBtn}
                                         border="gray-border" btnType="circle" cursor="pointer" paddingSize="Medium" sizeVariant="medium"
-                                        classNameCustom={(actionBuySellSol !== "unknown" && actionBuySellSol === "sellSOL") ? " text-white bg-purple-500" : "text-purple-500 bg-white"} />
+                                        classNameCustom={actionBuySellSol === "sell" ? " text-white bg-purple-500" : "text-purple-500 bg-white"} />
                                 </div>
                                 <CurrencyDollarIcon className="h-5 w-5 text-gray-500" />
                             </div>
